@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Pastarella/Pastarella.csproj" />
+    <Project Path="src/Pastarella.Core/Pastarella.Core.csproj" />
+    <Project Path="src/Pastarella.Terminal/Pastarella.Terminal.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,25 @@
+root = true
+
+[*]
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.csproj]
+indent_size = 4
+indent_style = space
+
+[*.cs]
+indent_size = 4
+indent_style = space
+
+# We use platform specific code, so just disable unnecessary warnings.
+dotnet_diagnostic.CA1416.severity = none
+
+csharp_style_namespace_declarations = file_scoped:error
+csharp_prefer_braces = when_multiline:error
+
+csharp_style_var_for_built_in_types = false:error
+csharp_style_var_when_type_is_apparent = true
+csharp_style_var_elsewhere = true
