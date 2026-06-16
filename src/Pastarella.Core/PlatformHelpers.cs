@@ -6,10 +6,12 @@ using System.Security.Principal;
 
 namespace Pastarella.Core;
 
-internal static class PlatformHelpers
+public static class PlatformHelpers
 {
     public static readonly ConcurrentDictionary<string, string> HashCache = new();
-    public static int CacheHits { get; private set; }
+
+    private static int _cacheHits;
+    public static int CacheHits => Volatile.Read(ref _cacheHits);
 
     [DllImport("libc")]
     private static extern uint geteuid();
@@ -134,7 +136,7 @@ internal static class PlatformHelpers
         {
             if (HashCache.TryGetValue(filePath, out string? sha256))
             {
-                CacheHits++;
+                Interlocked.Increment(ref _cacheHits);
                 return sha256;
             }
 

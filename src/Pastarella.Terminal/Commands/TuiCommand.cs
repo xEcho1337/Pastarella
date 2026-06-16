@@ -4,6 +4,7 @@ using Pastarella.Core.Models;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using Pastarella.Terminal.Outputs;
+using Pastarella.Core;
 
 namespace Pastarella.Terminal.Commands;
 
@@ -123,7 +124,7 @@ public class TuiCommand : Command<TuiCommand.TuiSettings>
 
         AnsiConsole.WriteLine();
         AnsiConsole.MarkupLine($"[green]Analysis completed in {took.TotalSeconds:F3}s.[/]");
-        AnsiConsole.MarkupLine($"[grey]Cached [green]{ExecutionContext.CacheHits}[/] hashes[/]");
+        AnsiConsole.MarkupLine($"[grey]Cached [green]{PlatformHelpers.CacheHits}[/] hashes[/]");
         AnsiConsole.WriteLine();
 
         if (!errors.IsEmpty)

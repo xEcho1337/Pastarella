@@ -17,7 +17,6 @@ public static class ExecutionContext
     public static readonly IServiceScanner ServiceScanner = GetServiceScanner();
 
     public static readonly ConcurrentDictionary<string, string> HashCache = new();
-    public static int CacheHits { get; }
 
     private static OperatingSystems GetOperatingSystem()
     {
