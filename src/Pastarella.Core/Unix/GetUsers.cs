@@ -24,7 +24,9 @@ public class ForensicScanner : IForensicScanner
             string home = parts[5];
             string shell = parts[6];
 
-            list.Add(new(name, "", uid, home, false /* TODO */)
+            bool is_disabled = shell.EndsWith("/nologin") || shell.EndsWith("/false");
+
+            list.Add(new(name, "", uid, home, is_disabled)
             {
                 Metadata =
                 {
