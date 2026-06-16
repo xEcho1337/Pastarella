@@ -21,4 +21,11 @@ public class AnalysisDispatcher : IAnalysisDispatcher
 
     public void AddDispatchers(Dictionary<string, Action> outActions)
     { }
+
+    public static string GetKernelVersion()
+    {
+        // TODO: get version via uname() libc function
+        string[] parts = File.ReadAllLines("/proc/version")[0].Split(' ');
+        return parts[2];
+    }
 }

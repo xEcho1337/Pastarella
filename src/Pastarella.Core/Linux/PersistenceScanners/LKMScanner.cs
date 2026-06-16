@@ -28,16 +28,9 @@ public class LKMScanner : IPersistenceScanner
         return Entries;
     }
 
-    private static string GetKernelVersion()
-    {
-        // TODO: get version via uname() libc function
-        string[] parts = File.ReadAllLines("/proc/version")[0].Split(' ');
-        return parts[2];
-    }
-
     public static string? FindModulePath(string moduleName)
     {
-        string modulesPath = $"{AnalysisDispatcher.ModulesPath}/{GetKernelVersion()}";
+        string modulesPath = $"{AnalysisDispatcher.ModulesPath}/{AnalysisDispatcher.GetKernelVersion()}";
         foreach (string line in File.ReadLines($"{modulesPath}/modules.dep"))
         {
             string path = line.Split(':')[0];

@@ -89,6 +89,7 @@ public enum ServiceStatus
 public enum DriverType
 {
     // Linux-only
+    BuiltinKernelModule,
     KernelModule,
 
     // Windows-only
