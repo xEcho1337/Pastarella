@@ -16,6 +16,11 @@
             href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
         />
         <style>
+            summary {
+                font-size: 2rem;
+                font-weight: bold;
+            }
+
             td {
                 white-space: pre-wrap;
                 word-break: break-word;
@@ -90,6 +95,13 @@
                             </li>
                         </ul>
                     </div>
+
+                    <div>
+                        <button id="uncollapse-all" class="btn btn-danger" type="submit">Uncollapse</button>
+                        /
+                        <button id="collapse-all" class="btn btn-success" type="submit">Collapse</button>
+                        <b>all</b>
+                    </div>
                 </div>
             </nav>
         </header>
@@ -112,128 +124,146 @@
         </div>
 
         <div id="report-infos" style="display: none">
-            <h1>Processes</h1>
-            <table class="table table-dark table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th style="width: 5%">Id</th>
-                        <th style="width: 10%">Name</th>
-                        <th>Path</th>
-                        <th style="width: 20%">SHA256</th>
-                        <th>Signature</th>
-                        <th>Start Time</th>
-                        <th>Metadata</th>
-                    </tr>
-                </thead>
-                <tbody id="processes"></tbody>
-            </table>
-            <h1>Services</h1>
-            <table class="table table-dark table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th style="width: 5%">Status</th>
-                        <th style="width: 10%">Service Type</th>
-                        <th>Service Name</th>
-                        <th>Display Name</th>
-                        <th>Command</th>
-                        <th style="width: 20%">Executable SHA256</th>
-                    </tr>
-                </thead>
-                <tbody id="services"></tbody>
-            </table>
-            <h1>Open Ports</h1>
-            <table class="table table-dark table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>Protocol</th>
-                        <th>State</th>
-                        <th>Local</th>
-                        <th>Remote</th>
-                        <th>PID</th>
-                        <th>Process Name</th>
-                    </tr>
-                </thead>
-                <tbody id="open-ports"></tbody>
-            </table>
-            <h1>Users</h1>
-            <table class="table table-dark table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Uid</th>
-                        <th>Home</th>
-                        <th>Disabled</th>
-                        <th>Metadata</th>
-                    </tr>
-                </thead>
-                <tbody id="users"></tbody>
-            </table>
-            <h1>Hosts</h1>
-            <table class="table table-dark table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>IP</th>
-                        <th>Domain(s)</th>
-                    </tr>
-                </thead>
-                <tbody id="hosts"></tbody>
-            </table>
-            <h1>Drivers</h1>
-            <table class="table table-dark table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Display Name</th>
-                        <th style="width: 10%">Identifier</th>
-                        <th>Type</th>
-                        <th>Executable Path</th>
-                        <th>Version</th>
-                        <th>Loaded</th>
-                        <th style="width: 20%">SHA256</th>
-                        <th>Signer</th>
-                    </tr>
-                </thead>
-                <tbody id="drivers"></tbody>
-            </table>
-            <h1>Persistences</h1>
-            <table class="table table-dark table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th style="width: 1%">Risk Score</th>
-                        <th>Name</th>
-                        <th>Path</th>
-                        <th>Action</th>
-                        <th>Trigger</th>
-                        <th>Privilege</th>
-                        <th>Type</th>
-                        <th>Metadata</th>
-                    </tr>
-                </thead>
-                <tbody id="persistences"></tbody>
-            </table>
-            <h1>Storages</h1>
-            <table class="table table-dark table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>Type</th>
-                        <th>Name</th>
-                        <th>Free Space</th>
-                        <th>Total Space</th>
-                    </tr>
-                </thead>
-                <tbody id="storages"></tbody>
-            </table>
-            <h1>Envs</h1>
-            <table class="table table-dark table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th style="width: 15%">Key</th>
-                        <th>Value</th>
-                    </tr>
-                </thead>
-                <tbody id="envs"></tbody>
-            </table>
+            <details open>
+                <summary>Processes</summary>
+                <table class="table table-dark table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">Id</th>
+                            <th style="width: 10%">Name</th>
+                            <th>Path</th>
+                            <th style="width: 20%">SHA256</th>
+                            <th>Signature</th>
+                            <th>Start Time</th>
+                            <th>Metadata</th>
+                        </tr>
+                    </thead>
+                    <tbody id="processes"></tbody>
+                </table>
+            </details>
+            <details open>
+                <summary>Services</summary>
+                <table class="table table-dark table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">Status</th>
+                            <th style="width: 10%">Service Type</th>
+                            <th>Service Name</th>
+                            <th>Display Name</th>
+                            <th>Command</th>
+                            <th style="width: 20%">Executable SHA256</th>
+                        </tr>
+                    </thead>
+                    <tbody id="services"></tbody>
+                </table>
+            </details>
+            <details open>
+                <summary>Open Ports</summary>
+                <table class="table table-dark table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Protocol</th>
+                            <th>State</th>
+                            <th>Local</th>
+                            <th>Remote</th>
+                            <th>PID</th>
+                            <th>Process Name</th>
+                        </tr>
+                    </thead>
+                    <tbody id="open-ports"></tbody>
+                </table>
+            </details>
+            <details open>
+                <summary>Users</summary>
+                <table class="table table-dark table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Uid</th>
+                            <th>Home</th>
+                            <th>Disabled</th>
+                            <th>Metadata</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users"></tbody>
+                </table>
+            </details>
+            <details open>
+                <summary>Hosts</summary>
+                <table class="table table-dark table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>IP</th>
+                            <th>Domain(s)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hosts"></tbody>
+                </table>
+            </details>
+            <details open>
+                <summary>Drivers</summary>
+                <table class="table table-dark table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Display Name</th>
+                            <th style="width: 10%">Identifier</th>
+                            <th>Type</th>
+                            <th>Executable Path</th>
+                            <th>Version</th>
+                            <th>Loaded</th>
+                            <th style="width: 20%">SHA256</th>
+                            <th>Signer</th>
+                        </tr>
+                    </thead>
+                    <tbody id="drivers"></tbody>
+                </table>
+            </details>
+            <details open>
+                <summary>Persistences</summary>
+                <table class="table table-dark table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 1%">Risk Score</th>
+                            <th>Name</th>
+                            <th>Path</th>
+                            <th>Action</th>
+                            <th>Trigger</th>
+                            <th>Privilege</th>
+                            <th>Type</th>
+                            <th>Metadata</th>
+                        </tr>
+                    </thead>
+                    <tbody id="persistences"></tbody>
+                </table>
+            </details>
+            <details open>
+                <summary>Storages</summary>
+                <table class="table table-dark table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Name</th>
+                            <th>Free Space</th>
+                            <th>Total Space</th>
+                        </tr>
+                    </thead>
+                    <tbody id="storages"></tbody>
+                </table>
+            </details>
+            <details open>
+                <summary>Envs</summary>
+                <table class="table table-dark table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 15%">Key</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody id="envs"></tbody>
+                </table>
+            </details>
         </div>
 
         <script

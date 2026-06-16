@@ -181,3 +181,11 @@ if (Math.random() < 0.05) {
 } else {
   logo.src = "./logo.png";
 }
+
+document.getElementById('collapse-all').addEventListener('click', () => {
+  document.querySelectorAll('details').forEach(d => d.open = false);
+});
+
+document.getElementById('uncollapse-all').addEventListener('click', () => {
+  document.querySelectorAll('details').forEach(d => d.open = true);
+});
