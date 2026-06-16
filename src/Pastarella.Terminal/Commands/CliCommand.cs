@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using Pastarella.Core;
 using Pastarella.Core.Common;
 using Pastarella.Terminal.Outputs;
 using Spectre.Console.Cli;
@@ -61,6 +62,9 @@ public class CliCommand : Command<CliCommand.CliSettings>
 
     protected override int Execute(CommandContext context, CliSettings settings, CancellationToken cancellationToken)
     {
+        if (!PlatformHelpers.IsElevated())
+            Console.WriteLine("Program not executed with admin privileges. Not all information will be given");
+
         try
         {
             var dispatcher = ExecutionContext.Dispatcher;
