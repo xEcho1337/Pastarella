@@ -58,7 +58,7 @@ public class KextScanner : IDriverScanner
                 Name: name,
                 DisplayName: displayName,
                 Identifier: identifier,
-                Type: DriverType.Kext,
+                Type: DriverType.KernelExtension,
                 ExecutablePath: execPath,
                 Version: version,
                 Loaded: loaded,

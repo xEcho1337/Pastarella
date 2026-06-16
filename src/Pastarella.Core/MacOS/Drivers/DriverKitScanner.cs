@@ -113,8 +113,10 @@ public class DriverKitScanner : IDriverScanner
 
         return type switch
         {
-            "driver_extension" => DriverType.DriverKit,
-            _ => DriverType.Kext
+            "cmio" => DriverType.CameraExtension,
+            "driver_extension" => DriverType.DriverExtension,
+            "network_extension" => DriverType.NetworkExtension,
+            _ => DriverType.KernelExtension
         };
     }
 }

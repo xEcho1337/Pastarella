@@ -97,6 +97,8 @@ public enum DriverType
     Filesystem,
 
     // MacOS-only
-    Kext,
-    DriverKit
+    KernelExtension,
+    CameraExtension,
+    DriverExtension,
+    NetworkExtension
 }
