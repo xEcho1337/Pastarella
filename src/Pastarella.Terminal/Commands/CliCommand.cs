@@ -55,6 +55,11 @@ public class CliCommand : Command<CliCommand.CliSettings>
         [DefaultValue(false)]
         public bool Persistances { get; init; }
 
+        [CommandOption("-C|--command-histories")]
+        [Description("Show all command histories")]
+        [DefaultValue(false)]
+        public bool CommandHistories { get; init; }
+
         [CommandArgument(0, "<output>")]
         [Description("Name of the output file")]
         public required string Output { get; init; }
@@ -73,6 +78,7 @@ public class CliCommand : Command<CliCommand.CliSettings>
             var network = ExecutionContext.NetworkScanner;
             var driver = ExecutionContext.DriverScanner;
             var service = ExecutionContext.ServiceScanner;
+            var cmdHistory = ExecutionContext.CommandHistoryScanner;
 
             var report = ExecutionContext.Dispatcher.Report;
 
@@ -85,6 +91,7 @@ public class CliCommand : Command<CliCommand.CliSettings>
             if (settings.Storages) report.Storages = forensic.ScanStorages().ToList();
             if (settings.OpenConnections) report.OpenPorts = network.Scan().ToList();
             if (settings.Persistances) report.Persistences = persistence.Scan().ToList();
+            if (settings.CommandHistories) report.CommandHistories = cmdHistory.Scan().ToList();
 
             if (settings.Output.EndsWith(".json"))
                 File.WriteAllText(settings.Output, JsonWriter.Serialize(report));

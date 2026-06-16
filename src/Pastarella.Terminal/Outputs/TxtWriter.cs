@@ -61,6 +61,10 @@ public class TxtWriter
         PrintTitle("Environment variables");
         envs.WriteEnvs(report.Envs);
 
+        var cmdHistories = new CommandHistoryScanner(_buffer);
+        PrintTitle("Command Histories");
+        cmdHistories.WriteHistories(report.CommandHistories);
+
         return _buffer.Text;
     }
 }

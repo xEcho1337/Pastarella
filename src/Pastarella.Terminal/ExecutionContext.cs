@@ -15,6 +15,7 @@ public static class ExecutionContext
     public static readonly INetworkScanner NetworkScanner = GetNetworkScanner();
     public static readonly IDriverScanner DriverScanner = GetDriverScanner();
     public static readonly IServiceScanner ServiceScanner = GetServiceScanner();
+    public static readonly ICommandHistoryScanner CommandHistoryScanner = GetCommandHistoryScanner();
 
     public static readonly ConcurrentDictionary<string, string> HashCache = new();
 
@@ -85,6 +86,13 @@ public static class ExecutionContext
         OperatingSystems.MacOS => new Core.MacOS.ServiceScanner(),
         OperatingSystems.Linux => new Core.Linux.ServiceScanner(),
         OperatingSystems.FreeBSD => new Core.FreeBSD.ServiceScanner(),
+        _ => throw new NotImplementedException($"{RuntimeInformation.OSDescription} is currently not supported.")
+    };
+
+    private static ICommandHistoryScanner GetCommandHistoryScanner() => OS switch
+    {
+        OperatingSystems.Windows => new Core.Windows.CommandHistoryScanner(),
+        OperatingSystems.MacOS or OperatingSystems.Linux or OperatingSystems.FreeBSD => new Core.Unix.CommandHistoryScanner(),
         _ => throw new NotImplementedException($"{RuntimeInformation.OSDescription} is currently not supported.")
     };
 }

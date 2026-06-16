@@ -21,4 +21,6 @@ public class AnalysisReport
     public List<StorageInfo> Storages = [];
 
     public Dictionary<string, string> Envs = [];
+
+    public List<CommandHistory> CommandHistories = [];
 }

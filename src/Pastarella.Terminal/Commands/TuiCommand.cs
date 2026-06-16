@@ -20,6 +20,7 @@ public class TuiCommand : Command<TuiCommand.TuiSettings>
         var network = ExecutionContext.NetworkScanner;
         var driver = ExecutionContext.DriverScanner;
         var service = ExecutionContext.ServiceScanner;
+        var cmdHistory = ExecutionContext.CommandHistoryScanner;
 
         var report = dispatcher.Report;
 
@@ -34,6 +35,7 @@ public class TuiCommand : Command<TuiCommand.TuiSettings>
             ["Storages"] = () => report.Storages = forensic.ScanStorages().ToList(),
             ["Open Connections"] = () => report.OpenPorts = network.Scan().ToList(),
             ["Persistence Checks"] = () => report.Persistences = persistence.Scan().ToList(),
+            ["Command Histories"] = () => report.CommandHistories = cmdHistory.Scan().ToList(),
         };
 
         dispatcher.AddDispatchers(actions);

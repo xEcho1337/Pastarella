@@ -37,6 +37,11 @@ public interface INetworkScanner
     IEnumerable<PortInfo> Scan();
 }
 
+public interface ICommandHistoryScanner
+{
+    IEnumerable<CommandHistory> Scan();
+}
+
 public record ProcessInfo(
     int Id,
     string Name,
@@ -96,3 +101,5 @@ public record UdpPortInfo(
 ) : PortInfo("UDP", ProcessName, ProcessId, Local);
 
 public record IpPort(string Ip, ushort Port);
+
+public record CommandHistory(string Shell, IEnumerable<string> Commands);
