@@ -24,9 +24,10 @@ public class ForensicScanner : IForensicScanner
             string home = parts[5];
             string shell = parts[6];
 
+            string full_name = gecos.Split(',', 2)[0];
             bool is_disabled = shell.EndsWith("/nologin") || shell.EndsWith("/false");
 
-            list.Add(new(name, "", uid, home, is_disabled)
+            list.Add(new(name, full_name, uid, home, is_disabled)
             {
                 Metadata =
                 {
