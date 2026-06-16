@@ -27,6 +27,8 @@ public static class ExecutionContext
             return OperatingSystems.MacOS;
         if (OperatingSystem.IsLinux())
             return OperatingSystems.Linux;
+        if (OperatingSystem.IsFreeBSD())
+            return OperatingSystems.FreeBSD;
 
         throw new NotImplementedException($"{RuntimeInformation.OSDescription} is currently not supported");
     }
@@ -36,6 +38,7 @@ public static class ExecutionContext
         OperatingSystems.Windows => new Core.Windows.ForensicScanner(),
         OperatingSystems.MacOS => new Core.MacOS.ForensicScanner(),
         OperatingSystems.Linux => new Core.Linux.ForensicScanner(),
+        OperatingSystems.FreeBSD => new Core.FreeBSD.ForensicScanner(),
         _ => throw new NotImplementedException($"{RuntimeInformation.OSDescription} is currently not supported.")
     };
 
@@ -44,6 +47,7 @@ public static class ExecutionContext
         OperatingSystems.Windows => new Core.Windows.AnalysisDispatcher(),
         OperatingSystems.MacOS => new Core.MacOS.AnalysisDispatcher(),
         OperatingSystems.Linux => new Core.Linux.AnalysisDispatcher(),
+        OperatingSystems.FreeBSD => new Core.FreeBSD.AnalysisDispatcher(),
         _ => throw new NotImplementedException($"{RuntimeInformation.OSDescription} is currently not supported.")
     };
 
@@ -52,6 +56,7 @@ public static class ExecutionContext
         OperatingSystems.Windows => new Core.Windows.PersistenceScanner(),
         OperatingSystems.MacOS => new Core.MacOS.PersistenceScanner(),
         OperatingSystems.Linux => new Core.Linux.PersistenceScanner(),
+        OperatingSystems.FreeBSD => new Core.FreeBSD.PersistenceScanner(),
         _ => throw new NotImplementedException($"{RuntimeInformation.OSDescription} is currently not supported.")
     };
 
@@ -61,6 +66,7 @@ public static class ExecutionContext
         OperatingSystems.Windows => new Core.Windows.DriverScanner(),
         OperatingSystems.MacOS => new Core.MacOS.DriverScanner(),
         OperatingSystems.Linux => new Core.Linux.DriverScanner(),
+        OperatingSystems.FreeBSD => new Core.FreeBSD.DriverScanner(),
         _ => throw new NotImplementedException($"{RuntimeInformation.OSDescription} is currently not supported.")
     };
 
@@ -69,15 +75,17 @@ public static class ExecutionContext
         OperatingSystems.Windows => new Core.Windows.NetworkScanner(),
         OperatingSystems.MacOS => new Core.MacOS.NetworkScanner(),
         OperatingSystems.Linux => new Core.Linux.NetworkScanner(),
+        OperatingSystems.FreeBSD => new Core.FreeBSD.NetworkScanner(),
         _ => throw new NotImplementedException($"{RuntimeInformation.OSDescription} is currently not supported.")
     };
 
 
-    private static IServiceScanner GetServiceScanner()=> OS switch
+    private static IServiceScanner GetServiceScanner() => OS switch
     {
         OperatingSystems.Windows => new Core.Windows.ServiceScanner(),
         OperatingSystems.MacOS => new Core.MacOS.ServiceScanner(),
         OperatingSystems.Linux => new Core.Linux.ServiceScanner(),
+        OperatingSystems.FreeBSD => new Core.FreeBSD.ServiceScanner(),
         _ => throw new NotImplementedException($"{RuntimeInformation.OSDescription} is currently not supported.")
     };
 }

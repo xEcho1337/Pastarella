@@ -5,39 +5,9 @@ namespace Pastarella.Core.Linux;
 
 public class ForensicScanner : IForensicScanner
 {
-    public static List<UserInfo> CachedUsersInfo
+    public static IEnumerable<UserInfo> CachedUsersInfo
     {
-        get
-        {
-            if (field == null)
-            {
-                field = [];
-
-                foreach (string line in File.ReadAllLines("/etc/passwd"))
-                {
-                    string[] parts = line.Split(':');
-
-                    string name = parts[0];
-                    string uid = parts[2];
-                    string gid = parts[3];
-                    string gecos = parts[4];
-                    string home = parts[5];
-                    string shell = parts[6];
-
-                    field.Add(new(name, "", uid, home, false /* TODO */)
-                    {
-                        Metadata =
-                        {
-                            ["gecos"] = gecos,
-                            ["gid"] = gid,
-                            ["shell"] = shell,
-                        },
-                    });
-                }
-            }
-
-            return field;
-        }
+        get => field ??= new Unix.ForensicScanner().ScanUsers();
     }
 
     public IEnumerable<ProcessInfo> ScanProcesses()

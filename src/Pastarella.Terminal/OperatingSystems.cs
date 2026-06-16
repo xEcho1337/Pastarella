@@ -5,4 +5,6 @@ public enum OperatingSystems
     Windows,
     MacOS,
     Linux,
+
+    FreeBSD,
 }
