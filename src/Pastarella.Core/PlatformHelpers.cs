@@ -14,7 +14,7 @@ public static class PlatformHelpers
     public static int CacheHits => Volatile.Read(ref _cacheHits);
 
     [DllImport("libc")]
-    private static extern uint geteuid();
+    private static extern uint getuid();
 
     public static bool IsElevated()
     {
@@ -26,7 +26,7 @@ public static class PlatformHelpers
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
-        return geteuid() == 0;
+        return getuid() == 0;
     }
 
     public static string NormalizePath(string path)

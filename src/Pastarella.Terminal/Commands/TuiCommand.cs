@@ -45,6 +45,9 @@ public class TuiCommand : Command<TuiCommand.TuiSettings>
     public static void Start(AnalysisReport report, Dictionary<string, Action> actions)
     {
         AnsiConsole.MarkupLine("[bold yellow]PASTARELLA[/]");
+        if (!PlatformHelpers.IsElevated())
+            AnsiConsole.MarkupLine("[bold red]Program not executed with admin privileges. Not all information will be given[/]");
+
         var checks = AnsiConsole.Prompt(
             new MultiSelectionPrompt<string>()
                 .Title("[grey]Select the options[/]")
