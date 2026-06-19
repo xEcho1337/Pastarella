@@ -156,6 +156,12 @@ input.addEventListener("change", async (event) => {
       appendArrToTable(document.getElementById("command-histories"), [history["Shell"], cmd]),
     );
   });
+
+  data["RecentFiles"].forEach((d) =>
+    appendArrToTable(document.getElementById("recent-files"), [
+      d["FilePath"], d["CreationTime"], d["LastWriteTime"],
+    ]),
+  );
 });
 
 const headings = document.querySelectorAll("#report-infos h1");

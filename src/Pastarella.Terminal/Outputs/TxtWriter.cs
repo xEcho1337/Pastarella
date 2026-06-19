@@ -65,6 +65,10 @@ public class TxtWriter
         PrintTitle("Command Histories");
         cmdHistories.WriteHistories(report.CommandHistories);
 
+        var recentFiles = new RecentFileScanner(_buffer);
+        PrintTitle("Recent Files (last 30 days)");
+        recentFiles.Write(report.RecentFiles);
+
         return _buffer.Text;
     }
 }

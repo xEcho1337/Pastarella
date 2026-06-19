@@ -103,3 +103,5 @@ public record UdpPortInfo(
 public record IpPort(string Ip, ushort Port);
 
 public record CommandHistory(string Shell, IEnumerable<string> Commands);
+
+public record RecentFileInfo(string FilePath, DateTime CreationTime, DateTime LastWriteTime);

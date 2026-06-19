@@ -28,6 +28,7 @@ public class TuiCommand : Command<TuiCommand.TuiSettings>
         {
             ["Environment Variables"] = () => report.Envs = EnvironmentVariablesScanner.GetEnvs(),
             ["Hosts"] = () => report.Hosts = HostsScanner.GetHosts().ToList(),
+            ["Recent Files"] = () => report.RecentFiles = RecentFileScanner.Scan().ToList(),
             ["Drivers"] = () => report.Drivers = driver.Scan().ToList(),
             ["Processes"] = () => report.Processes = forensic.ScanProcesses().ToList(),
             ["Services"] = () => report.Services = service.Scan().ToList(),
