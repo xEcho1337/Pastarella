@@ -150,6 +150,12 @@ input.addEventListener("change", async (event) => {
   Object.entries(data["Envs"]).forEach(([k, v]) =>
     appendArrToTable(document.getElementById("envs"), [k, v]),
   );
+
+  data["CommandHistories"].forEach(history => {
+    history["Commands"].forEach(cmd =>
+      appendArrToTable(document.getElementById("command-histories"), [history["Shell"], cmd]),
+    );
+  });
 });
 
 const headings = document.querySelectorAll("#report-infos h1");
