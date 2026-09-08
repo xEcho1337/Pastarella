@@ -17,27 +17,30 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand border-bottom">
-        <div class="container-fluid px-3">
+    <header class="sticky-top">
+        <nav class="navbar navbar-expand" style="background-color: #444444">
+            <div class="container-fluid px-3">
 
-            <a class="navbar-brand" href="#">
-                Pastarella
-            </a>
-
-            <div class="d-flex align-items-center gap-1">
-
-                <a href="https://github.com/xEcho1337/Pastarella" target="_blank" rel="noopener noreferrer"
-                    class="navbar-icon-btn" title="GitHub" aria-label="GitHub">
-                    <i class="bi bi-github"></i>
+                <a class="navbar-brand" href="#">
+                    Pastarella
                 </a>
 
-                <button class="navbar-icon-btn" type="button" title="Theme" aria-label="Theme" onclick="toggleTheme()">
-                    <i id="theme-icon"></i>
-                </button>
+                <div class="d-flex align-items-center gap-1">
 
+                    <a href="https://github.com/xEcho1337/Pastarella" target="_blank" rel="noopener noreferrer"
+                        class="navbar-icon-btn" title="GitHub" aria-label="GitHub">
+                        <i class="bi bi-github"></i>
+                    </a>
+
+                    <button class="navbar-icon-btn" type="button" title="Theme" aria-label="Theme"
+                        onclick="toggleTheme()">
+                        <i id="theme-icon"></i>
+                    </button>
+
+                </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    </header>
 
 
     <div id="load-file-container" class="text-center">
