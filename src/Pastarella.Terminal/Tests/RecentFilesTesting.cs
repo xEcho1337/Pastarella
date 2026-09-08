@@ -9,7 +9,7 @@ public class RecentFilesTesting
     {
         string root = OperatingSystem.IsWindows()
             ? @"C:\Users"
-            : "/Users/";
+            : "/Users";
 
         var options = new EnumerationOptions
         {
@@ -20,7 +20,7 @@ public class RecentFilesTesting
         long files = Benchmark("EnumerateFiles", () =>
         {
             long count = 0;
-            foreach (string file in Directory.EnumerateFiles(root, "*", options))
+            foreach (string unused in Directory.EnumerateFiles(root, "*", options))
                 count++;
             return count;
         });
@@ -31,12 +31,23 @@ public class RecentFilesTesting
         long customFiles = Benchmark("CustomEnumerateFiles", () =>
         {
             long count = 0;
-            foreach (string file in CustomFilesIterator(root))
+            foreach (string unused in CustomFilesIterator(root))
                 count++;
             return count;
         });
 
         Console.WriteLine($"  files: {customFiles:N0}");
+        Console.WriteLine();
+
+        long fastFiles = Benchmark("FastFiles", () =>
+        {
+            long count = 0;
+            foreach (string unused in FastFilesIterator(root))
+                count++;
+            return count;
+        });
+
+        Console.WriteLine($"  files: {fastFiles:N0}");
         Console.WriteLine();
     }
 
@@ -52,6 +63,127 @@ public class RecentFilesTesting
 
         Console.WriteLine($"{name,-35} {sw.Elapsed.TotalSeconds:F3}s");
         return result;
+    }
+
+    static IEnumerable<string> FastFilesIterator(string root)
+    {
+        int degreeOfParallelism = Math.Clamp(Environment.ProcessorCount, 1, 8);
+        var seen = new ConcurrentDictionary<string, byte>();
+        var dirs = new ConcurrentQueue<string>();
+        var files = new ConcurrentBag<string>();
+
+        seen.TryAdd(new DirectoryInfo(root).FullName, 0);
+        dirs.Enqueue(root);
+
+        int pending = 1;
+
+        Task[] workers = new Task[degreeOfParallelism];
+        for (int i = 0; i < degreeOfParallelism; i++)
+        {
+            workers[i] = Task.Run(() =>
+            {
+                while (true)
+                {
+                    if (!dirs.TryDequeue(out string? current))
+                    {
+                        if (Volatile.Read(ref pending) == 0)
+                            return;
+
+                        Thread.Yield();
+                        continue;
+                    }
+
+                    ProcessDir(current, dirs, files, seen, ref pending);
+
+                    if (Interlocked.Decrement(ref pending) == 0)
+                        return;
+                }
+            });
+        }
+
+        Task.WaitAll(workers);
+
+        return files;
+    }
+
+    static void ProcessDir(string path, ConcurrentQueue<string> dirs, ConcurrentBag<string> files,
+        ConcurrentDictionary<string, byte> seen, ref int pending)
+    {
+        FileSystemInfo[] entries;
+        try
+        {
+            entries = new DirectoryInfo(path).GetFileSystemInfos("*", DefaultOptions);
+        }
+        catch
+        {
+            return;
+        }
+
+        foreach (FileSystemInfo entry in entries)
+        {
+            if (entry is FileInfo file)
+            {
+                files.Add(file.FullName);
+                continue;
+            }
+
+            var dir = (DirectoryInfo)entry;
+
+            try
+            {
+                if ((dir.Attributes & (FileAttributes.Hidden | FileAttributes.System)) != 0)
+                    continue;
+
+                if (!string.IsNullOrEmpty(dir.LinkTarget))
+                {
+                    string physical = dir.ResolveLinkTarget(true)?.FullName ?? dir.FullName;
+
+                    if (!seen.TryAdd(physical, 0))
+                        continue;
+                }
+            }
+            catch
+            {
+                continue;
+            }
+
+            dirs.Enqueue(dir.FullName);
+            Interlocked.Increment(ref pending);
+        }
+    }
+
+    static readonly EnumerationOptions DefaultOptions = new() { IgnoreInaccessible = true };
+
+    static IEnumerable<string> SafeFiles(DirectoryInfo dir)
+    {
+        try
+        {
+            return dir.EnumerateFiles("*", DefaultOptions)
+                .Select(f => f.FullName).ToList();
+        }
+        catch
+        {
+            return [];
+        }
+    }
+
+    static DirectoryInfo[] SafeDirs(DirectoryInfo dir)
+    {
+        try
+        {
+            return dir.GetDirectories("*", DefaultOptions);
+        }
+        catch
+        {
+            return [];
+        }
+    }
+
+    // Echo's Version
+    static IEnumerable<string> FilesOf(DirectoryInfo dir)
+    {
+        foreach (string f in SafeFiles(dir))
+            yield return f;
     }
 
     static IEnumerable<string> CustomFilesIterator(string root)
@@ -71,14 +203,6 @@ public class RecentFilesTesting
             yield return x;
     }
 
-    static readonly EnumerationOptions DefaultOptions = new() { IgnoreInaccessible = true };
-
-    static IEnumerable<string> FilesOf(DirectoryInfo dir)
-    {
-        foreach (FileInfo file in dir.EnumerateFiles("*", DefaultOptions))
-            yield return file.FullName;
-    }
-
     static IEnumerable<string> CollectFiles(DirectoryInfo dir, ConcurrentDictionary<string, byte> seen,
         int degreeOfParallelism, int depth)
     {
@@ -87,20 +211,21 @@ public class RecentFilesTesting
 
         List<string> files = [];
 
-        var directories = dir.GetDirectories("*", DefaultOptions);
+        var directories = SafeDirs(dir);
 
         if (directories.Length == 0) yield break;
 
-        if (depth > 2)
-            serialScan(directories, seen, degreeOfParallelism, files, depth);
+        // no need to parallelize for 1 directory
+        if (directories.Length == 1 || depth > 2)
+            SerialScan(directories, seen, degreeOfParallelism, files, depth);
         else
-            parallelScan(directories, seen, degreeOfParallelism, files, depth);
+            ParallelScan(directories, seen, degreeOfParallelism, files, depth);
 
         foreach (string f in files)
             yield return f;
     }
 
-    private static void serialScan(DirectoryInfo[] directories, ConcurrentDictionary<string, byte> seen,
+    static void SerialScan(DirectoryInfo[] directories, ConcurrentDictionary<string, byte> seen,
         int degreeOfParallelism, List<string> files, int depth)
     {
         foreach (var child in directories)
@@ -126,7 +251,7 @@ public class RecentFilesTesting
         }
     }
 
-    private static void parallelScan(DirectoryInfo[] directories, ConcurrentDictionary<string, byte> seen,
+    static void ParallelScan(DirectoryInfo[] directories, ConcurrentDictionary<string, byte> seen,
         int degreeOfParallelism, List<string> files, int depth)
     {
         directories.AsParallel()
