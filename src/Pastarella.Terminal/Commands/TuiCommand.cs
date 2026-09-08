@@ -130,16 +130,14 @@ public class TuiCommand : Command<TuiCommand.TuiSettings>
 
         AnsiConsole.WriteLine();
         AnsiConsole.MarkupLine($"[green]Analysis completed in {took.TotalSeconds:F3}s.[/]");
-        AnsiConsole.MarkupLine($"[grey]Cached [green]{PlatformHelpers.CacheHits}[/] hashes[/]");
         AnsiConsole.WriteLine();
 
-        if (!errors.IsEmpty)
-        {
-            AnsiConsole.MarkupLine("[red]Error reports:[/]");
+        if (errors.IsEmpty) return;
 
-            foreach (var exception in errors)
-                AnsiConsole.WriteException(exception);
-        }
+        AnsiConsole.MarkupLine("[red]Error reports:[/]");
+
+        foreach (var exception in errors)
+            AnsiConsole.WriteException(exception);
     }
 
     private static void Export(AnalysisReport report)

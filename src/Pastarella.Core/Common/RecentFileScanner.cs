@@ -18,7 +18,7 @@ public static class RecentFileScanner
             {
                 FileInfo info = new(file);
                 if (info.LastWriteTime >= limit && info.CreationTime >= limit)
-                    files.Add(new(file, info.CreationTime, info.LastWriteTime));
+                    files.Add(new RecentFileInfo(file, info.CreationTime, info.LastWriteTime));
             }
             catch
             {
@@ -38,20 +38,18 @@ public static class RecentFileScanner
             // TODO: do with all disks
             return GetFilesOfDir("C:", limit);
         }
-        else
+
+        List<RecentFileInfo> files = [];
+
+        files.AddRange(GetFilesOfDir("/", limit, false));
+        foreach (string dir in Directory.EnumerateDirectories("/", "*", new EnumerationOptions { IgnoreInaccessible = true }))
         {
-            List<RecentFileInfo> files = [];
+            if (dir == "/proc" || dir == "/sys" || dir == "/dev")
+                continue;
 
-            files.AddRange(GetFilesOfDir("/", limit, false));
-            foreach (string dir in Directory.EnumerateDirectories("/", "*", new EnumerationOptions { IgnoreInaccessible = true }))
-            {
-                if (dir == "/proc" || dir == "/sys" || dir == "/dev")
-                    continue;
-
-                files.AddRange(GetFilesOfDir(dir, limit));
-            }
-
-            return files;
+            files.AddRange(GetFilesOfDir(dir, limit));
         }
+
+        return files;
     }
 }
