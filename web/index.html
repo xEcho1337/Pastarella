@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="./css/homepage.css">
 
     <script defer src="./js/homepage.js"></script>
+    <script defer src="./js/feedback.js"></script>
     <script defer src="./js/bootstrap_auto_theme.js"></script>
 </head>
 
@@ -26,6 +27,9 @@
                 </a>
 
                 <div class="d-flex align-items-center gap-1">
+
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#feedbackModal">Feedback</button>
 
                     <a href="https://github.com/xEcho1337/Pastarella" target="_blank" rel="noopener noreferrer"
                         class="navbar-icon-btn" title="GitHub" aria-label="GitHub">
@@ -42,6 +46,31 @@
         </nav>
     </header>
 
+    <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="feedbackModalLabel">Send a feedback</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="feedbackSubject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="feedbackSubject"
+                            placeholder="windows: recent files are slow">
+                    </div>
+                    <div class="mb-3">
+                        <label for="feedbackMessage" class="form-label">Message</label>
+                        <textarea class="form-control" id="feedbackMessage" rows="10"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="sendFeedback()">Send</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="load-file-container" class="text-center">
         <img id="logo" alt="" class="mb-3" />
@@ -165,16 +194,18 @@
                                         <td><i class="bi bi-check-lg"></i></td>
                                         <td>
                                             Registry
-                                            <br/>
+                                            <br />
                                             User logon scripts
-                                            <br/>
+                                            <br />
                                             Tasks
                                         </td>
                                         <td><i class="bi bi-check-lg"></i></td>
                                         <td><i class="bi bi-check-lg"></i></td>
                                         <td><i class="bi bi-check-lg"></i></td>
                                         <td><i class="bi bi-check-lg"></i></td>
-                                        <td data-impl="partial">Using <a href="https://learn.microsoft.com/en-us/dotnet/api/system.io.driveinfo.getdrives">C#</a></td>
+                                        <td data-impl="partial">Using <a
+                                                href="https://learn.microsoft.com/en-us/dotnet/api/system.io.driveinfo.getdrives">C#</a>
+                                        </td>
                                         <td><i class="bi bi-check-lg"></i></td>
                                     </tr>
                                     <tr>
@@ -183,14 +214,16 @@
                                         <td><i class="bi bi-check-lg"></i></td>
                                         <td>
                                             LaunchD
-                                            <br/>
+                                            <br />
                                             Cron
                                         </td>
                                         <td><i class="bi bi-check-lg"></i></td>
                                         <td><i class="bi bi-x-lg"></i></td>
                                         <td><i class="bi bi-check-lg"></i></td>
                                         <td><i class="bi bi-check-lg"></i></td>
-                                        <td data-impl="partial">Using <a href="https://learn.microsoft.com/en-us/dotnet/api/system.io.driveinfo.getdrives">C#</a></td>
+                                        <td data-impl="partial">Using <a
+                                                href="https://learn.microsoft.com/en-us/dotnet/api/system.io.driveinfo.getdrives">C#</a>
+                                        </td>
                                         <td><i class="bi bi-check-lg"></i></td>
                                     </tr>
                                     <tr>
@@ -200,9 +233,13 @@
                                         <td data-impl="partial">Only boot time LKM and XDG autostart programs</td>
                                         <td><i class="bi bi-check-lg"></i></td>
                                         <td><i class="bi bi-x-lg"></i></td>
-                                        <td data-impl="partial">Using <a href="https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.process.getprocesses">C#</a></td>
+                                        <td data-impl="partial">Using <a
+                                                href="https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.process.getprocesses">C#</a>
+                                        </td>
                                         <td><i class="bi bi-check-lg"></i></td>
-                                        <td data-impl="partial">Using <a href="https://learn.microsoft.com/en-us/dotnet/api/system.io.driveinfo.getdrives">C#</a></td>
+                                        <td data-impl="partial">Using <a
+                                                href="https://learn.microsoft.com/en-us/dotnet/api/system.io.driveinfo.getdrives">C#</a>
+                                        </td>
                                         <td><i class="bi bi-check-lg"></i></td>
                                     </tr>
                                     <tr>
@@ -214,7 +251,9 @@
                                         <td><i class="bi bi-x-lg"></i></td>
                                         <td><i class="bi bi-x-lg"></i></td>
                                         <td><i class="bi bi-check-lg"></i></td>
-                                        <td data-impl="partial">Using <a href="https://learn.microsoft.com/en-us/dotnet/api/system.io.driveinfo.getdrives">C#</a></td>
+                                        <td data-impl="partial">Using <a
+                                                href="https://learn.microsoft.com/en-us/dotnet/api/system.io.driveinfo.getdrives">C#</a>
+                                        </td>
                                         <td><i class="bi bi-check-lg"></i></td>
                                     </tr>
                                 </tbody>
