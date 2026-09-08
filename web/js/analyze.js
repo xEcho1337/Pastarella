@@ -1,4 +1,3 @@
-const input = document.getElementById("json-file-to-load");
 
 function signerIcon(signer) {
   if (signer)
@@ -32,21 +31,7 @@ function stringifyMetadata(metadata) {
   return str.trimEnd();
 }
 
-input.addEventListener("change", async (event) => {
-  input.disabled = true;
-
-  document.getElementById("load-file-container").style.display = "none";
-  document.getElementsByTagName("header")[0].style.display = "block";
-  document.getElementById("report-infos").style.display = "block";
-
-  const file = event.target.files[0];
-  if (!file) {
-    alert("You need to choose a file");
-    return;
-  }
-
-  const data = JSON.parse(await file.text());
-
+function analyzeDump(data) {
   data["Processes"].forEach((d) =>
     appendArrToTable(document.getElementById("processes"), [
       d["Id"],
@@ -150,9 +135,21 @@ input.addEventListener("change", async (event) => {
   Object.entries(data["Envs"]).forEach(([k, v]) =>
     appendArrToTable(document.getElementById("envs"), [k, v]),
   );
-});
 
-const headings = document.querySelectorAll("#report-infos h1");
+  data["CommandHistories"].forEach(history => {
+    history["Commands"].forEach(cmd =>
+      appendArrToTable(document.getElementById("command-histories"), [history["Shell"], cmd]),
+    );
+  });
+
+  data["RecentFiles"].forEach((d) =>
+    appendArrToTable(document.getElementById("recent-files"), [
+      d["FilePath"], d["CreationTime"], d["LastWriteTime"],
+    ]),
+  );
+}
+
+const headings = document.querySelectorAll("details summary");
 const navLinks = document.querySelectorAll(".navbar-nav .nav-link");
 const navbarHeight = 56;
 
@@ -173,14 +170,6 @@ function updateActiveNav() {
 
 window.addEventListener("scroll", updateActiveNav, { passive: true });
 updateActiveNav();
-
-const logo = document.getElementById("logo");
-
-if (Math.random() < 0.05) {
-  logo.src = "https://static.gamberorosso.it/2024/04/pastarelle-1024x573.jpg";
-} else {
-  logo.src = "./logo.png";
-}
 
 document.getElementById('collapse-all').addEventListener('click', () => {
   document.querySelectorAll('details').forEach(d => d.open = false);

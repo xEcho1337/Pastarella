@@ -29,16 +29,12 @@ body {
 }
 
 #load-file-container {
-    max-width: 700px;
-    width: 90%;
-    margin: 0 auto;
-    padding-top: 5vh;
-    text-align: center;
+    padding-top: 3vh;
 }
 
 #logo {
-    width: 180px;
-    height: 180px;
+    width: 200px;
+    height: 200px;
     object-fit: contain;
     margin-bottom: 15px;
 }
@@ -77,6 +73,7 @@ body {
 .github-links {
     margin-top: 25px;
     margin-bottom: 40px;
+    text-align: center;
 }
 
 .github-links a {
@@ -88,10 +85,6 @@ body {
 }
 
 @media (max-width: 576px) {
-    #load-file-container {
-        padding-top: 4vh;
-    }
-
     #logo {
         width: 140px;
         height: 140px;

@@ -1,82 +1,56 @@
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Pastarella</title>
 
-    <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-            integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
-            crossorigin="anonymous"
-    />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="./css/homepage.css">
 
-    <link
-            rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    />
-
-    <link rel="stylesheet" href="./style.css">
+    <script defer src="./js/homepage.js"></script>
+    <script src="./js/bootstrap_auto_theme.js"></script>
 </head>
 
 <body>
-<nav class="navbar navbar-expand border-bottom">
-    <div class="container-fluid px-3">
+    <nav class="navbar navbar-expand border-bottom">
+        <div class="container-fluid px-3">
 
-        <a class="navbar-brand" href="#">
-            Pastarella
-        </a>
-
-        <div class="d-flex align-items-center gap-1">
-
-            <a
-                    href="https://github.com/xEcho1337/Pastarella"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="navbar-icon-btn"
-                    title="GitHub"
-                    aria-label="GitHub"
-            >
-                <i class="bi bi-github"></i>
+            <a class="navbar-brand" href="#">
+                Pastarella
             </a>
 
-            <button
-                    id="theme-toggle"
-                    class="navbar-icon-btn"
-                    type="button"
-                    title="Theme"
-                    aria-label="Theme"
-            >
-                <i id="theme-icon" class="bi bi-sun-fill"></i>
-            </button>
+            <div class="d-flex align-items-center gap-1">
 
+                <a href="https://github.com/xEcho1337/Pastarella" target="_blank" rel="noopener noreferrer"
+                    class="navbar-icon-btn" title="GitHub" aria-label="GitHub">
+                    <i class="bi bi-github"></i>
+                </a>
+
+                <button id="theme-toggle" class="navbar-icon-btn" type="button" title="Theme" aria-label="Theme">
+                    <i id="theme-icon" class="bi bi-sun-fill"></i>
+                </button>
+
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-<div id="load-file-container">
 
-    <img
-            id="logo"
-            alt="Pastarella Logo"
-            class="mb-3"
-    />
+    <div id="load-file-container" class="text-center">
+        <img id="logo" alt="" class="mb-3" />
 
-    <h1 class="mb-2">Pastarella Viewer</h1>
-
-    <div class="mb-3">
-        <input
-                type="file"
-                class="form-control d-inline-block w-auto"
-                id="json-file-to-load"
-                accept="application/json,.json"
-        />
+        <h1 class="mb-3">Viewer</h1>
+        <div class="mb-3">
+            <input type="file" class="form-control d-inline-block w-auto" id="json-file-to-load"
+                accept="application/json" />
+        </div>
     </div>
 
     <div class="description">
-
         <h1>Pastarella</h1>
 
         <h4>A forensic analysis tool written in C#.</h4>
@@ -129,19 +103,13 @@
         <h2>License</h2>
 
         <h6>Pastarella is licensed under GPL-3.</h6>
-
     </div>
 
     <div class="github-links">
-
         <div class="mb-2">
             <i class="bi bi-github me-1"></i>
 
-            <a
-                    href="https://github.com/xEcho1337/Pastarella"
-                    target="_blank"
-                    rel="noopener noreferrer"
-            >
+            <a href="https://github.com/xEcho1337/Pastarella" target="_blank" rel="noopener noreferrer">
                 View the project on GitHub
             </a>
         </div>
@@ -149,23 +117,15 @@
         <div>
             <i class="bi bi-download me-1"></i>
 
-            <a
-                    href="https://github.com/xEcho1337/Pastarella/releases"
-                    target="_blank"
-                    rel="noopener noreferrer"
-            >
+            <a href="https://github.com/xEcho1337/Pastarella/releases" target="_blank" rel="noopener noreferrer">
                 Download the latest release
             </a>
         </div>
     </div>
-</div>
 
-<script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-        crossorigin="anonymous"
-></script>
-<script src="./script.js"></script>
-<script src="./bootstrap_auto_theme.js"></script>
+        crossorigin="anonymous"></script>
 </body>
+
 </html>
