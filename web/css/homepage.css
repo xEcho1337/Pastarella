@@ -1,18 +1,6 @@
-body {
-    min-height: 100vh;
-}
-
-.navbar {
-    height: 56px;
-}
-
 .navbar-brand {
     font-size: 1.25rem;
     font-weight: 700;
-}
-
-.navbar-brand i {
-    margin-right: 6px;
 }
 
 .navbar-icon-btn {
@@ -44,27 +32,6 @@ body {
     font-weight: 700;
 }
 
-.description {
-    max-width: 600px;
-    margin: 25px auto;
-    color: #d6d6d6;
-    line-height: 1.6;
-    text-align: left;
-}
-
-.description h1,
-.description h2 {
-    margin-top: 30px;
-}
-
-.description h4 {
-    color: inherit;
-}
-
-.description ul {
-    padding-left: 25px;
-}
-
 #json-file-to-load {
     max-width: 450px;
     margin: 0 auto;
@@ -74,14 +41,14 @@ body {
     margin-top: 25px;
     margin-bottom: 40px;
     text-align: center;
-}
 
-.github-links a {
-    text-decoration: none;
-}
+    & a {
+        text-decoration: none;
+    }
 
-.github-links a:hover {
-    text-decoration: underline;
+    & a:hover {
+        text-decoration: underline;
+    }
 }
 
 @media (max-width: 576px) {
