@@ -110,7 +110,8 @@ public class TuiCommand : Command<TuiCommand.TuiSettings>
                             try
                             {
                                 actions[check]();
-                                task.Increment(100);
+                                task.Value = 100;
+                                task.StopTask();
                             }
                             catch (Exception e)
                             {
