@@ -6,7 +6,7 @@ namespace Pastarella.Core.Windows.PersistenceScanners;
 
 public class TaskScanner : IPersistenceScanner
 {
-    public IEnumerable<PersistenceEntry> Scan()
+    public IEnumerable<PersistenceEntry> Scan(IProgress<ScanProgress>? progress = null)
     {
         foreach (var task in ScanTasks())
         {

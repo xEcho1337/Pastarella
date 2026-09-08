@@ -7,7 +7,7 @@ namespace Pastarella.Core.Windows;
 
 public class DriverScanner : IDriverScanner
 {
-    public IEnumerable<DriverInfo> Scan()
+    public IEnumerable<DriverInfo> Scan(IProgress<ScanProgress>? progress = null)
     {
         return ServiceController.GetDevices()
             .Select(d =>

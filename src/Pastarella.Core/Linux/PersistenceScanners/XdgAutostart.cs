@@ -16,7 +16,7 @@ public class XdgAutostart : IPersistenceScanner
             yield return Path.Combine(userHome, ".config/autostart");
     }
 
-    public IEnumerable<PersistenceEntry> Scan()
+    public IEnumerable<PersistenceEntry> Scan(IProgress<ScanProgress>? progress = null)
     {
         List<PersistenceEntry> list = [];
 

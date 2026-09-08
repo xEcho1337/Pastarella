@@ -11,7 +11,7 @@ public sealed class CronScanner : IPersistenceScanner
         "/usr/lib/cron/tabs"
     ];
 
-    public IEnumerable<PersistenceEntry> Scan()
+    public IEnumerable<PersistenceEntry> Scan(IProgress<ScanProgress>? progress = null)
     {
         var entries = new List<PersistenceEntry>();
 

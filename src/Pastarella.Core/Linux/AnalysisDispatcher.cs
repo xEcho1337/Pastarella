@@ -19,7 +19,7 @@ public class AnalysisDispatcher : IAnalysisDispatcher
             ModulesPath = "/usr/lib/modules";
     }
 
-    public void AddDispatchers(Dictionary<string, Action> outActions)
+    public void AddDispatchers(Dictionary<string, Action<IProgress<ScanProgress>>> outActions)
     { }
 
     public static string GetKernelVersion()

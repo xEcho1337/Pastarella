@@ -93,7 +93,7 @@ public class NetworkScanner : INetworkScanner
         }
     }
 
-    public IEnumerable<PortInfo> Scan()
+    public IEnumerable<PortInfo> Scan(IProgress<ScanProgress>? progress = null)
     {
         List<PortInfo> list = [];
 

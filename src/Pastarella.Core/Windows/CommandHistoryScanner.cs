@@ -10,7 +10,7 @@ public class CommandHistoryScanner : ICommandHistoryScanner
         return new("PowerShell", File.ReadAllLines(historyFilePath));
     }
 
-    public IEnumerable<CommandHistory> Scan()
+    public IEnumerable<CommandHistory> Scan(IProgress<ScanProgress>? progress = null)
     {
         return [GetPowerShellHistory()];
     }

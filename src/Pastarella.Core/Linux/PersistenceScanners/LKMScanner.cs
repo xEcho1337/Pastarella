@@ -14,7 +14,7 @@ public class LKMScanner : IPersistenceScanner
         ? ["/etc/modprobe.d/", "/usr/lib/modprobe.d/"]
         : ["/etc/modprobe.d/", "/lib/modprobe.d/", "/usr/lib/modprobe.d/"];
 
-    public IEnumerable<PersistenceEntry> Scan()
+    public IEnumerable<PersistenceEntry> Scan(IProgress<ScanProgress>? progress = null)
     {
         // TODO: improve performance. Store all modules to find in a list, then
         // call `FindModulesPath` which scans line by line `modules.dep`, ...

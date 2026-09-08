@@ -73,7 +73,7 @@ public class DriverScanner : IDriverScanner
         public static extern int modstat(int modid, ref ModuleStat stat);
     }
 
-    public IEnumerable<DriverInfo> Scan()
+    public IEnumerable<DriverInfo> Scan(IProgress<ScanProgress>? progress = null)
     {
         List<DriverInfo> list = [];
 

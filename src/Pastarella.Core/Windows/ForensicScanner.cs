@@ -30,9 +30,12 @@ public class ForensicScanner : IForensicScanner
         return list;
     }
 
-    public IEnumerable<ProcessInfo> ScanProcesses()
+    public IEnumerable<ProcessInfo> ScanProcesses(IProgress<ScanProgress>? progress = null)
     {
-        foreach (var process in Process.GetProcesses())
+        var processes = Process.GetProcesses();
+        int done = 0;
+
+        foreach (var process in processes)
         {
             string? path = PlatformHelpers.TryGet(() => process.MainModule?.FileName);
             Dictionary<string, object> metadata = [];
@@ -66,15 +69,19 @@ public class ForensicScanner : IForensicScanner
             {
                 Metadata = metadata,
             };
+
+            progress?.Report(new ScanProgress(++done, processes.Length));
         }
     }
 
-    public IEnumerable<UserInfo> ScanUsers()
+    public IEnumerable<UserInfo> ScanUsers(IProgress<ScanProgress>? progress = null)
     {
-        return CachedUserInfo.Select(u =>
+        int done = 0;
+
+        foreach (var u in CachedUserInfo)
         {
             var (info, sid) = u;
-            return new UserInfo(
+            yield return new UserInfo(
                 info.usri1_name,
                 info.usri1_comment ?? "",
                 sid,
@@ -87,6 +94,8 @@ public class ForensicScanner : IForensicScanner
                     ["lockout"] = (info.usri1_flags & UserAcctCtrlFlags.UF_LOCKOUT) != 0,
                 },
             };
-        });
+
+            progress?.Report(new ScanProgress(++done, CachedUserInfo.Count));
+        }
     }
 }

@@ -257,7 +257,7 @@ public class RegistryScanner : IPersistenceScanner
         }
     }
 
-    public IEnumerable<PersistenceEntry> Scan()
+    public IEnumerable<PersistenceEntry> Scan(IProgress<ScanProgress>? progress = null)
     {
         List<PersistenceEntry> list = [];
         IEnumerable<string /* SID */> user_sid_cache = ForensicScanner.CachedUserInfo.Select(u => u.Item2);

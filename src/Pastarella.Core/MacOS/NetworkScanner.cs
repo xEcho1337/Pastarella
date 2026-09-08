@@ -6,7 +6,7 @@ namespace Pastarella.Core.MacOS;
 
 public class NetworkScanner : INetworkScanner
 {
-    public IEnumerable<PortInfo> Scan()
+    public IEnumerable<PortInfo> Scan(IProgress<ScanProgress>? progress = null)
     {
         var psi = new ProcessStartInfo
         {

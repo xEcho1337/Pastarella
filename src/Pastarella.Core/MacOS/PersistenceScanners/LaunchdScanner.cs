@@ -14,7 +14,7 @@ public sealed class LaunchdScanner : IPersistenceScanner
         PlatformHelpers.NormalizePath("~/Library/LaunchAgents")
     ];
 
-    public IEnumerable<PersistenceEntry> Scan()
+    public IEnumerable<PersistenceEntry> Scan(IProgress<ScanProgress>? progress = null)
     {
         var entries = new List<PersistenceEntry>();
 

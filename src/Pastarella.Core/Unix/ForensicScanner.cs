@@ -4,16 +4,18 @@ namespace Pastarella.Core.Unix;
 
 public class ForensicScanner : IForensicScanner
 {
-    public IEnumerable<ProcessInfo> ScanProcesses()
+    public IEnumerable<ProcessInfo> ScanProcesses(IProgress<ScanProgress>? progress = null)
     {
         throw new Exception("Scanning processes is OS-specific, not a UNIX \"standard\"");
     }
 
-    public IEnumerable<UserInfo> ScanUsers()
+    public IEnumerable<UserInfo> ScanUsers(IProgress<ScanProgress>? progress = null)
     {
         List<UserInfo> list = [];
+        string[] lines = File.ReadAllLines("/etc/passwd");
+        int done = 0;
 
-        foreach (string line in File.ReadAllLines("/etc/passwd"))
+        foreach (string line in lines)
         {
             string[] parts = line.Split(':');
 
@@ -36,6 +38,8 @@ public class ForensicScanner : IForensicScanner
                     ["shell"] = shell,
                 },
             });
+
+            progress?.Report(new ScanProgress(++done, lines.Length));
         }
 
         return list;

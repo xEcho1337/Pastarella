@@ -7,12 +7,16 @@ public static class RecentFileScanner
 {
     private static readonly EnumerationOptions DefaultOptions = new() { IgnoreInaccessible = true };
 
-    private static List<RecentFileInfo> GetFilesOfDir(string dir, DateTime limit)
+    private static List<RecentFileInfo> GetFilesOfDir(string dir, DateTime limit, IProgress<ScanProgress>? progress = null)
     {
         List<RecentFileInfo> files = [];
+        int seen = 0;
 
         foreach (string file in GetAllFilesRecursive(dir))
         {
+            if (++seen % 64 == 0)
+                progress?.Report(new ScanProgress(seen));
+
             try
             {
                 var info = new FileInfo(file);
@@ -25,17 +29,18 @@ public static class RecentFileScanner
             }
         }
 
+        progress?.Report(new ScanProgress(seen, seen));
         return files;
     }
 
-    public static IEnumerable<RecentFileInfo> Scan()
+    public static IEnumerable<RecentFileInfo> Scan(IProgress<ScanProgress>? progress = null)
     {
         var limit = DateTime.Now.AddDays(-30);
 
         if (OperatingSystem.IsWindows())
         {
             // TODO: do with all disks
-            return GetFilesOfDir("C:", limit);
+            return GetFilesOfDir("C:", limit, progress);
         }
 
         List<RecentFileInfo> files = [];
@@ -48,23 +53,23 @@ public static class RecentFileScanner
             if (Directory.Exists(usersRoot))
             {
                 foreach (string dir in Directory.EnumerateDirectories(usersRoot))
-                    files.AddRange(GetFilesOfDir(dir, limit));
+                    files.AddRange(GetFilesOfDir(dir, limit, progress));
             }
             else
             {
-                files.AddRange(GetFilesOfDir("/", limit));
+                files.AddRange(GetFilesOfDir("/", limit, progress));
             }
 
             return files;
         }
 
-        files.AddRange(GetFilesOfDir("/", limit));
+        files.AddRange(GetFilesOfDir("/", limit, progress));
         foreach (string dir in Directory.EnumerateDirectories("/", "*", new EnumerationOptions { IgnoreInaccessible = true }))
         {
             if (dir == "/proc" || dir == "/sys" || dir == "/dev")
                 continue;
 
-            files.AddRange(GetFilesOfDir(dir, limit));
+            files.AddRange(GetFilesOfDir(dir, limit, progress));
         }
 
         return files;

@@ -4,7 +4,7 @@ namespace Pastarella.Core.Unix;
 
 public class CommandHistoryScanner : ICommandHistoryScanner
 {
-    public IEnumerable<CommandHistory> Scan()
+    public IEnumerable<CommandHistory> Scan(IProgress<ScanProgress>? progress = null)
     {
         string home = Environment.GetEnvironmentVariable("HOME") ?? throw new Exception("HOME env not found");
 

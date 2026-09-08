@@ -4,7 +4,7 @@ namespace Pastarella.Core.FreeBSD.PersistenceScanners;
 
 public class LKMScanner : IPersistenceScanner
 {
-    public IEnumerable<PersistenceEntry> Scan()
+    public IEnumerable<PersistenceEntry> Scan(IProgress<ScanProgress>? progress = null)
     {
         List<PersistenceEntry> list = [];
 

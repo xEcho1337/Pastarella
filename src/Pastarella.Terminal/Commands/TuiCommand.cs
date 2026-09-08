@@ -24,19 +24,19 @@ public class TuiCommand : Command<TuiCommand.TuiSettings>
 
         var report = dispatcher.Report;
 
-        Dictionary<string, Action> actions = new()
+        Dictionary<string, Action<IProgress<ScanProgress>>> actions = new()
         {
-            ["Environment Variables"] = () => report.Envs = EnvironmentVariablesScanner.GetEnvs(),
-            ["Hosts"] = () => report.Hosts = HostsScanner.GetHosts().ToList(),
-            ["Recent Files"] = () => report.RecentFiles = RecentFileScanner.Scan().ToList(),
-            ["Drivers"] = () => report.Drivers = driver.Scan().ToList(),
-            ["Processes"] = () => report.Processes = forensic.ScanProcesses().ToList(),
-            ["Services"] = () => report.Services = service.Scan().ToList(),
-            ["Users"] = () => report.Users = forensic.ScanUsers().ToList(),
-            ["Storages"] = () => report.Storages = forensic.ScanStorages().ToList(),
-            ["Open Connections"] = () => report.OpenPorts = network.Scan().ToList(),
-            ["Persistence Checks"] = () => report.Persistences = persistence.Scan().ToList(),
-            ["Command Histories"] = () => report.CommandHistories = cmdHistory.Scan().ToList(),
+            ["Environment Variables"] = p => report.Envs = EnvironmentVariablesScanner.GetEnvs(),
+            ["Hosts"] = p => report.Hosts = HostsScanner.GetHosts().ToList(),
+            ["Recent Files"] = p => report.RecentFiles = RecentFileScanner.Scan(p).ToList(),
+            ["Drivers"] = p => report.Drivers = driver.Scan(p).ToList(),
+            ["Processes"] = p => report.Processes = forensic.ScanProcesses(p).ToList(),
+            ["Services"] = p => report.Services = service.Scan(p).ToList(),
+            ["Users"] = p => report.Users = forensic.ScanUsers(p).ToList(),
+            ["Storages"] = p => report.Storages = forensic.ScanStorages().ToList(),
+            ["Open Connections"] = p => report.OpenPorts = network.Scan(p).ToList(),
+            ["Persistence Checks"] = p => report.Persistences = persistence.Scan(p).ToList(),
+            ["Command Histories"] = p => report.CommandHistories = cmdHistory.Scan(p).ToList(),
         };
 
         dispatcher.AddDispatchers(actions);
@@ -45,7 +45,7 @@ public class TuiCommand : Command<TuiCommand.TuiSettings>
         return 0;
     }
 
-    public static void Start(AnalysisReport report, Dictionary<string, Action> actions)
+    public static void Start(AnalysisReport report, Dictionary<string, Action<IProgress<ScanProgress>>> actions)
     {
         AnsiConsole.MarkupLine("[bold yellow]PASTARELLA[/]");
         if (!PlatformHelpers.IsElevated())
@@ -66,7 +66,7 @@ public class TuiCommand : Command<TuiCommand.TuiSettings>
         AnsiConsole.MarkupLine("[yellow]Bye![/] Thanks for using Pastarella [red]♥[/]");
     }
 
-    private static void RunAnalysis(List<string> checks, Dictionary<string, Action> actions)
+    private static void RunAnalysis(List<string> checks, Dictionary<string, Action<IProgress<ScanProgress>>> actions)
     {
         var errors = new ConcurrentBag<Exception>();
 
@@ -107,19 +107,64 @@ public class TuiCommand : Command<TuiCommand.TuiSettings>
                         {
                             task.StartTask();
 
+                            // Hybrid bar: creep toward 90% while the total is
+                            // unknown; switch to the real percentage as soon
+                            // as the scanner reports a total.
+                            int hasTotal = 0;
+                            var progress = new Progress<ScanProgress>(p =>
+                            {
+                                if (p.Total is > 0)
+                                {
+                                    Interlocked.Exchange(ref hasTotal, 1);
+                                    task.MaxValue = p.Total.Value;
+                                    task.Value = Math.Min(p.Done, p.Total.Value);
+                                }
+
+                                task.Description = string.IsNullOrWhiteSpace(p.Phase)
+                                    ? Volatile.Read(ref hasTotal) == 0
+                                        ? $"{check} [grey]({p.Done:N0})[/]"
+                                        : check
+                                    : $"{check} [grey]({p.Phase})[/]";
+                            });
+
+                            using var pulseCts = new CancellationTokenSource();
+                            var pulse = Task.Run(async () =>
+                            {
+                                try
+                                {
+                                    while (!pulseCts.Token.IsCancellationRequested)
+                                    {
+                                        await Task.Delay(200, pulseCts.Token);
+
+                                        if (Volatile.Read(ref hasTotal) == 0 && task.Value < 90)
+                                            task.Increment(1.5);
+                                    }
+                                }
+                                catch (OperationCanceledException)
+                                {
+                                    // expected on cancel
+                                }
+                            });
+
                             try
                             {
-                                actions[check]();
-                                task.Value = 100;
-                                task.StopTask();
+                                actions[check](progress);
                             }
-                            catch (Exception e)
+                            finally
                             {
-                                task.Description = $"[bold red]✗ {task.Description}[/]";
-                                task.StopTask();
-                                errors.Add(e);
+                                await pulseCts.CancelAsync();
+                                await pulse;
                             }
 
+                            task.Value = task.MaxValue;
+                            task.StopTask();
+                            totalTask.Increment(1);
+                        }
+                        catch (Exception e)
+                        {
+                            task.Description = $"[bold red]✗ {task.Description}[/]";
+                            task.StopTask();
+                            errors.Add(e);
                             totalTask.Increment(1);
                         }
                         finally

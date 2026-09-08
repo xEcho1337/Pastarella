@@ -7,6 +7,6 @@ public class AnalysisDispatcher : IAnalysisDispatcher
 {
     public AnalysisReport Report { get; } = new();
 
-    public void AddDispatchers(Dictionary<string, Action> outActions)
+    public void AddDispatchers(Dictionary<string, Action<IProgress<ScanProgress>>> outActions)
     { }
 }

@@ -5,8 +5,8 @@ namespace Pastarella.Core.FreeBSD;
 
 public class PersistenceScanner : IPersistenceScanner
 {
-    public IEnumerable<PersistenceEntry> Scan()
+    public IEnumerable<PersistenceEntry> Scan(IProgress<ScanProgress>? progress = null)
     {
-        return new LKMScanner().Scan();
+        return new LKMScanner().Scan(progress);
     }
 }

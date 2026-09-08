@@ -101,7 +101,7 @@ public class DriverScanner : IDriverScanner
         return list;
     }
 
-    public IEnumerable<DriverInfo> Scan()
+    public IEnumerable<DriverInfo> Scan(IProgress<ScanProgress>? progress = null)
     {
         return GetLoadedModules()
             .Concat(GetBuiltinModules());

@@ -7,7 +7,7 @@ namespace Pastarella.Core.Windows;
 
 public class ServiceScanner : IServiceScanner
 {
-    public IEnumerable<ServiceInfo> Scan()
+    public IEnumerable<ServiceInfo> Scan(IProgress<ScanProgress>? progress = null)
     {
         return ServiceController.GetServices().Select(GetServiceInfo);
     }

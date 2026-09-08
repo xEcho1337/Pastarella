@@ -5,11 +5,13 @@ namespace Pastarella.Core.MacOS;
 
 public class ForensicScanner : IForensicScanner
 {
-    public IEnumerable<ProcessInfo> ScanProcesses()
+    public IEnumerable<ProcessInfo> ScanProcesses(IProgress<ScanProgress>? progress = null)
     {
         var list = new List<ProcessInfo>();
+        var processes = Process.GetProcesses();
+        int done = 0;
 
-        foreach (var proc in Process.GetProcesses())
+        foreach (var proc in processes)
         {
             string? path = PlatformHelpers.TryGet(() => proc.MainModule?.FileName);
             Dictionary<string, object> metadata = [];
@@ -35,20 +37,22 @@ public class ForensicScanner : IForensicScanner
 
             string? hash = PlatformHelpers.GetSha256(path);
             list.Add(new ProcessInfo(proc.Id, proc.ProcessName, path, hash, null, start) { Metadata = metadata });
+            progress?.Report(new ScanProgress(++done, processes.Length));
         }
 
         return list;
     }
 
-    public IEnumerable<UserInfo> ScanUsers()
+    public IEnumerable<UserInfo> ScanUsers(IProgress<ScanProgress>? progress = null)
     {
         var users = new List<UserInfo>();
         try
         {
             string output = PlatformHelpers.RunProcessAndCaptureOutput("dscl", ". -list /Users");
-            using var sr = new StringReader(output);
+            string[] names = output.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            int done = 0;
 
-            while (sr.ReadLine() is { } user)
+            foreach (string user in names)
             {
                 if (string.IsNullOrWhiteSpace(user)) continue;
                 if (user.StartsWith('_')) continue;
@@ -82,6 +86,7 @@ public class ForensicScanner : IForensicScanner
                 }
 
                 users.Add(new UserInfo(user, realName, uniqueId, homeDir, false));
+                progress?.Report(new ScanProgress(++done, names.Length));
             }
         }
         catch

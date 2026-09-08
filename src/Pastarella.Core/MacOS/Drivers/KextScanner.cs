@@ -9,7 +9,7 @@ public class KextScanner : IDriverScanner
     private const string SystemExtensionsPath = "/System/Library/Extensions";
     private const string LibraryExtensionsPath = "/Library/Extensions";
 
-    public IEnumerable<DriverInfo> Scan()
+    public IEnumerable<DriverInfo> Scan(IProgress<ScanProgress>? progress = null)
     {
         var loadedIds = GetLoadedKextIdentifiers();
 

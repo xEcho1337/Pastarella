@@ -1,9 +1,16 @@
 namespace Pastarella.Core.Models;
 
+/// <summary>
+/// Progress report from a scanner. <see cref="Total"/> is set when the
+/// scanner knows the work size upfront (real percentage); otherwise only
+/// <see cref="Done"/> advances and the UI shows a live counter.
+/// </summary>
+public record ScanProgress(int Done, int? Total = null, string? Phase = null);
+
 public interface IForensicScanner
 {
-    IEnumerable<ProcessInfo> ScanProcesses();
-    IEnumerable<UserInfo> ScanUsers();
+    IEnumerable<ProcessInfo> ScanProcesses(IProgress<ScanProgress>? progress = null);
+    IEnumerable<UserInfo> ScanUsers(IProgress<ScanProgress>? progress = null);
 
     IEnumerable<StorageInfo> ScanStorages()
     {
@@ -19,27 +26,27 @@ public interface IForensicScanner
 
 public interface IServiceScanner
 {
-    IEnumerable<ServiceInfo> Scan();
+    IEnumerable<ServiceInfo> Scan(IProgress<ScanProgress>? progress = null);
 }
 
 public interface IDriverScanner
 {
-    IEnumerable<DriverInfo> Scan();
+    IEnumerable<DriverInfo> Scan(IProgress<ScanProgress>? progress = null);
 }
 
 public interface IPersistenceScanner
 {
-    IEnumerable<PersistenceEntry> Scan();
+    IEnumerable<PersistenceEntry> Scan(IProgress<ScanProgress>? progress = null);
 }
 
 public interface INetworkScanner
 {
-    IEnumerable<PortInfo> Scan();
+    IEnumerable<PortInfo> Scan(IProgress<ScanProgress>? progress = null);
 }
 
 public interface ICommandHistoryScanner
 {
-    IEnumerable<CommandHistory> Scan();
+    IEnumerable<CommandHistory> Scan(IProgress<ScanProgress>? progress = null);
 }
 
 public record ProcessInfo(

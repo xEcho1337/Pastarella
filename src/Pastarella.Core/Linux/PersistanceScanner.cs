@@ -5,12 +5,17 @@ namespace Pastarella.Core.Linux;
 
 public class PersistenceScanner : IPersistenceScanner
 {
-    public IEnumerable<PersistenceEntry> Scan()
+    public IEnumerable<PersistenceEntry> Scan(IProgress<ScanProgress>? progress = null)
     {
         var lkml = new LKMScanner();
         var xdgAutostart = new XdgAutostart();
 
-        return lkml.Scan()
-            .Concat(xdgAutostart.Scan());
+        progress?.Report(new ScanProgress(0, 2, "kernel modules"));
+        var first = lkml.Scan(progress).ToList();
+        progress?.Report(new ScanProgress(1, 2, "xdg autostart"));
+        var second = xdgAutostart.Scan(progress).ToList();
+        progress?.Report(new ScanProgress(2, 2));
+
+        return first.Concat(second);
     }
 }

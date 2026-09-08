@@ -6,5 +6,5 @@ public interface IAnalysisDispatcher
 {
     AnalysisReport Report { get; }
 
-    void AddDispatchers(Dictionary<string, Action> outActions);
+    void AddDispatchers(Dictionary<string, Action<IProgress<ScanProgress>>> outActions);
 }

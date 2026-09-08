@@ -5,7 +5,7 @@ namespace Pastarella.Core.MacOS.Drivers;
 
 public class DriverKitScanner : IDriverScanner
 {
-    public IEnumerable<DriverInfo> Scan()
+    public IEnumerable<DriverInfo> Scan(IProgress<ScanProgress>? progress = null)
     {
         var results = new List<DriverInfo>();
 

@@ -15,7 +15,7 @@ public class ServiceScanner : IServiceScanner
         PlatformHelpers.NormalizePath("~/Library/LaunchAgents")
     ];
 
-    public IEnumerable<ServiceInfo> Scan()
+    public IEnumerable<ServiceInfo> Scan(IProgress<ScanProgress>? progress = null)
     {
         var results = new List<ServiceInfo>();
 
