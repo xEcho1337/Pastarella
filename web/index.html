@@ -1,277 +1,171 @@
 <!doctype html>
 <html lang="en" data-bs-theme="auto">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        <title>Pastarella</title>
-        <link
+    <title>Pastarella</title>
+
+    <link
             href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
             rel="stylesheet"
             integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
             crossorigin="anonymous"
-        />
-        <link
+    />
+
+    <link
             rel="stylesheet"
             href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+<nav class="navbar navbar-expand border-bottom">
+    <div class="container-fluid px-3">
+
+        <a class="navbar-brand" href="#">
+            Pastarella
+        </a>
+
+        <div class="d-flex align-items-center gap-1">
+
+            <a
+                    href="https://github.com/xEcho1337/Pastarella"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="navbar-icon-btn"
+                    title="GitHub"
+                    aria-label="GitHub"
+            >
+                <i class="bi bi-github"></i>
+            </a>
+
+            <button
+                    id="theme-toggle"
+                    class="navbar-icon-btn"
+                    type="button"
+                    title="Theme"
+                    aria-label="Theme"
+            >
+                <i id="theme-icon" class="bi bi-sun-fill"></i>
+            </button>
+
+        </div>
+    </div>
+</nav>
+
+<div id="load-file-container">
+
+    <img
+            id="logo"
+            alt="Pastarella Logo"
+            class="mb-3"
+    />
+
+    <h1 class="mb-2">Pastarella Viewer</h1>
+
+    <div class="mb-3">
+        <input
+                type="file"
+                class="form-control d-inline-block w-auto"
+                id="json-file-to-load"
+                accept="application/json,.json"
         />
-        <style>
-            summary {
-                font-size: 2rem;
-                font-weight: bold;
-            }
+    </div>
 
-            td {
-                white-space: pre-wrap;
-                word-break: break-word;
-            }
-            td:has(.bi) {
-                text-align: center;
-            }
-            thead {
-                position: sticky;
-                top: 55px;
-                z-index: 1;
-            }
-        </style>
-    </head>
-    <body>
-        <header class="sticky-top" style="display: none">
-            <nav class="navbar navbar-expand-lg bg-primary">
-                <div class="container-fluid">
-                    <a class="navbar-brand" href="#">Pastarella</a>
-                    <button
-                        class="navbar-toggler"
-                        type="button"
-                        data-bs-toggle="collapse"
-                        data-bs-target="#navbarNavDropdown"
-                        aria-controls="navbarNavDropdown"
-                        aria-expanded="false"
-                        aria-label="Toggle navigation"
-                    >
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div
-                        class="collapse navbar-collapse"
-                        id="navbarNavDropdown"
-                    >
-                        <ul class="navbar-nav">
-                            <li class="nav-item">
-                                <a class="nav-link" href="#processes"
-                                    >Processes</a
-                                >
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#services"
-                                    >Services</a
-                                >
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#open-ports"
-                                    >Open Ports</a
-                                >
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#users">Users</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#hosts">Hosts</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#drivers">Drivers</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#persistences"
-                                    >Persistences</a
-                                >
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#storages"
-                                    >Storages</a
-                                >
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="#envs">Envs</a>
-                            </li>
-                        </ul>
-                    </div>
+    <div class="description">
 
-                    <div>
-                        <button id="uncollapse-all" class="btn btn-danger" type="submit">Uncollapse</button>
-                        /
-                        <button id="collapse-all" class="btn btn-success" type="submit">Collapse</button>
-                        <b>all</b>
-                    </div>
-                </div>
-            </nav>
-        </header>
+        <h1>Pastarella</h1>
 
-        <div
-            id="load-file-container"
-            class="position-absolute top-50 start-50 translate-middle text-center"
-        >
-            <img id="logo" height="300px" alt="" class="mb-3" />
+        <h4>A forensic analysis tool written in C#.</h4>
 
-            <h1 class="mb-3">Pastarella Viewer</h1>
-            <div class="mb-3">
-                <input
-                    type="file"
-                    class="form-control d-inline-block w-auto"
-                    id="json-file-to-load"
-                    accept="application/json"
-                />
-            </div>
+        <p>
+            Pastarella is designed to collect data on your computer
+            by using many different forensic analysis algorithms,
+            providing a clear view of user activity and system state
+            to investigators.
+        </p>
+
+        <h2>Support</h2>
+
+        <h6>
+            Pastarella is still in development, and it currently supports:
+        </h6>
+
+        <ul>
+            <li>Windows</li>
+            <li>macOS</li>
+            <li>Linux</li>
+        </ul>
+
+        <h2>The Name</h2>
+
+        <h6>
+            Pastarella can mean different things depending on what
+            you like the most:
+        </h6>
+
+        <ul>
+            <li>
+                an Italian way to say "pastry": if you are feeling hungry
+            </li>
+            <li>
+                Postmortem Analysis of System Telemetry, Artifacts,
+                Registry, Events, Logs, Links and Activity:
+                if you feel creative
+            </li>
+            <li>
+                a delicious forensic framework:
+                if you ask the marketing team
+            </li>
+            <li>
+                just a pastry:
+                if you ask my grandmother
+            </li>
+        </ul>
+
+        <h2>License</h2>
+
+        <h6>Pastarella is licensed under GPL-3.</h6>
+
+    </div>
+
+    <div class="github-links">
+
+        <div class="mb-2">
+            <i class="bi bi-github me-1"></i>
+
+            <a
+                    href="https://github.com/xEcho1337/Pastarella"
+                    target="_blank"
+                    rel="noopener noreferrer"
+            >
+                View the project on GitHub
+            </a>
         </div>
 
-        <div id="report-infos" style="display: none">
-            <details open>
-                <summary>Processes</summary>
-                <table class="table table-dark table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th style="width: 5%">Id</th>
-                            <th style="width: 10%">Name</th>
-                            <th>Path</th>
-                            <th style="width: 20%">SHA256</th>
-                            <th>Signature</th>
-                            <th>Start Time</th>
-                            <th>Metadata</th>
-                        </tr>
-                    </thead>
-                    <tbody id="processes"></tbody>
-                </table>
-            </details>
-            <details open>
-                <summary>Services</summary>
-                <table class="table table-dark table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th style="width: 5%">Status</th>
-                            <th style="width: 10%">Service Type</th>
-                            <th>Service Name</th>
-                            <th>Display Name</th>
-                            <th>Command</th>
-                            <th style="width: 20%">Executable SHA256</th>
-                        </tr>
-                    </thead>
-                    <tbody id="services"></tbody>
-                </table>
-            </details>
-            <details open>
-                <summary>Open Ports</summary>
-                <table class="table table-dark table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>Protocol</th>
-                            <th>State</th>
-                            <th>Local</th>
-                            <th>Remote</th>
-                            <th>PID</th>
-                            <th>Process Name</th>
-                        </tr>
-                    </thead>
-                    <tbody id="open-ports"></tbody>
-                </table>
-            </details>
-            <details open>
-                <summary>Users</summary>
-                <table class="table table-dark table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Description</th>
-                            <th>Uid</th>
-                            <th>Home</th>
-                            <th>Disabled</th>
-                            <th>Metadata</th>
-                        </tr>
-                    </thead>
-                    <tbody id="users"></tbody>
-                </table>
-            </details>
-            <details open>
-                <summary>Hosts</summary>
-                <table class="table table-dark table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>IP</th>
-                            <th>Domain(s)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="hosts"></tbody>
-                </table>
-            </details>
-            <details open>
-                <summary>Drivers</summary>
-                <table class="table table-dark table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Display Name</th>
-                            <th style="width: 10%">Identifier</th>
-                            <th>Type</th>
-                            <th>Executable Path</th>
-                            <th>Version</th>
-                            <th>Loaded</th>
-                            <th style="width: 20%">SHA256</th>
-                            <th>Signer</th>
-                        </tr>
-                    </thead>
-                    <tbody id="drivers"></tbody>
-                </table>
-            </details>
-            <details open>
-                <summary>Persistences</summary>
-                <table class="table table-dark table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th style="width: 1%">Risk Score</th>
-                            <th>Name</th>
-                            <th>Path</th>
-                            <th>Action</th>
-                            <th>Trigger</th>
-                            <th>Privilege</th>
-                            <th>Type</th>
-                            <th>Metadata</th>
-                        </tr>
-                    </thead>
-                    <tbody id="persistences"></tbody>
-                </table>
-            </details>
-            <details open>
-                <summary>Storages</summary>
-                <table class="table table-dark table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th>Type</th>
-                            <th>Name</th>
-                            <th>Free Space</th>
-                            <th>Total Space</th>
-                        </tr>
-                    </thead>
-                    <tbody id="storages"></tbody>
-                </table>
-            </details>
-            <details open>
-                <summary>Envs</summary>
-                <table class="table table-dark table-striped table-hover">
-                    <thead>
-                        <tr>
-                            <th style="width: 15%">Key</th>
-                            <th>Value</th>
-                        </tr>
-                    </thead>
-                    <tbody id="envs"></tbody>
-                </table>
-            </details>
-        </div>
+        <div>
+            <i class="bi bi-download me-1"></i>
 
-        <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-            crossorigin="anonymous"
-        ></script>
-        <script src="./script.js"></script>
-        <script src="./bootstrap_auto_theme.js"></script>
-    </body>
+            <a
+                    href="https://github.com/xEcho1337/Pastarella/releases"
+                    target="_blank"
+                    rel="noopener noreferrer"
+            >
+                Download the latest release
+            </a>
+        </div>
+    </div>
+</div>
+
+<script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"
+></script>
+<script src="./script.js"></script>
+<script src="./bootstrap_auto_theme.js"></script>
+</body>
 </html>

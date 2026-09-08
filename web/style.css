@@ -1,0 +1,107 @@
+body {
+    min-height: 100vh;
+}
+
+.navbar {
+    height: 56px;
+}
+
+.navbar-brand {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.navbar-brand i {
+    margin-right: 6px;
+}
+
+.navbar-icon-btn {
+    border: none;
+    background: transparent;
+    font-size: 1.25rem;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.navbar-icon-btn:hover {
+    background-color: rgba(128, 128, 128, 0.15);
+}
+
+#load-file-container {
+    max-width: 700px;
+    width: 90%;
+    margin: 0 auto;
+    padding-top: 5vh;
+    text-align: center;
+}
+
+#logo {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    margin-bottom: 15px;
+}
+
+#load-file-container h1 {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.description {
+    max-width: 600px;
+    margin: 25px auto;
+    color: #d6d6d6;
+    line-height: 1.6;
+    text-align: left;
+}
+
+.description h1,
+.description h2 {
+    margin-top: 30px;
+}
+
+.description h4 {
+    color: inherit;
+}
+
+.description ul {
+    padding-left: 25px;
+}
+
+#json-file-to-load {
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+.github-links {
+    margin-top: 25px;
+    margin-bottom: 40px;
+}
+
+.github-links a {
+    text-decoration: none;
+}
+
+.github-links a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 576px) {
+    #load-file-container {
+        padding-top: 4vh;
+    }
+
+    #logo {
+        width: 140px;
+        height: 140px;
+    }
+
+    #load-file-container h1 {
+        font-size: 1.7rem;
+    }
+
+    .description {
+        font-size: 0.95rem;
+    }
+}
