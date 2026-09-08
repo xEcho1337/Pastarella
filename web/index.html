@@ -50,32 +50,182 @@
         </div>
     </div>
 
-    <div style="padding-top: 2vh; display: flex">
-        <div style="flex: 1"></div>
+    <div class="d-grid" style="padding-top: 2vh; grid-template-columns: 30% 40% 30%">
+        <div></div>
 
-        <div style="flex: 1">
-            <h1>Pastarella</h1>
-
-            <h4>A forensic analysis tool written in C#.</h4>
+        <div>
+            <h1 class="text-center">Pastarella</h1>
+            <h6 class="text-center" style="padding-bottom: 1vh">A forensic analysis tool written in C#.</h6>
 
             <p>
-                Pastarella is designed to collect data on your computer
+                Pastarella is an <b>under development</b> tool designed to collect data on your computer
                 by using many different forensic analysis algorithms,
                 providing a clear view of user activity and system state
                 to investigators.
-            </p>
 
-            <h2>Support</h2>
+                <hr />
 
-            <h6>
-                Pastarella is still in development, and it currently supports:
-            </h6>
+                For doing all of its operations, Pastarella under the hood uses <i>Scanners</i>, classes specialized
+                on retrieving one kind of data. The implemented scanners are:
 
+            <table class="table table-stripped table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Returns</th>
+                    </tr>
+                </thead>
+
+                <tbody style="vertical-align: middle">
+                    <tr>
+                        <td>Service</td>
+                        <td>Enabled services</td>
+                    </tr>
+                    <tr>
+                        <td>Driver</td>
+                        <td>Drivers/LKM present on the system</td>
+                    </tr>
+                    <tr>
+                        <td>Persistence</td>
+                        <td>Persistance points enabled or not</td>
+                    </tr>
+                    <tr>
+                        <td>Network</td>
+                        <td>What ports are opened and by who</td>
+                    </tr>
+                    <tr>
+                        <td>Command History</td>
+                        <td>Saved command histories</td>
+                    </tr>
+                    <tr>
+                        <td>Forensic</td>
+                        <td>Active processes, users, drives/storage informations</td>
+                    </tr>
+                    <tr>
+                        <td>Hosts</td>
+                        <td>Hosts file content</td>
+                    </tr>
+                    <tr>
+                        <td>Environment variables</td>
+                        <td>The process environ</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            Pastarella currently supports the following operating systems:
             <ul>
-                <li>Windows</li>
+                <li>Windows 10/11</li>
                 <li>macOS</li>
-                <li>Linux</li>
+                <li>Linux (WIP)</li>
+                <li>FreeBSD (very WIP)</li>
             </ul>
+
+            Click <a data-bs-toggle="modal" data-bs-target="#scannersModal" href="#">here</a> for a table that describes
+            the
+            scanners supported by OS.
+
+            <div class="modal fade" id="scannersModal" tabindex="-1" aria-labelledby="scannersModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="scannersModalLabel">Scanners</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <table id="scannersTable" class="table table-stripped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" rowspan="3">OS</th>
+                                        <th scope="col" colspan="11">Scanners</th>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col" rowspan="3">Service</th>
+                                        <th scope="col" rowspan="3">Driver</th>
+                                        <th scope="col" rowspan="3">Persistance</th>
+                                        <th scope="col" rowspan="3">Network</th>
+                                        <th scope="col" rowspan="3">Command History</th>
+                                        <th scope="col" colspan="3">Forensic</th>
+                                        <th scope="col" rowspan="3">Hosts</th>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">Active processes</th>
+                                        <th scope="col">Users</th>
+                                        <th scope="col">Drives/Storage</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr>
+                                        <th scope="col">Windows</th>
+                                        <td><i class="bi bi-check-lg"></i></td>
+                                        <td><i class="bi bi-check-lg"></i></td>
+                                        <td>
+                                            Registry
+                                            <br/>
+                                            User logon scripts
+                                            <br/>
+                                            Tasks
+                                        </td>
+                                        <td><i class="bi bi-check-lg"></i></td>
+                                        <td><i class="bi bi-check-lg"></i></td>
+                                        <td><i class="bi bi-check-lg"></i></td>
+                                        <td><i class="bi bi-check-lg"></i></td>
+                                        <td data-impl="partial">Using <a href="https://learn.microsoft.com/en-us/dotnet/api/system.io.driveinfo.getdrives">C#</a></td>
+                                        <td><i class="bi bi-check-lg"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">MacOS</th>
+                                        <td><i class="bi bi-check-lg"></i></td>
+                                        <td><i class="bi bi-check-lg"></i></td>
+                                        <td>
+                                            LaunchD
+                                            <br/>
+                                            Cron
+                                        </td>
+                                        <td><i class="bi bi-check-lg"></i></td>
+                                        <td><i class="bi bi-x-lg"></i></td>
+                                        <td><i class="bi bi-check-lg"></i></td>
+                                        <td><i class="bi bi-check-lg"></i></td>
+                                        <td data-impl="partial">Using <a href="https://learn.microsoft.com/en-us/dotnet/api/system.io.driveinfo.getdrives">C#</a></td>
+                                        <td><i class="bi bi-check-lg"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">Linux</th>
+                                        <td><i class="bi bi-x-lg"></i></td>
+                                        <td><i class="bi bi-check-lg"></i></td>
+                                        <td data-impl="partial">Only boot time LKM and XDG autostart programs</td>
+                                        <td><i class="bi bi-check-lg"></i></td>
+                                        <td><i class="bi bi-x-lg"></i></td>
+                                        <td data-impl="partial">Using <a href="https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.process.getprocesses">C#</a></td>
+                                        <td><i class="bi bi-check-lg"></i></td>
+                                        <td data-impl="partial">Using <a href="https://learn.microsoft.com/en-us/dotnet/api/system.io.driveinfo.getdrives">C#</a></td>
+                                        <td><i class="bi bi-check-lg"></i></td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">FreeBSD</th>
+                                        <td><i class="bi bi-x-lg"></i></td>
+                                        <td><i class="bi bi-check-lg"></i></td>
+                                        <td data-impl="partial">Only boot time LKM</td>
+                                        <td><i class="bi bi-x-lg"></i></td>
+                                        <td><i class="bi bi-x-lg"></i></td>
+                                        <td><i class="bi bi-x-lg"></i></td>
+                                        <td><i class="bi bi-check-lg"></i></td>
+                                        <td data-impl="partial">Using <a href="https://learn.microsoft.com/en-us/dotnet/api/system.io.driveinfo.getdrives">C#</a></td>
+                                        <td><i class="bi bi-check-lg"></i></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <i style="margin: 0">P.S: envrionment variables and recent files are always available.</i>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </p>
 
             <h2>The Name</h2>
 
@@ -108,7 +258,7 @@
             <h6>Pastarella is licensed under GPL-3.</h6>
         </div>
 
-        <div style="flex: 1"></div>
+        <div></div>
     </div>
 
     <div class="github-links">

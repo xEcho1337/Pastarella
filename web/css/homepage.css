@@ -65,3 +65,27 @@
         font-size: 0.95rem;
     }
 }
+
+#scannersTable {
+    vertical-align: middle;
+    text-align: center;
+
+    & thead tr th {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    & tbody tr {
+        & td:has(.bi-check-lg) {
+            background-color: limegreen;
+        }
+
+        & td:has(.bi-x-lg) {
+            background-color: #ff1a1a;
+        }
+
+        & td[data-impl="partial"] {
+            background-color: #ffae1a;
+        }
+    }
+}
