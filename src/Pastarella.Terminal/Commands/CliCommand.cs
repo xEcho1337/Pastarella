@@ -20,6 +20,11 @@ public class CliCommand : Command<CliCommand.CliSettings>
         [DefaultValue(false)]
         public bool Hosts { get; init; }
 
+        [CommandOption("-r|--recent-files")]
+        [Description("Show all recent files")]
+        [DefaultValue(false)]
+        public bool RecentFiles { get; init; }
+
         [CommandOption("-d|--drivers")]
         [Description("Show all used drivers")]
         [DefaultValue(false)]
@@ -84,6 +89,7 @@ public class CliCommand : Command<CliCommand.CliSettings>
 
             if (settings.Envs) report.Envs = EnvironmentVariablesScanner.GetEnvs();
             if (settings.Hosts) report.Hosts = HostsScanner.GetHosts().ToList();
+            if (settings.RecentFiles) report.RecentFiles = RecentFileScanner.Scan().ToList();
             if (settings.Drivers) report.Drivers = driver.Scan().ToList();
             if (settings.Processes) report.Processes = forensic.ScanProcesses().ToList();
             if (settings.Services) report.Services = service.Scan().ToList();

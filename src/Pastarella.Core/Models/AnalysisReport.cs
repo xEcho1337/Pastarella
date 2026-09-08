@@ -23,4 +23,6 @@ public class AnalysisReport
     public Dictionary<string, string> Envs = [];
 
     public List<CommandHistory> CommandHistories = [];
+
+    public List<RecentFileInfo> RecentFiles = [];
 }

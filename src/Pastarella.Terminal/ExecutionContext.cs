@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 using Pastarella.Core.Common;
 using Pastarella.Core.Models;
@@ -7,7 +6,7 @@ namespace Pastarella.Terminal;
 
 public static class ExecutionContext
 {
-    public static readonly OperatingSystems OS = GetOperatingSystem();
+    private static readonly OperatingSystems Os = GetOperatingSystem();
 
     public static readonly IAnalysisDispatcher Dispatcher = GetAnalyzer();
     public static readonly IForensicScanner ForensicScanner = GetForensicScanner();
@@ -16,8 +15,6 @@ public static class ExecutionContext
     public static readonly IDriverScanner DriverScanner = GetDriverScanner();
     public static readonly IServiceScanner ServiceScanner = GetServiceScanner();
     public static readonly ICommandHistoryScanner CommandHistoryScanner = GetCommandHistoryScanner();
-
-    public static readonly ConcurrentDictionary<string, string> HashCache = new();
 
     private static OperatingSystems GetOperatingSystem()
     {
@@ -33,7 +30,7 @@ public static class ExecutionContext
         throw new NotImplementedException($"{RuntimeInformation.OSDescription} is currently not supported");
     }
 
-    private static IForensicScanner GetForensicScanner() => OS switch
+    private static IForensicScanner GetForensicScanner() => Os switch
     {
         OperatingSystems.Windows => new Core.Windows.ForensicScanner(),
         OperatingSystems.MacOS => new Core.MacOS.ForensicScanner(),
@@ -42,7 +39,7 @@ public static class ExecutionContext
         _ => throw new NotImplementedException($"{RuntimeInformation.OSDescription} is currently not supported.")
     };
 
-    public static IAnalysisDispatcher GetAnalyzer() => OS switch
+    private static IAnalysisDispatcher GetAnalyzer() => Os switch
     {
         OperatingSystems.Windows => new Core.Windows.AnalysisDispatcher(),
         OperatingSystems.MacOS => new Core.MacOS.AnalysisDispatcher(),
@@ -51,7 +48,7 @@ public static class ExecutionContext
         _ => throw new NotImplementedException($"{RuntimeInformation.OSDescription} is currently not supported.")
     };
 
-    public static IPersistenceScanner GetPersistenceScanner() => OS switch
+    private static IPersistenceScanner GetPersistenceScanner() => Os switch
     {
         OperatingSystems.Windows => new Core.Windows.PersistenceScanner(),
         OperatingSystems.MacOS => new Core.MacOS.PersistenceScanner(),
@@ -60,8 +57,7 @@ public static class ExecutionContext
         _ => throw new NotImplementedException($"{RuntimeInformation.OSDescription} is currently not supported.")
     };
 
-
-    private static IDriverScanner GetDriverScanner() => OS switch
+    private static IDriverScanner GetDriverScanner() => Os switch
     {
         OperatingSystems.Windows => new Core.Windows.DriverScanner(),
         OperatingSystems.MacOS => new Core.MacOS.DriverScanner(),
@@ -70,7 +66,7 @@ public static class ExecutionContext
         _ => throw new NotImplementedException($"{RuntimeInformation.OSDescription} is currently not supported.")
     };
 
-    private static INetworkScanner GetNetworkScanner() => OS switch
+    private static INetworkScanner GetNetworkScanner() => Os switch
     {
         OperatingSystems.Windows => new Core.Windows.NetworkScanner(),
         OperatingSystems.MacOS => new Core.MacOS.NetworkScanner(),
@@ -80,7 +76,7 @@ public static class ExecutionContext
     };
 
 
-    private static IServiceScanner GetServiceScanner() => OS switch
+    private static IServiceScanner GetServiceScanner() => Os switch
     {
         OperatingSystems.Windows => new Core.Windows.ServiceScanner(),
         OperatingSystems.MacOS => new Core.MacOS.ServiceScanner(),
@@ -89,7 +85,7 @@ public static class ExecutionContext
         _ => throw new NotImplementedException($"{RuntimeInformation.OSDescription} is currently not supported.")
     };
 
-    private static ICommandHistoryScanner GetCommandHistoryScanner() => OS switch
+    private static ICommandHistoryScanner GetCommandHistoryScanner() => Os switch
     {
         OperatingSystems.Windows => new Core.Windows.CommandHistoryScanner(),
         OperatingSystems.MacOS or OperatingSystems.Linux or OperatingSystems.FreeBSD => new Core.Unix.CommandHistoryScanner(),

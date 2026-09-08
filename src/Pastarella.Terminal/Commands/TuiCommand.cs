@@ -28,6 +28,7 @@ public class TuiCommand : Command<TuiCommand.TuiSettings>
         {
             ["Environment Variables"] = () => report.Envs = EnvironmentVariablesScanner.GetEnvs(),
             ["Hosts"] = () => report.Hosts = HostsScanner.GetHosts().ToList(),
+            ["Recent Files"] = () => report.RecentFiles = RecentFileScanner.Scan().ToList(),
             ["Drivers"] = () => report.Drivers = driver.Scan().ToList(),
             ["Processes"] = () => report.Processes = forensic.ScanProcesses().ToList(),
             ["Services"] = () => report.Services = service.Scan().ToList(),
@@ -129,16 +130,14 @@ public class TuiCommand : Command<TuiCommand.TuiSettings>
 
         AnsiConsole.WriteLine();
         AnsiConsole.MarkupLine($"[green]Analysis completed in {took.TotalSeconds:F3}s.[/]");
-        AnsiConsole.MarkupLine($"[grey]Cached [green]{PlatformHelpers.CacheHits}[/] hashes[/]");
         AnsiConsole.WriteLine();
 
-        if (!errors.IsEmpty)
-        {
-            AnsiConsole.MarkupLine("[red]Error reports:[/]");
+        if (errors.IsEmpty) return;
 
-            foreach (var exception in errors)
-                AnsiConsole.WriteException(exception);
-        }
+        AnsiConsole.MarkupLine("[red]Error reports:[/]");
+
+        foreach (var exception in errors)
+            AnsiConsole.WriteException(exception);
     }
 
     private static void Export(AnalysisReport report)
