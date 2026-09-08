@@ -1,0 +1,19 @@
+summary {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+td {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+td:has(.bi) {
+    text-align: center;
+}
+
+thead {
+    position: sticky;
+    top: 55px;
+    z-index: 1;
+}
