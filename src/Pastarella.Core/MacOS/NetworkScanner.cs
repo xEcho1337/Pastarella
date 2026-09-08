@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net;
 using Pastarella.Core.Models;
 
 namespace Pastarella.Core.MacOS;
@@ -7,9 +8,10 @@ public class NetworkScanner : INetworkScanner
 {
     public IEnumerable<PortInfo> Scan()
     {
-        var psi = new ProcessStartInfo()
+        var psi = new ProcessStartInfo
         {
             FileName = "lsof",
+            // magic flags to output every connection in multiple lines
             Arguments = "-nP -i -FpcuPtnT",
             RedirectStandardOutput = true,
             UseShellExecute = false
@@ -62,6 +64,10 @@ public class NetworkScanner : INetworkScanner
                     info!.Connection = line[1..];
                     break;
 
+                case 't':
+                    info!.Version = line[1..];
+                    break;
+
                 case 'T':
                     string value = line[1..];
 
@@ -92,6 +98,7 @@ public class NetworkScanner : INetworkScanner
         public string ConnectionType { get; set; } = string.Empty;
         public string Connection { get; set; } = string.Empty;
         public string State { get; set; } = string.Empty;
+        public string Version { get; set; } = string.Empty;
 
         public PortInfo? ToPortInfo(uint processId, string processName)
         {
@@ -99,6 +106,7 @@ public class NetworkScanner : INetworkScanner
                 return null;
 
             ParseConnection(Connection,
+                Version,
                 out var local,
                 out var remote);
 
@@ -119,6 +127,7 @@ public class NetworkScanner : INetworkScanner
 
         private static void ParseConnection(
             string value,
+            string version,
             out IpPort? local,
             out IpPort? remote
         )
@@ -126,22 +135,34 @@ public class NetworkScanner : INetworkScanner
             remote = null;
             string[] endpoints = value.Split("->", 2);
 
-            ParseEndpoint(endpoints[0], out local);
+            ParseEndpoint(endpoints[0], version, out local);
 
             if (endpoints.Length == 2)
-                ParseEndpoint(endpoints[1], out remote);
+                ParseEndpoint(endpoints[1], version, out remote);
         }
 
-        private static void ParseEndpoint(string endpoint, out IpPort? ipPort)
+        private static void ParseEndpoint(string endpoint, string version, out IpPort? ipPort)
         {
             ipPort = null;
             int idx = endpoint.LastIndexOf(':');
 
             if (idx < 0) return;
 
+            string allInterfaces = version.Equals("ipv6", StringComparison.CurrentCultureIgnoreCase)
+                ? "[::]" : "0.0.0.0";
+
             string[] parts = endpoint.Split(':');
-            string ip = parts[^2].Replace("*", "0.0.0.0");
+
+            // * is tricky and we have to handle it differently, according to the IP version
+            string ip = parts[^2].Replace("*", allInterfaces);
             string portStr = parts[^1];
+
+            if (version == "ipv6")
+            {
+                // lsof returns IPv4 addresses even for IPv6 connections
+                IPAddress address = IPAddress.Parse(ip);
+                ip = address.MapToIPv6().ToString();
+            }
 
             if (ushort.TryParse(portStr, out ushort port))
                 ipPort = new IpPort(ip, port);
