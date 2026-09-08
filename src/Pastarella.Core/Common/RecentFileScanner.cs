@@ -45,7 +45,7 @@ public static class RecentFileScanner
             // Full-disk scan on macOS exhausts the default fd limit (256) and
             // crawls /System, /private, /Library: scan user homes instead.
             string usersRoot = "/Users";
-            if (!Directory.Exists(usersRoot))
+            if (Directory.Exists(usersRoot))
             {
                 foreach (string dir in Directory.EnumerateDirectories(usersRoot))
                     files.AddRange(GetFilesOfDir(dir, limit));
