@@ -1,0 +1,89 @@
+name: Build
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            rid: linux-x64
+          - os: ubuntu-latest
+            rid: linux-arm64
+          - os: macos-latest
+            rid: osx-x64
+          - os: macos-latest
+            rid: osx-arm64
+          - os: windows-latest
+            rid: win-x64
+          - os: windows-latest
+            rid: win-arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - name: Publish
+        shell: bash
+        run: |
+          dotnet publish src/Pastarella/Pastarella.csproj \
+            -c Release \
+            -r ${{ matrix.rid }} \
+            -o publish/${{ matrix.rid }} \
+            -p:Version=${{ github.run_number }}
+      - name: Rename binary
+        shell: bash
+        run: |
+          mkdir -p release
+          if [[ "${{ matrix.rid }}" == win-* ]]; then
+            mv "publish/${{ matrix.rid }}/Pastarella.exe" "release/pastarella-${{ matrix.rid }}.exe"
+          else
+            mv "publish/${{ matrix.rid }}/Pastarella" "release/pastarella-${{ matrix.rid }}"
+            chmod +x "release/pastarella-${{ matrix.rid }}"
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pastarella-${{ matrix.rid }}
+          path: release/*
+
+  release:
+    if: github.event_name == 'push'
+    needs: [build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Flatten artifacts
+        run: |
+          mkdir -p release
+          for dir in artifacts/*/; do
+            mv "$dir"* release/
+            rmdir "$dir"
+          done
+          ls -la release/
+      - name: Set release name
+        id: release_name
+        run: |
+          sha="${{ github.sha }}"
+          echo "name=Build (${sha:0:8})" >> "$GITHUB_OUTPUT"
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: continuous
+          name: ${{ steps.release_name.outputs.name }}
+          body: |
+            Automatic release from commit ${{ github.sha }}.
+          artifacts: "release/*"
+          artifactErrorsFailBuild: true
+          allowUpdates: true
+          removeArtifacts: true
+          replacesArtifacts: true
+          makeLatest: true
+          prerelease: true
