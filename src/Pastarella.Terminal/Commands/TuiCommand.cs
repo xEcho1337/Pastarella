@@ -95,26 +95,36 @@ public class TuiCommand : Command<TuiCommand.TuiSettings>
                 var working = new List<Task>();
                 start = DateTime.UtcNow;
 
+                using var gate = new SemaphoreSlim(3);
                 foreach (string check in checks)
                 {
                     var task = tasks[check];
-                    var work = Task.Run(() =>
+                    var work = Task.Run(async () =>
                     {
-                        task.StartTask();
+                        await gate.WaitAsync();
 
                         try
                         {
-                            actions[check]();
-                            task.Increment(100);
-                        }
-                        catch (Exception e)
-                        {
-                            task.Description = $"[bold red]✗ {task.Description}[/]";
-                            task.StopTask();
-                            errors.Add(e);
-                        }
+                            task.StartTask();
 
-                        totalTask.Increment(1);
+                            try
+                            {
+                                actions[check]();
+                                task.Increment(100);
+                            }
+                            catch (Exception e)
+                            {
+                                task.Description = $"[bold red]✗ {task.Description}[/]";
+                                task.StopTask();
+                                errors.Add(e);
+                            }
+
+                            totalTask.Increment(1);
+                        }
+                        finally
+                        {
+                            gate.Release();
+                        }
                     });
 
                     working.Add(work);
