@@ -5,7 +5,7 @@
 
 <h4 align="center">A forensic analysis tool written in C#.</h4>
 
-Pastarella is designed to collect data in your computer by using many different forensic analysis algorithms, providing a clear view of the user activity and system state to the investigators.
+Pastarella is an **under development** tool designed to collect data in your computer by using many different forensic analysis algorithms, providing a clear view of the user activity and system state to the investigators.
 
 ---
 
@@ -14,7 +14,10 @@ Pastarella is designed to collect data in your computer by using many different 
 Pastarella is still in development, and it currently supports:
 - Windows
 - macOS
-- Linux
+- Linux (WIP)
+- FreeBSD (very WIP)
+
+For further information click [here](https://xecho1337.github.io/Pastarella).
 
 ## The name
 
