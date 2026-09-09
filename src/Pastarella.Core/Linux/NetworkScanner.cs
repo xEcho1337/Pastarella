@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net;
 using Pastarella.Core.Models;
 
@@ -21,14 +22,54 @@ public class NetworkScanner : INetworkScanner
         return arr;
     }
 
-    private static uint InodeToPid(ulong inode)
+    private static uint? InodeToPid(ulong inode)
     {
-        return 0;
+        // TODO: optimize (calling this for every row is bad. Have an array of inodes to find).
+
+        foreach (string dir in Directory.EnumerateDirectories("/proc")) {
+            string basename = dir.Split('/', 3)[^1];
+
+            // Inside /proc there are also non-processes folders. Skip them
+            if (!basename.All(char.IsDigit))
+                continue;
+
+            uint pid = uint.Parse(basename);
+            try
+            {
+                foreach (string fd in Directory.EnumerateFiles($"{dir}/fd"))
+                {
+                    try
+                    {
+                        var link = new FileInfo(fd).ResolveLinkTarget(false);
+                        string socket = link!.Name;
+                        if (!socket.StartsWith("socket:["))
+                            continue;
+
+                        ulong socket_inode = ulong.Parse(socket["socket:[".Length..^1]);
+
+                        if (socket_inode == inode)
+                            return pid;
+                    }
+                    catch (FileNotFoundException)
+                    {
+                        // The fd may be closed in the exact time we tried to get it.
+                        // Ignore the exception.
+                    }
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // We may not have enough permissions for opening the directory.
+                // Ignore the exception.
+            }
+        }
+
+        return null;
     }
 
     private static string PidToProcessName(uint pid)
     {
-        return "N/A";
+        return File.ReadAllLines($"/proc/{pid}/cmdline")[0].Split('\x00', ' ')[0];
     }
 
     private static string ParseTcpState(byte number)
@@ -67,12 +108,12 @@ public class NetworkScanner : INetworkScanner
             ushort remotePort = Convert.ToUInt16(remote[1], 16);
 
             byte connectionState = Convert.ToByte(parts[3], 16);
-            ulong inode = Convert.ToUInt64(parts[11], 16);
+            ulong inode = Convert.ToUInt64(parts[9]);
 
-            uint pid = InodeToPid(inode);
+            uint? pid = InodeToPid(inode);
             list.Add(new TcpPortInfo(
-                PidToProcessName(pid),
-                pid,
+                (pid == null) ? "N/A" : PidToProcessName(pid.Value),
+                pid ?? 0,
                 ParseTcpState(connectionState),
                 new IpPort(localAddr.ToString(), localPort),
                 new IpPort(remoteAddr.ToString(), remotePort)
@@ -90,12 +131,12 @@ public class NetworkScanner : INetworkScanner
             var localAddr = new IPAddress(HexIPv4ToBytes(local[0]));
             ushort localPort = Convert.ToUInt16(local[1], 16);
 
-            ulong inode = Convert.ToUInt64(parts[11], 16);
+            ulong inode = Convert.ToUInt64(parts[9]);
 
-            uint pid = InodeToPid(inode);
+            uint? pid = InodeToPid(inode);
             list.Add(new UdpPortInfo(
-                PidToProcessName(pid),
-                pid,
+                (pid == null) ? "N/A" : PidToProcessName(pid.Value),
+                pid ?? 0,
                 new IpPort(localAddr.ToString(), localPort)
             ));
         }
@@ -116,12 +157,12 @@ public class NetworkScanner : INetworkScanner
             ushort remotePort = Convert.ToUInt16(remote[1], 16);
 
             byte connectionState = Convert.ToByte(parts[3], 16);
-            ulong inode = Convert.ToUInt64(parts[11], 16);
+            ulong inode = Convert.ToUInt64(parts[9]);
 
-            uint pid = InodeToPid(inode);
+            uint? pid = InodeToPid(inode);
             list.Add(new TcpPortInfo(
-                PidToProcessName(pid),
-                pid,
+                (pid == null) ? "N/A" : PidToProcessName(pid.Value),
+                pid ?? 0,
                 ParseTcpState(connectionState),
                 new IpPort(localAddr.ToString(), localPort),
                 new IpPort(remoteAddr.ToString(), remotePort)
@@ -139,12 +180,12 @@ public class NetworkScanner : INetworkScanner
             var localAddr = new IPAddress(HexIPv6ToBytes(local[0]));
             ushort localPort = Convert.ToUInt16(local[1], 16);
 
-            ulong inode = Convert.ToUInt64(parts[11], 16);
+            ulong inode = Convert.ToUInt64(parts[9]);
 
-            uint pid = InodeToPid(inode);
+            uint? pid = InodeToPid(inode);
             list.Add(new UdpPortInfo(
-                PidToProcessName(pid),
-                pid,
+                (pid == null) ? "N/A" : PidToProcessName(pid.Value),
+                pid ?? 0,
                 new IpPort(localAddr.ToString(), localPort)
             ));
         }
