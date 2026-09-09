@@ -242,15 +242,32 @@
     <script src="./js/bootstrap_auto_theme.js"></script>
 
     <script defer>
-        const savedFile = sessionStorage.getItem("fileToAnalyze");
+        const request = window.indexedDB.open("files", 1);
 
-        if (!savedFile) {
-            alert("You mustn't enter into this page directly");
-        }
-        else {
-            analyzeDump(JSON.parse(savedFile));
-            sessionStorage.removeItem("fileToAnalyze");
-        }
+        request.onerror = () => {
+            alert("An error has occurred (IndexedDB)");
+        };
+
+        request.onsuccess = () => {
+            const db = request.result;
+
+            const tx = db.transaction("files", "readwrite");
+            const store = tx.objectStore("files");
+            const fileReq = store.get("file");
+
+            fileReq.onsuccess = () => {
+                const savedFile = fileReq.result;
+                if (!savedFile) {
+                    db.close();
+                    alert("You mustn't enter into this page directly");
+                }
+                else {
+                    analyzeDump(savedFile);
+                    store.delete("file");
+                    db.close();
+                }
+            };
+        };
     </script>
 </body>
 

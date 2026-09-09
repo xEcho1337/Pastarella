@@ -9,15 +9,29 @@ input.addEventListener("change", async (event) => {
         return;
     }
 
-    const data = await file.text();
-    const reader = new FileReader();
+    const request = window.indexedDB.open("files", 1);
 
-    reader.onload = function () {
-        sessionStorage.setItem("fileToAnalyze", data);
-        window.location.href = "analyzer.html";
+    request.onupgradeneeded = () => {
+        request.result.createObjectStore("files");
     };
 
-    reader.readAsDataURL(file);
+    request.onerror = () => {
+        alert("An error has occurred (IndexedDB)");
+    };
+
+    request.onsuccess = async () => {
+        const db = request.result;
+
+        const jsonObj = JSON.parse(await file.text());
+
+        const tx = db.transaction("files", "readwrite");
+        tx.objectStore("files").put(jsonObj, "file");
+
+        tx.oncomplete = () => {
+            db.close();
+            location.href = "analyzer.html";
+        };
+    };
 });
 
 const logo = document.getElementById("logo");
