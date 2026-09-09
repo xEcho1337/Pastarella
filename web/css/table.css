@@ -1,0 +1,308 @@
+/* Recent connections */
+
+.recent-panel {
+  padding-bottom: 8px;
+}
+
+/* Stacked table cards need breathing room */
+.recent-panel + .recent-panel {
+  margin-top: 12px;
+}
+
+.recent-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.recent-head .panel-sub {
+  margin-bottom: 0;
+}
+
+/* Dark thin scrollbars for wide tables (Firefox + WebKit) */
+.table-responsive {
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: #2e2e35 transparent;
+}
+
+.table-responsive::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #2e2e35;
+  border-radius: 999px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+.table-responsive::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Sort indicator appended to the active header */
+.sort-ind {
+  margin-left: 6px;
+  font-size: 9px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* Pager bar under wide tables */
+.pager-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 10px 2px 2px 2px;
+}
+
+.pager-info {
+  font-size: 11px;
+  color: var(--muted-2);
+}
+
+.pager-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pager-btn {
+  min-width: 26px;
+  height: 26px;
+  padding: 0 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.pager-btn:hover:not(:disabled) {
+  background: #1e1e24;
+  border-color: var(--border);
+  color: #e4e4e7;
+}
+
+.pager-btn.current {
+  background: #1d1d22;
+  border-color: #2a2a31;
+  font-weight: 700;
+  color: #fff;
+}
+
+.pager-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.pager-ellipsis {
+  padding: 0 2px;
+  font-size: 11px;
+  color: var(--muted-2);
+}
+
+.pager-select {
+  margin-left: 6px;
+  padding: 4px 6px;
+  background: #17171b;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+  color: #d4d4d8;
+  cursor: pointer;
+}
+
+.dark-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.dark-table thead th {
+  padding: 8px 10px;
+  border-top: 1px solid var(--border-soft);
+  border-bottom: 1px solid var(--border-soft);
+  font-size: 10.5px;
+  font-weight: 600;
+  text-align: left;
+  color: var(--muted-2);
+  position: relative;
+  overflow: visible;
+}
+
+/* Resizable columns: fixed layout only after the user drags (or on restore) */
+.dark-table.resizable {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.dark-table.resizable tbody td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Invisible grip on the right edge of each header cell */
+.col-grip {
+  position: absolute;
+  top: 0;
+  right: -5px;
+  width: 10px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 2;
+  touch-action: none;
+}
+
+.col-grip::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 4px;
+  width: 2px;
+  border-radius: 2px;
+  background: transparent;
+  transition: background 0.15s;
+}
+
+.col-grip:hover::after {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+body.col-resizing,
+body.col-resizing .col-grip {
+  cursor: col-resize !important;
+  user-select: none;
+}
+
+body.col-resizing .col-grip::after {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* Column reorder: grab cursor, drag ghost and drop indicators */
+.dark-table thead th.reorderable {
+  cursor: grab;
+}
+
+.dark-table thead th.col-dragging {
+  opacity: 0.4;
+}
+
+.dark-table thead th.drop-before {
+  box-shadow: inset 2px 0 0 rgba(255, 255, 255, 0.5);
+}
+
+.dark-table thead th.drop-after {
+  box-shadow: inset -2px 0 0 rgba(255, 255, 255, 0.5);
+}
+
+.col-ghost {
+  position: fixed;
+  z-index: 100;
+  pointer-events: none;
+  padding: 8px 10px;
+  background: #1d1d22;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--muted);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+body.col-reordering,
+body.col-reordering .dark-table thead th {
+  cursor: grabbing !important;
+  user-select: none;
+}
+
+.dark-table tbody td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--border-soft);
+  vertical-align: middle;
+  color: #d4d4d8;
+}
+
+.dark-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.dark-table tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.cell-date {
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+
+.cell-ip {
+  font-size: 11.5px;
+}
+
+/* Centered yes/no + signature icons */
+.dark-table td.icon-cell {
+  text-align: center;
+}
+
+.dark-table td.icon-cell i[title] {
+  cursor: help;
+}
+
+.token-badge {
+  padding: 2px 8px;
+  background: #1e1e24;
+  border: 1px solid #2b2b32;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #d4d4d8;
+}
+
+.cell-path {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  white-space: nowrap;
+  color: #d4d4d8;
+}
+
+.status-badge {
+  padding: 2px 8px;
+  border: 1px solid;
+  border-radius: 999px;
+  font-family: ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.status-ok {
+  background: var(--green-bg);
+  border-color: var(--green-border);
+  color: var(--green-text);
+}
+
+.status-err {
+  background: var(--red-bg);
+  border-color: var(--red-border);
+  color: var(--red-text);
+}
+
+.status-warn {
+  background: var(--amber-bg);
+  border-color: var(--amber-border);
+  color: var(--amber-text);
+}

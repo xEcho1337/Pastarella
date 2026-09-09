@@ -1,0 +1,83 @@
+/* Base */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Inter",
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+  font-size: 15px;
+}
+
+/* Faint background grid */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(
+    ellipse at center,
+    black 40%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
+}
+
+.app {
+  display: flex;
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+/* Load Report buttons: dashed border everywhere */
+.btn-refresh[data-action="load-report"],
+.btn-navbar[data-action="load-report"] {
+  border-style: dashed;
+}
+
+/* Dark Bootstrap modal (feedback) */
+.dark-modal {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.dark-modal .modal-header,
+.dark-modal .modal-footer {
+  border-color: var(--border-soft);
+}
+
+.dark-input {
+  background: #0d0d0f;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.dark-input:focus {
+  background: #0d0d0f;
+  border-color: #3f3f46;
+  color: #fff;
+  box-shadow: none;
+}
+
+.dark-input::placeholder {
+  color: var(--muted-2);
+}

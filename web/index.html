@@ -1,335 +1,183 @@
-<!doctype html>
-<html lang="en">
-
+<!DOCTYPE html>
+<html lang="it">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <title>Pastarella</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-    <link rel="stylesheet" href="./css/homepage.css">
-
-    <script defer src="./js/homepage.js"></script>
-    <script defer src="./js/feedback.js"></script>
-    <script defer src="./js/bootstrap_auto_theme.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pastarella — Analyzer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="./css/variables.css">
+    <link rel="stylesheet" href="./css/base.css">
+    <link rel="stylesheet" href="./css/sidebar.css">
+    <link rel="stylesheet" href="./css/topbar.css">
+    <link rel="stylesheet" href="./css/content.css">
+    <link rel="stylesheet" href="./css/cards.css">
+    <link rel="stylesheet" href="./css/panels.css">
+    <link rel="stylesheet" href="./css/table.css">
+    <link rel="stylesheet" href="./css/home.css">
+    <link rel="stylesheet" href="./css/responsive.css">
 </head>
-
 <body>
-    <header class="sticky-top">
-        <nav class="navbar navbar-expand" style="background-color: #444444">
-            <div class="container-fluid px-3">
+    <div class="app">
+    <aside class="sidebar">
+        <div class="brand">
+        <div class="brand-text">
+            <div class="brand-name">Pastarella</div>
+        </div>
+        </div>
 
-                <a class="navbar-brand" href="#">
-                    Pastarella
-                </a>
-
-                <div class="d-flex align-items-center gap-1">
-
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#feedbackModal">Feedback</button>
-
-                    <a href="https://github.com/xEcho1337/Pastarella" target="_blank" rel="noopener noreferrer"
-                        class="navbar-icon-btn" title="GitHub" aria-label="GitHub">
-                        <i class="bi bi-github"></i>
-                    </a>
-
-                    <button class="navbar-icon-btn" type="button" title="Theme" aria-label="Theme"
-                        onclick="toggleTheme()">
-                        <i id="theme-icon"></i>
-                    </button>
-
-                </div>
-            </div>
+        <nav class="side-nav home-nav">
+            <a href="#" class="side-link" data-page="index">
+                <i class="bi bi-house"></i>
+                <span>Home</span>
+                <i class="bi bi-dot active-dot ms-auto" style="visibility:hidden"></i>
+            </a>
         </nav>
-    </header>
 
+        <div class="sections-label">Sections</div>
+        <nav class="side-nav">
+            <a href="#" class="side-link" data-page="dashboard">
+                <i class="bi bi-grid"></i>
+                <span>Dashboard</span>
+                <i class="bi bi-dot active-dot ms-auto"></i>
+            </a>
+
+            <!-- services -->
+            <a href="#" class="side-link" data-page="services">
+                <i class="bi bi-activity"></i>
+                <span>Services</span>
+                <i class="bi bi-dot active-dot ms-auto" style="visibility:hidden"></i>
+            </a>
+
+            <!-- open ports, hosts -->
+            <a href="#" class="side-link" data-page="network">
+                <i class="bi bi-wifi"></i>
+                <span>Network</span>
+                <i class="bi bi-dot active-dot ms-auto" style="visibility:hidden"></i>
+            </a>
+
+            <!-- system: processes, users, storage -->
+            <a href="#" class="side-link" data-page="system">
+                <i class="bi bi-pc-display"></i>
+                <span>System</span>
+                <i class="bi bi-dot active-dot ms-auto" style="visibility:hidden"></i>
+            </a>
+
+            <!-- persistence -->
+            <a href="#" class="side-link" data-page="persistence">
+                <i class="bi bi-hdd-fill"></i>
+                <span>Persistence</span>
+                <i class="bi bi-dot active-dot ms-auto" style="visibility:hidden"></i>
+            </a>
+
+            <!-- environment variables, history -->
+            <a href="#" class="side-link" data-page="environment">
+                <i class="bi bi-cpu"></i>
+                <span>Environment</span>
+                <i class="bi bi-dot active-dot ms-auto" style="visibility:hidden"></i>
+            </a>
+
+            <!-- drivers -->
+            <a href="#" class="side-link" data-page="drivers">
+                <i class="bi bi-tools"></i>
+                <span>Drivers</span>
+                <i class="bi bi-dot active-dot ms-auto" style="visibility:hidden"></i>
+            </a>
+
+            <!-- recent files -->
+            <a href="#" class="side-link" data-page="recent-files">
+                <i class="bi bi-file-earmark-fill"></i>
+                <span>Recent Files</span>
+                <i class="bi bi-dot active-dot ms-auto" style="visibility:hidden"></i>
+            </a>
+        </nav>
+    </aside>
+
+    <div class="main-col">
+        <header class="topbar">
+        <div class="topbar-left">
+            <div class="topbar-title" id="topbarTitle">Home</div>
+            <div class="topbar-sub" id="topbarSub">Welcome</div>
+        </div>
+        <div class="topbar-right">
+            <button class="btn-navbar" type="button" data-action="load-report"><i class="bi bi-upload"></i> Load report</button>
+            <button class="btn-navbar" type="button" data-bs-toggle="modal" data-bs-target="#feedbackModal"><i class="bi bi-chat-left-fill"></i> Feedback</button>
+            <button class="btn-navbar" type="button" data-action="export-hashes"><i class="bi bi-download"></i> Export hashes</button>
+            <a class="btn-navbar" href="https://github.com/xEcho1337/Pastarella" target="_blank" rel="noopener noreferrer" title="GitHub" aria-label="GitHub"><i class="bi bi-github"></i></a>
+            <a class="btn-navbar" href="https://github.com/xEcho1337/Pastarella/releases" target="_blank" rel="noopener noreferrer" title="Download latest release" aria-label="Download latest release"><i class="bi bi-download"></i></a>
+        </div>
+        </header>
+
+        <main class="content">
+        <div class="content-inner" id="pageContent">
+            <!-- Page partials from ./pages/ are loaded here by js/router.js -->
+        </div>
+        </main>
+    </div>
+    </div>
+
+    <!-- Feedback modal (ported from the old site) -->
     <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
+        <div class="modal-dialog">
+            <div class="modal-content dark-modal">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="feedbackModalLabel">Send a feedback</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h1 class="modal-title fs-5" id="feedbackModalLabel">Send feedback</h1>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="feedbackSubject" class="form-label">Subject</label>
-                        <input type="text" class="form-control" id="feedbackSubject"
-                            placeholder="windows: recent files are slow">
+                        <input type="text" class="form-control dark-input" id="feedbackSubject" placeholder="Report title">
                     </div>
                     <div class="mb-3">
                         <label for="feedbackMessage" class="form-label">Message</label>
-                        <textarea class="form-control" id="feedbackMessage" rows="10"></textarea>
+                        <textarea class="form-control dark-input" id="feedbackMessage" rows="6"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="sendFeedback()">Send</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-refresh" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn-refresh" id="sendFeedbackBtn">Send</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="load-file-container" class="text-center">
-        <img id="logo" alt="" class="mb-3" />
-
-        <h1 class="mb-3">Viewer</h1>
-        <div class="mb-3">
-            <input type="file" class="form-control d-inline-block w-auto" id="json-file-to-load"
-                accept="application/json" />
-        </div>
-    </div>
-
-    <div class="d-grid" style="padding-top: 2vh; grid-template-columns: 30% 40% 30%">
-        <div></div>
-
-        <div>
-            <h1 class="text-center">Pastarella</h1>
-            <h6 class="text-center" style="padding-bottom: 1vh">A forensic analysis tool written in C#.</h6>
-
-            <p>
-                Pastarella is an <b>under development</b> tool designed to collect data on your computer
-                by using many different forensic analysis algorithms,
-                providing a clear view of user activity and system state
-                to investigators.
-
-                <hr />
-
-                For doing all of its operations, Pastarella under the hood uses <i>Scanners</i>, classes specialized
-                on retrieving one kind of data. The implemented scanners are:
-
-            <table class="table table-stripped table-hover">
-                <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Returns</th>
-                    </tr>
-                </thead>
-
-                <tbody style="vertical-align: middle">
-                    <tr>
-                        <td>Service</td>
-                        <td>Enabled services</td>
-                    </tr>
-                    <tr>
-                        <td>Driver</td>
-                        <td>Drivers/LKM present on the system</td>
-                    </tr>
-                    <tr>
-                        <td>Persistence</td>
-                        <td>Persistance points enabled or not</td>
-                    </tr>
-                    <tr>
-                        <td>Network</td>
-                        <td>What ports are opened and by who</td>
-                    </tr>
-                    <tr>
-                        <td>Command History</td>
-                        <td>Saved command histories</td>
-                    </tr>
-                    <tr>
-                        <td>Forensic</td>
-                        <td>Active processes, users, drives/storage informations</td>
-                    </tr>
-                    <tr>
-                        <td>Hosts</td>
-                        <td>Hosts file content</td>
-                    </tr>
-                    <tr>
-                        <td>Environment variables</td>
-                        <td>The process environ</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            Pastarella currently supports the following operating systems:
-            <ul>
-                <li>Windows 10/11</li>
-                <li>macOS</li>
-                <li>Linux (WIP)</li>
-                <li>FreeBSD (very WIP)</li>
-            </ul>
-
-            Click <a data-bs-toggle="modal" data-bs-target="#scannersModal" href="#">here</a> for a table that describes
-            the
-            scanners supported by OS.
-
-            <div class="modal fade" id="scannersModal" tabindex="-1" aria-labelledby="scannersModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog modal-xl">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="scannersModalLabel">Scanners</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <table id="scannersTable" class="table table-stripped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th scope="col" rowspan="3">OS</th>
-                                        <th scope="col" colspan="11">Scanners</th>
-                                    </tr>
-                                    <tr>
-                                        <th scope="col" rowspan="3">Service</th>
-                                        <th scope="col" rowspan="3">Driver</th>
-                                        <th scope="col" rowspan="3">Persistance<sup><a href="#scannersFootnote1">[1]</a></sup></th>
-                                        <th scope="col" rowspan="3">Network</th>
-                                        <th scope="col" rowspan="3">Command History</th>
-                                        <th scope="col" colspan="3">Forensic</th>
-                                        <th scope="col" rowspan="3">Hosts</th>
-                                    </tr>
-                                    <tr>
-                                        <th scope="col">Active processes</th>
-                                        <th scope="col">Users</th>
-                                        <th scope="col">Drives/Storage</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    <tr>
-                                        <th scope="col">Windows</th>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                        <td>
-                                            Registry
-                                            <br />
-                                            User logon scripts
-                                            <br />
-                                            Tasks
-                                        </td>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                        <td data-impl="partial">Using <a
-                                                href="https://learn.microsoft.com/en-us/dotnet/api/system.io.driveinfo.getdrives">C#</a>
-                                        </td>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="col">MacOS</th>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                        <td>
-                                            LaunchD
-                                            <br />
-                                            Cron
-                                        </td>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                        <td data-impl="partial">Using <a
-                                                href="https://learn.microsoft.com/en-us/dotnet/api/system.io.driveinfo.getdrives">C#</a>
-                                        </td>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="col">Linux</th>
-                                        <td><i class="bi bi-x-lg"></i></td>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                        <td data-impl="partial">Only boot time LKM and XDG autostart programs</td>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                        <td data-impl="partial">Using <a
-                                                href="https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.process.getprocesses">C#</a>
-                                        </td>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                        <td data-impl="partial">Using <a
-                                                href="https://learn.microsoft.com/en-us/dotnet/api/system.io.driveinfo.getdrives">C#</a>
-                                        </td>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="col">FreeBSD</th>
-                                        <td><i class="bi bi-x-lg"></i></td>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                        <td data-impl="partial">Only boot time LKM</td>
-                                        <td><i class="bi bi-x-lg"></i></td>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                        <td><i class="bi bi-x-lg"></i></td>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                        <td data-impl="partial">Using <a
-                                                href="https://learn.microsoft.com/en-us/dotnet/api/system.io.driveinfo.getdrives">C#</a>
-                                        </td>
-                                        <td><i class="bi bi-check-lg"></i></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
-                            <i>P.S: envrionment variables and recent files are always available.</i>
-
-                            <br/><br/>
-
-                            <section>
-                                <p style="margin: 0" id="scannersFootnote1">1. persistance report has a "risk score", which will be always zero apart from some Windows registry keys.</p>
-                            </section>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
+    <!-- Shared markup templates (vanilla): cloned by js/components.js, never rendered directly -->
+    <template id="tpl-page-head">
+        <div class="page-head">
+            <div>
+                <h1 class="page-title"></h1>
+                <p class="page-sub"></p>
             </div>
-            </p>
-
-            <h2>The Name</h2>
-
-            <h6>
-                Pastarella can mean different things depending on what
-                you like the most:
-            </h6>
-
-            <ul>
-                <li>
-                    an Italian way to say "pastry": if you are feeling hungry
-                </li>
-                <li>
-                    Postmortem Analysis of System Telemetry, Artifacts,
-                    Registry, Events, Logs, Links and Activity:
-                    if you feel creative
-                </li>
-                <li>
-                    a delicious forensic framework:
-                    if you ask the marketing team
-                </li>
-                <li>
-                    just a pastry:
-                    if you ask my grandmother
-                </li>
-            </ul>
-
-            <h2>License</h2>
-
-            <h6>Pastarella is licensed under GPL-3.</h6>
         </div>
+    </template>
 
-        <div></div>
-    </div>
-
-    <div class="github-links">
-        <div class="mb-2">
-            <i class="bi bi-github me-1"></i>
-
-            <a href="https://github.com/xEcho1337/Pastarella" target="_blank" rel="noopener noreferrer">
-                View the project on GitHub
-            </a>
+    <template id="tpl-empty-state">
+        <div class="page-head">
+            <div>
+                <h1 class="page-title"></h1>
+                <p class="page-sub"></p>
+            </div>
         </div>
-
-        <div>
-            <i class="bi bi-download me-1"></i>
-
-            <a href="https://github.com/xEcho1337/Pastarella/releases" target="_blank" rel="noopener noreferrer">
-                Download the latest release
-            </a>
+        <div class="empty-report">
+            <div class="empty-report-icon"><i class="bi bi-file-earmark-arrow-up"></i></div>
+            <div class="empty-report-title">No report loaded</div>
+            <div class="empty-report-text"></div>
+            <button class="btn-navbar" type="button" data-action="load-report"><i class="bi bi-upload"></i> Load report</button>
         </div>
-    </div>
+    </template>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    <script src="./js/report-store.js"></script>
+    <script src="./js/components.js"></script>
+    <script src="./js/pager.js"></script>
+    <script src="./js/section-renderers.js"></script>
+    <script src="./js/column-resize.js"></script>
+    <script src="./js/collapse.js"></script>
+    <script src="./js/export-hashes.js"></script>
+    <script src="./js/feedback.js"></script>
+    <script src="./js/home.js"></script>
+    <script src="./js/dashboard.js"></script>
+    <script src="./js/router.js"></script>
 </body>
-
 </html>

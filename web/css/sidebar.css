@@ -1,0 +1,126 @@
+/* Sidebar */
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  width: 235px;
+  min-width: 215px;
+  height: 100vh;
+  padding: 0 12px 14px 12px;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border-soft);
+}
+
+/* Sidebar header: same height as topbar to align borders */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: var(--topbar-h);
+  min-height: var(--topbar-h);
+  margin: 0 -12px 12px -12px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.brand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: #1a1a1e;
+  border: 1px solid var(--border);
+  font-size: 14px;
+  color: #d4d4d8;
+}
+
+.brand-name {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.brand-sub {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.sections-label {
+  margin-bottom: 10px;
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted-2);
+}
+
+.side-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.home-nav {
+  margin-bottom: 12px;
+}
+
+.side-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  margin: 3px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 13px;
+  height: 35px;
+  color: #a1a1aa;
+  text-decoration: none;
+}
+
+.side-link i {
+  font-size: 15px;
+  opacity: 0.9;
+}
+
+.side-link:hover {
+  background: #17171a;
+  color: #e4e4e7;
+}
+
+.side-link.active {
+  background: #1d1d22;
+  border-color: #2a2a31;
+  font-weight: 600;
+  color: #fff;
+}
+
+.active-dot {
+  font-size: 18px !important;
+  color: #a1a1aa;
+}
+
+.restricted-box {
+  margin: 8px 2px 2px 2px;
+  padding: 11px 12px;
+  background: #131316;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+}
+
+.restricted-title {
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.restricted-text {
+  font-size: 10.5px;
+  line-height: 1.45;
+  color: var(--muted);
+}

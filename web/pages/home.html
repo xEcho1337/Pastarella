@@ -1,0 +1,135 @@
+<div class="home-hero">
+  <img id="homeLogo" class="home-logo" src="./logo.png" alt="Pastarella logo">
+  <h1 class="home-title">Pastarella</h1>
+  <p class="home-license">Pastarella is licensed under GPL-3.</p>
+  <p class="home-sub">A forensic analysis tool. Load a collection report to inspect it.</p>
+  <div class="home-actions">
+    <button class="btn-refresh home-load-btn" type="button" data-action="load-report"><i class="bi bi-upload"></i> Load Report</button>
+  </div>
+  <p class="home-report-line d-none" id="homeReportLine">Report loaded · <button class="linklike" type="button" data-goto-dashboard>open the dashboard</button></p>
+</div>
+
+<div class="panel home-panel">
+  <div class="panel-title">What is Pastarella</div>
+  <div class="panel-sub">Under development forensic collector.</div>
+  <p class="home-text">
+    Pastarella collects data on your computer using many different forensic analysis
+    algorithms, providing a clear view of user activity and system state to investigators.
+  </p>
+  <p class="home-text">
+    Under the hood it uses <em>Scanners</em>, classes specialized on retrieving one kind
+    of data. The implemented scanners are:
+  </p>
+  <div class="table-responsive">
+    <table class="dark-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Returns</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Service</td><td>Enabled services</td></tr>
+        <tr><td>Driver</td><td>Drivers and kernel modules present on the system</td></tr>
+        <tr><td>Persistence</td><td>Persistence points enabled or not</td></tr>
+        <tr><td>Network</td><td>What ports are opened and by who</td></tr>
+        <tr><td>Command History</td><td>Saved command histories</td></tr>
+        <tr><td>Forensic</td><td>Active processes, users, drives and storage information</td></tr>
+        <tr><td>Hosts</td><td>Hosts file content</td></tr>
+        <tr><td>Environment variables</td><td>The process environ</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="panel home-panel">
+  <div class="panel-title">Supported systems</div>
+  <div class="panel-sub">Scanner coverage per operating system.</div>
+  <div class="table-responsive">
+    <table class="dark-table matrix-table">
+      <thead>
+        <tr>
+          <th rowspan="3">OS</th>
+          <th colspan="9">Scanners</th>
+        </tr>
+        <tr>
+          <th rowspan="2">Service</th>
+          <th rowspan="2">Driver</th>
+          <th rowspan="2">Persistence *</th>
+          <th rowspan="2">Network</th>
+          <th colspan="3">Forensic</th>
+          <th rowspan="2">Cmd History</th>
+          <th rowspan="2">Hosts</th>
+        </tr>
+        <tr>
+          <th>Processes</th>
+          <th>Users</th>
+          <th>Storage</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Windows</td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+          <td>Registry · Logon scripts · Tasks</td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+          <td class="partial">Using <a href="https://learn.microsoft.com/en-us/dotnet/api/system.io.driveinfo.getdrives" target="_blank" rel="noopener noreferrer">C#</a></td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+        </tr>
+        <tr>
+          <td>macOS</td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+          <td>LaunchD · Cron</td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+          <td class="partial">Using <a href="https://learn.microsoft.com/en-us/dotnet/api/system.io.driveinfo.getdrives" target="_blank" rel="noopener noreferrer">C#</a></td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+        </tr>
+        <tr>
+          <td>Linux</td>
+          <td class="missing"><i class="bi bi-x-lg"></i></td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+          <td class="partial">Boot LKM · XDG autostart</td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+          <td class="partial">Using <a href="https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.process.getprocesses" target="_blank" rel="noopener noreferrer">C#</a></td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+          <td class="partial">Using <a href="https://learn.microsoft.com/en-us/dotnet/api/system.io.driveinfo.getdrives" target="_blank" rel="noopener noreferrer">C#</a></td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+        </tr>
+        <tr>
+          <td>FreeBSD</td>
+          <td class="missing"><i class="bi bi-x-lg"></i></td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+          <td class="partial">Boot LKM only</td>
+          <td class="missing"><i class="bi bi-x-lg"></i></td>
+          <td class="missing"><i class="bi bi-x-lg"></i></td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+          <td class="partial">Using <a href="https://learn.microsoft.com/en-us/dotnet/api/system.io.driveinfo.getdrives" target="_blank" rel="noopener noreferrer">C#</a></td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+          <td class="full"><i class="bi bi-check-lg"></i></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="home-note">* Persistance report has a "risk score", which will be always zero apart from some Windows registry keys.</p>
+  <p class="home-note">Environment variables and recent files are always collected.</p>
+</div>
+
+<div class="panel home-panel">
+  <div class="panel-title">The Name</div>
+  <div class="panel-sub">Pastarella can mean different things:</div>
+  <ul class="home-list">
+    <li>an Italian way to say "pastry": if you are feeling hungry</li>
+    <li>Postmortem Analysis of System Telemetry, Artifacts, Registry, Events, Logs, Links and Activity: if you feel creative</li>
+    <li>a delicious forensic framework: if you ask the marketing team</li>
+    <li>just a pastry: if you ask my grandmother</li>
+  </ul>
+</div>
