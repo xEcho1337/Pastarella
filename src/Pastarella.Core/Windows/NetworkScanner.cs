@@ -82,7 +82,7 @@ public class NetworkScanner : INetworkScanner
         foreach (var entry in GetExtendedUdpTable<MIB_UDP6TABLE_OWNER_PID>(UDP_TABLE_CLASS.UDP_TABLE_OWNER_PID, ADDRESS_FAMILY.AF_INET6))
         {
             string ip = new IPAddress(entry.ucLocalAddr.bytes, entry.dwLocalScopeId).ToString();
-            ushort port = (ushort) entry.dwLocalPort;
+            ushort port = (ushort)entry.dwLocalPort;
             list.Add(
                 new UdpPortInfo(
                     Process.GetProcessById((int)entry.dwOwningPid).ProcessName,

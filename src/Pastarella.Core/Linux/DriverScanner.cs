@@ -40,7 +40,7 @@ public class DriverScanner : IDriverScanner
     {
         List<DriverInfo> list = [];
 
-        string modulesPath = $"{AnalysisDispatcher.ModulesPath}/{AnalysisDispatcher.GetKernelVersion()}";
+        string modulesPath = $"{Context.ModulesPath}/{Context.GetKernelVersion()}";
         string kernelFilePath = $"{modulesPath}/vmlinuz";
         string? kernelSha256 = PlatformHelpers.GetSha256(kernelFilePath);
 
@@ -107,4 +107,3 @@ public class DriverScanner : IDriverScanner
             .Concat(GetBuiltinModules());
     }
 }
-

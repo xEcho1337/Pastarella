@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using Pastarella.Core;
+using Pastarella.Core.Models;
 using Pastarella.Core.Common;
 using Pastarella.Terminal.Outputs;
 using Spectre.Console.Cli;
@@ -70,6 +71,14 @@ public class CliCommand : Command<CliCommand.CliSettings>
         public required string Output { get; init; }
     }
 
+    public class NotImplementedPlatformException : Exception
+    {
+        public NotImplementedPlatformException(string scannerName)
+            : base($"{scannerName} scanner is not implemented for this platform")
+        {
+        }
+    }
+
     protected override int Execute(CommandContext context, CliSettings settings, CancellationToken cancellationToken)
     {
         if (!PlatformHelpers.IsElevated())
@@ -77,27 +86,60 @@ public class CliCommand : Command<CliCommand.CliSettings>
 
         try
         {
-            var dispatcher = ExecutionContext.Dispatcher;
-            var forensic = ExecutionContext.ForensicScanner;
-            var persistence = ExecutionContext.PersistenceScanner;
-            var network = ExecutionContext.NetworkScanner;
-            var driver = ExecutionContext.DriverScanner;
-            var service = ExecutionContext.ServiceScanner;
-            var cmdHistory = ExecutionContext.CommandHistoryScanner;
+            var ctx = new Context();
+            var report = new AnalysisReport(DateTime.UtcNow);
 
-            var report = ExecutionContext.Dispatcher.Report;
+            if (settings.Envs)
+                report.Envs = EnvironmentVariablesScanner.GetEnvs();
+            if (settings.Hosts)
+                report.Hosts = HostsScanner.GetHosts().ToList();
+            if (settings.RecentFiles)
+                report.RecentFiles = RecentFileScanner.Scan().ToList();
 
-            if (settings.Envs) report.Envs = EnvironmentVariablesScanner.GetEnvs();
-            if (settings.Hosts) report.Hosts = HostsScanner.GetHosts().ToList();
-            if (settings.RecentFiles) report.RecentFiles = RecentFileScanner.Scan().ToList();
-            if (settings.Drivers) report.Drivers = driver.Scan().ToList();
-            if (settings.Processes) report.Processes = forensic.ScanProcesses().ToList();
-            if (settings.Services) report.Services = service.Scan().ToList();
-            if (settings.Users) report.Users = forensic.ScanUsers().ToList();
-            if (settings.Storages) report.Storages = forensic.ScanStorages().ToList();
-            if (settings.OpenConnections) report.OpenPorts = network.Scan().ToList();
-            if (settings.Persistances) report.Persistences = persistence.Scan().ToList();
-            if (settings.CommandHistories) report.CommandHistories = cmdHistory.Scan().ToList();
+            if ((settings.Users || settings.Storages || settings.Processes) && ctx.ForensicScanner == null)
+                throw new NotImplementedException("Forensic");
+
+            if (settings.Users)
+                report.Users = ctx.ForensicScanner!.ScanUsers().ToList();
+            if (settings.Storages)
+                report.Storages = ctx.ForensicScanner!.ScanStorages().ToList();
+            if (settings.Processes)
+                report.Processes = ctx.ForensicScanner!.ScanProcesses().ToList();
+
+            if (settings.Persistances)
+            {
+                if (ctx.PersistenceScanner == null)
+                    throw new NotImplementedException("Persistence");
+                report.Persistences = ctx.PersistenceScanner.Scan().ToList();
+            }
+
+            if (settings.OpenConnections)
+            {
+                if (ctx.NetworkScanner == null)
+                    throw new NotImplementedPlatformException("Network");
+                report.OpenPorts = ctx.NetworkScanner.Scan().ToList();
+            }
+
+            if (settings.Drivers)
+            {
+                if (ctx.DriverScanner == null)
+                    throw new NotImplementedPlatformException("Driver");
+                report.Drivers = ctx.DriverScanner.Scan().ToList();
+            }
+
+            if (settings.Services)
+            {
+                if (ctx.ServiceScanner == null)
+                    throw new NotImplementedPlatformException("Service");
+                report.Services = ctx.ServiceScanner.Scan().ToList();
+            }
+
+            if (settings.CommandHistories)
+            {
+                if (ctx.CommandHistoryScanner == null)
+                    throw new NotImplementedPlatformException("Command History");
+                report.CommandHistories = ctx.CommandHistoryScanner.Scan().ToList();
+            }
 
             if (settings.Output.EndsWith(".json"))
                 File.WriteAllText(settings.Output, JsonWriter.Serialize(report));

@@ -6,7 +6,8 @@ public class NetworkService(OutputBuffer buffer)
 {
     private readonly OutputBuffer Buffer = buffer;
 
-    public void WritePorts(IEnumerable<PortInfo> ports) {
+    public void WritePorts(IEnumerable<PortInfo> ports)
+    {
 
         Buffer.WriteLine("Protocol [PID] Name (Local -> Remote) - State");
 

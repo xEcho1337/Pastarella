@@ -6,11 +6,11 @@ public class LKMScanner : IPersistenceScanner
 {
     private List<PersistenceEntry> Entries { get; init; } = [];
 
-    private readonly string[] ModulesLoadDirs = AnalysisDispatcher.UsrMerged
+    private readonly string[] ModulesLoadDirs = Context.UsrMerged
         ? ["/etc/modules-load.d/", "/usr/lib/modules-load.d/"]
         : ["/etc/modules-load.d/", "/lib/modules-load.d/", "/usr/lib/modules-load.d/"];
 
-    private readonly string[] ModprobeDirs = AnalysisDispatcher.UsrMerged
+    private readonly string[] ModprobeDirs = Context.UsrMerged
         ? ["/etc/modprobe.d/", "/usr/lib/modprobe.d/"]
         : ["/etc/modprobe.d/", "/lib/modprobe.d/", "/usr/lib/modprobe.d/"];
 
@@ -30,7 +30,7 @@ public class LKMScanner : IPersistenceScanner
 
     public static string? FindModulePath(string moduleName)
     {
-        string modulesPath = $"{AnalysisDispatcher.ModulesPath}/{AnalysisDispatcher.GetKernelVersion()}";
+        string modulesPath = $"{Context.ModulesPath}/{Context.GetKernelVersion()}";
         foreach (string line in File.ReadLines($"{modulesPath}/modules.dep"))
         {
             string path = line.Split(':')[0];

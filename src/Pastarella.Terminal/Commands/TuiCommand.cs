@@ -14,32 +14,33 @@ public class TuiCommand : Command<TuiCommand.TuiSettings>
 
     protected override int Execute(CommandContext context, TuiSettings settings, CancellationToken cancellationToken)
     {
-        var dispatcher = ExecutionContext.Dispatcher;
-        var forensic = ExecutionContext.ForensicScanner;
-        var persistence = ExecutionContext.PersistenceScanner;
-        var network = ExecutionContext.NetworkScanner;
-        var driver = ExecutionContext.DriverScanner;
-        var service = ExecutionContext.ServiceScanner;
-        var cmdHistory = ExecutionContext.CommandHistoryScanner;
-
-        var report = dispatcher.Report;
+        var ctx = new Context();
+        var report = new AnalysisReport(DateTime.UtcNow);
 
         Dictionary<string, Action<IProgress<ScanProgress>>> actions = new()
         {
             ["Environment Variables"] = p => report.Envs = EnvironmentVariablesScanner.GetEnvs(),
             ["Hosts"] = p => report.Hosts = HostsScanner.GetHosts().ToList(),
             ["Recent Files"] = p => report.RecentFiles = RecentFileScanner.Scan(p).ToList(),
-            ["Drivers"] = p => report.Drivers = driver.Scan(p).ToList(),
-            ["Processes"] = p => report.Processes = forensic.ScanProcesses(p).ToList(),
-            ["Services"] = p => report.Services = service.Scan(p).ToList(),
-            ["Users"] = p => report.Users = forensic.ScanUsers(p).ToList(),
-            ["Storages"] = p => report.Storages = forensic.ScanStorages().ToList(),
-            ["Open Connections"] = p => report.OpenPorts = network.Scan(p).ToList(),
-            ["Persistence Checks"] = p => report.Persistences = persistence.Scan(p).ToList(),
-            ["Command Histories"] = p => report.CommandHistories = cmdHistory.Scan(p).ToList(),
         };
 
-        dispatcher.AddDispatchers(actions);
+        if (ctx.ForensicScanner != null)
+        {
+            actions.Add("Processes", p => report.Processes = ctx.ForensicScanner.ScanProcesses(p).ToList());
+            actions.Add("Users", p => report.Users = ctx.ForensicScanner.ScanUsers(p).ToList());
+            actions.Add("Storages", p => report.Storages = ctx.ForensicScanner.ScanStorages().ToList());
+        }
+
+        if (ctx.PersistenceScanner != null)
+            actions.Add("Persistence checks", p => report.Persistences = ctx.PersistenceScanner.Scan(p).ToList());
+        if (ctx.NetworkScanner != null)
+            actions.Add("Open connections", p => report.OpenPorts = ctx.NetworkScanner.Scan(p).ToList());
+        if (ctx.DriverScanner != null)
+            actions.Add("Drivers", p => report.Drivers = ctx.DriverScanner.Scan(p).ToList());
+        if (ctx.ServiceScanner != null)
+            actions.Add("Services", p => report.Services = ctx.ServiceScanner.Scan(p).ToList());
+        if (ctx.CommandHistoryScanner != null)
+            actions.Add("Command histories", p => report.CommandHistories = ctx.CommandHistoryScanner.Scan(p).ToList());
 
         Start(report, actions);
         return 0;
