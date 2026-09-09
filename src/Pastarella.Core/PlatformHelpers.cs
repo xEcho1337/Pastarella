@@ -29,37 +29,6 @@ public static class PlatformHelpers
         return getuid() == 0;
     }
 
-    public static string NormalizePath(string path)
-    {
-        if (path.Length == 0)
-            return "";
-
-        if (OperatingSystem.IsWindows())
-        {
-            if (path.StartsWith(@"\SystemRoot"))
-                return Environment.GetEnvironmentVariable("SystemRoot") + path[@"\SystemRoot".Length..];
-
-            if (path.StartsWith("System32", StringComparison.OrdinalIgnoreCase))
-                return Environment.GetEnvironmentVariable("SystemRoot") + '\\' + path;
-
-            if (path[0] == '\\')
-            {
-                if (path.Length > 1 && path[1] != '\\')
-                    throw new NotImplementedException($"Use RtlNtPathNameToDosPathName or family.\nPath: {path}");
-                else
-                    return path; // paths that starts with '\\' are network drives
-            }
-        }
-
-        if (OperatingSystem.IsMacOS() || OperatingSystem.IsLinux())
-        {
-            if (path[0] == '~')
-                return Environment.GetEnvironmentVariable("HOME") + path[1..];
-        }
-
-        return path;
-    }
-
     public static T? TryGet<T>(Func<T> getter)
     {
         try

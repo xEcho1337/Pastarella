@@ -24,7 +24,7 @@ public class DriverScanner : IDriverScanner
 
                 int nativeStatus = (int)d.Status;
 
-                string filePath = PlatformHelpers.NormalizePath(key?.GetValue("ImagePath")?.ToString() ?? "");
+                string filePath = PathNormalizer.Normalize(key?.GetValue("ImagePath")?.ToString() ?? "");
                 string hash = PlatformHelpers.GetSha256(filePath);
 
                 string? signer = null;
@@ -51,4 +51,3 @@ public class DriverScanner : IDriverScanner
             });
     }
 }
-

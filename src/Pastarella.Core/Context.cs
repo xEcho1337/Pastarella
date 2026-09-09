@@ -6,7 +6,7 @@ namespace Pastarella.Core;
 
 public class Context
 {
-    private enum OS
+    public enum OS
     {
         Windows,
         MacOS,
@@ -28,7 +28,7 @@ public class Context
         throw new NotImplementedException($"{RuntimeInformation.OSDescription} is currently not supported");
     }
 
-    private static readonly OS Os = GetOS();
+    public static readonly OS Os = GetOS();
 
     public readonly IForensicScanner? ForensicScanner;
     public readonly IPersistenceScanner? PersistenceScanner;

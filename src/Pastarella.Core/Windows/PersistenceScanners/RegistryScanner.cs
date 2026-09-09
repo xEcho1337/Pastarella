@@ -164,7 +164,7 @@ public class RegistryScanner : IPersistenceScanner
             case RegistryValueKind.MultiString:
                 string val = value is string[] multiline_val ? string.Join('\n', multiline_val) : (string)value!;
                 string _checkerVal = checkerValue is string[] multiline_checker ? string.Join('\n', multiline_checker) : (string)checkerValue!;
-                string checkerVal = PlatformHelpers.NormalizePath(_checkerVal) ?? _checkerVal;
+                string checkerVal = PathNormalizer.Normalize(_checkerVal) ?? _checkerVal;
 
                 if (val == checkerVal)
                     return 0;
@@ -298,4 +298,3 @@ public class RegistryScanner : IPersistenceScanner
         return list;
     }
 }
-
