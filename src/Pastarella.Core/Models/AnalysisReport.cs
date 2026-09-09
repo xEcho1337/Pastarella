@@ -2,6 +2,8 @@ namespace Pastarella.Core.Models;
 
 public class AnalysisReport(DateTime timestamp)
 {
+    public uint Version = 1;
+
     public DateTime Timestamp = timestamp;
 
     public List<ProcessInfo> Processes = [];
