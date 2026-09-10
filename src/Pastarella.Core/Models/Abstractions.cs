@@ -1,10 +1,5 @@
 namespace Pastarella.Core.Models;
 
-/// <summary>
-/// Progress report from a scanner. <see cref="Total"/> is set when the
-/// scanner knows the work size upfront (real percentage); otherwise only
-/// <see cref="Done"/> advances and the UI shows a live counter.
-/// </summary>
 public record ScanProgress(int Done, int? Total = null, string? Phase = null);
 
 public interface IForensicScanner
