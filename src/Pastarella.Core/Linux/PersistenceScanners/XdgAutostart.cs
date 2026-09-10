@@ -53,7 +53,7 @@ public class XdgAutostart : IPersistenceScanner
                     if (name == null || exec == null)
                         continue;
 
-                    string execPath = PlatformHelpers.FindExecutableInPath(exec) ?? throw new Exception("Cannot be null");
+                    string execPath = PlatformHelpers.FindExecutableInPath(exec) ?? exec;
                     list.Add(new PersistenceEntry()
                     {
                         Name = name,
