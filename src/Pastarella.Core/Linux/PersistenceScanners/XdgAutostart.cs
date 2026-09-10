@@ -12,7 +12,7 @@ public class XdgAutostart : IPersistenceScanner
 
         yield return "/etc/xdg/autostart";
 
-        foreach (string userHome in ForensicScanner.CachedUsersInfo.Select(u => u.Home))
+        foreach (string userHome in ForensicScanners.Users.CachedUsersInfo.Select(u => u.Home))
             yield return Path.Combine(userHome, ".config/autostart");
     }
 
