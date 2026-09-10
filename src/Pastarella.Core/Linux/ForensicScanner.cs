@@ -12,7 +12,7 @@ public class ForensicScanner : IForensicScanner
 
     public IEnumerable<ProcessInfo> ScanProcesses(IProgress<ScanProgress>? progress = null)
     {
-        var list = new List<ProcessInfo>();
+        var result = new List<ProcessInfo>();
         var processes = Process.GetProcesses();
         int done = 0;
 
@@ -23,11 +23,19 @@ public class ForensicScanner : IForensicScanner
 
             string? hash = PlatformHelpers.GetSha256(path);
 
-            list.Add(new ProcessInfo(proc.Id, proc.ProcessName, path, hash, null, start));
+            result.Add(new ProcessInfo(proc.Id)
+            {
+                Metadata = [],
+                CommandArgs = null, // TODO
+                Path = path,
+                Sha256 = hash,
+                Signer = null,
+                StartTime = start
+            });
             progress?.Report(new ScanProgress(++done, processes.Length));
         }
 
-        return list;
+        return result;
     }
 
     public IEnumerable<UserInfo> ScanUsers(IProgress<ScanProgress>? progress = null)

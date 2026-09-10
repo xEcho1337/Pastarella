@@ -12,7 +12,7 @@ public class ForensicServices(OutputBuffer buffer)
 
         foreach (var p in processes.OrderBy(p => p.Id))
         {
-            Buffer.WriteLine($"[{p.Id}] {p.Name} ({p.Path}) [{p.Signer ?? "Unsigned"}] - {p.Sha256} - {p.StartTime}");
+            Buffer.WriteLine($"[{p.Id}] {p.Path} {p.CommandArgs}[{p.Signer ?? "Unsigned"}] - {p.Sha256} - {p.StartTime}");
             TxtWriter.BasicPrintMetadata(Buffer, p.Metadata);
         }
     }

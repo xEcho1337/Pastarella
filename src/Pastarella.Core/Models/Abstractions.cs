@@ -44,16 +44,26 @@ public interface ICommandHistoryScanner
     IEnumerable<CommandHistory> Scan(IProgress<ScanProgress>? progress = null);
 }
 
-public record ProcessInfo(
-    int Id,
-    string Name,
-    string? Path,
-    string? Sha256,
-    string? Signer,
-    DateTime? StartTime
-)
+public record ProcessInfo(int Id)
 {
     public Dictionary<string, object> Metadata { get; init; } = [];
+
+    public string? CommandArgs
+    {
+        get
+        {
+            if (field != null)
+                return field + " ";
+
+            return field;
+        }
+        init;
+    }
+
+    public string? Path { get; init; }
+    public string? Sha256 { get; init; }
+    public string? Signer { get; init; }
+    public DateTime? StartTime { get; init; }
 }
 
 public record ServiceInfo(

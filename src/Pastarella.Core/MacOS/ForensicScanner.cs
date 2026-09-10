@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Pastarella.Core.Models;
+using Pastarella.Core.MacOS.Native;
 
 namespace Pastarella.Core.MacOS;
 
@@ -13,11 +14,14 @@ public class ForensicScanner : IForensicScanner
 
         foreach (var proc in processes)
         {
-            string? path = PlatformHelpers.TryGet(() => proc.MainModule?.FileName);
             Dictionary<string, object> metadata = [];
-            string company = string.Empty;
-            string product = string.Empty;
+
             DateTime? start = PlatformHelpers.TryGet(() => proc.StartTime);
+            string? path = PlatformHelpers.TryGet(() => MacOsProcess.GetExePath(proc.Id));
+            string? cmdline = PlatformHelpers.TryGet(() => MacOsProcess.GetCommandLine(proc.Id));
+
+            if (cmdline != null && path != null)
+                cmdline = cmdline.Replace(path, "");
 
             if (!string.IsNullOrWhiteSpace(path))
             {
@@ -36,7 +40,15 @@ public class ForensicScanner : IForensicScanner
             }
 
             string? hash = PlatformHelpers.GetSha256(path);
-            list.Add(new ProcessInfo(proc.Id, proc.ProcessName, path, hash, null, start) { Metadata = metadata });
+            list.Add(new ProcessInfo(proc.Id)
+            {
+                Metadata = metadata,
+                CommandArgs = cmdline,
+                Path = path,
+                Sha256 = hash,
+                StartTime = start
+
+            });
             progress?.Report(new ScanProgress(++done, processes.Length));
         }
 
