@@ -38,6 +38,8 @@
       colNames: canonicalColNames(tbodyId),
       sortIdx: -1,
       sortDir: "",
+      filterText: "",
+      filterCol: -1,
       page: 1,
       perPage: prev ? prev.perPage : storedPerPage()
     };
@@ -81,6 +83,63 @@
     });
   }
 
+  /* Searchable text of a cell: visible text plus title attributes
+     (icon cells carry the signer name only in the title) */
+  function titlesOf(el) {
+    var out = [];
+    if (el.getAttribute && el.getAttribute("title")) out.push(el.getAttribute("title"));
+    if (el.querySelectorAll) {
+      Array.prototype.forEach.call(el.querySelectorAll("[title]"), function (n) {
+        out.push(n.getAttribute("title"));
+      });
+    }
+    return out.join(" ");
+  }
+
+  function cellSearchText(cell) {
+    var text = cellText(cell);
+    if (cell && cell.__element) return text + " " + titlesOf(cell.__element);
+    if (cell && typeof cell === "object" && cell.nodeType === 1) {
+      return text + " " + titlesOf(cell);
+    }
+    return text;
+  }
+
+  /* Filter the full dataset (every pager page), optionally one column */
+  function matchesFilter(s, row) {
+    if (!s.filterText) return true;
+    var q = s.filterText.toLowerCase();
+    if (s.filterCol >= 0 && s.filterCol < row.length) {
+      return cellSearchText(row[s.filterCol]).toLowerCase().indexOf(q) !== -1;
+    }
+    for (var i = 0; i < row.length; i++) {
+      if (cellSearchText(row[i]).toLowerCase().indexOf(q) !== -1) return true;
+    }
+    return false;
+  }
+
+  /* Rebuild the visible rows: filter first, then re-apply the active sort */
+  function refreshRows(s) {
+    s.rows = s.original.filter(function (row) { return matchesFilter(s, row); });
+    if (s.sortIdx >= 0 && s.sortDir) {
+      var idx = s.sortIdx;
+      var dir = s.sortDir === "asc" ? 1 : -1;
+      s.rows.sort(function (rowA, rowB) {
+        return dir * cmpText(cellText(rowA[idx]), cellText(rowB[idx]));
+      });
+    }
+  }
+
+  function setFilter(tbodyId, text, colIdx) {
+    var s = state[tbodyId];
+    if (!s) return;
+    s.filterText = text ? String(text).trim() : "";
+    s.filterCol = typeof colIdx === "number" ? colIdx : -1;
+    refreshRows(s);
+    s.page = 1;
+    render(tbodyId);
+  }
+
   /* Click a header: asc -> desc -> original order */
   function sortBy(tbodyId, domIdx) {
     var s = state[tbodyId];
@@ -98,9 +157,9 @@
       if (s.sortDir === "asc") {
         s.sortDir = "desc";
       } else {
-        s.rows = s.original.slice();
         s.sortIdx = -1;
         s.sortDir = "";
+        refreshRows(s);
         s.page = 1;
         render(tbodyId);
         updateIndicators(table, -1, "");
@@ -111,10 +170,7 @@
       s.sortDir = "asc";
     }
 
-    var dir = s.sortDir === "asc" ? 1 : -1;
-    s.rows.sort(function (rowA, rowB) {
-      return dir * cmpText(cellText(rowA[dataIdx]), cellText(rowB[dataIdx]));
-    });
+    refreshRows(s);
     s.page = 1;
     render(tbodyId);
     updateIndicators(table, domIdx, s.sortDir);
@@ -145,7 +201,7 @@
         Array.prototype.forEach.call(
           table.querySelectorAll("thead th"),
           function (th, domIdx) {
-            if (!th.title) th.title = "Click to sort · drag to move";
+            if (!th.title) th.title = "Click to sort · drag to move · right-click for columns";
             th.addEventListener("click", function (e) {
               if (e.target.closest && e.target.closest(".col-grip")) return;
               if (Date.now() - Number(table.dataset.reorderedAt || 0) < 350) return;
@@ -272,6 +328,19 @@
     bar.appendChild(controls);
   }
 
+  /* Canonical data index for each live header position. Rows are stored
+     in canonical order, so every render permutes them to follow the header
+     (user reorder): the body can never diverge from what the header shows. */
+  function displayOrder(table, s) {
+    if (!table || !s.colNames.length) return null;
+    var map = Array.prototype.map.call(
+      table.querySelectorAll("thead th"),
+      function (th) { return s.colNames.indexOf(headerName(th)); }
+    );
+    if (map.some(function (i) { return i === -1; })) return null;
+    return map;
+  }
+
   function render(tbodyId) {
     var s = state[tbodyId];
     if (!s) return;
@@ -285,17 +354,30 @@
     var start = (s.page - 1) * s.perPage;
     var slice = s.rows.slice(start, start + s.perPage);
 
+    var table = body.closest("table");
+    var order = displayOrder(table, s);
+
     body.innerHTML = "";
     slice.forEach(function (cells) {
       var tr = document.createElement("tr");
-      R.appendCells(tr, cells);
+      R.appendCells(tr, order ? order.map(function (i) { return cells[i]; }) : cells);
       body.appendChild(tr);
     });
 
+    if (slice.length === 0) {
+      var empty = document.createElement("tr");
+      var td = document.createElement("td");
+      td.className = "no-matches";
+      td.colSpan = table ? Math.max(1, table.querySelectorAll("thead th").length) : 1;
+      td.textContent = s.filterText ? "No matches for \u201c" + s.filterText + "\u201d" : "No entries";
+      empty.appendChild(td);
+      body.appendChild(empty);
+    }
+
     renderBar(tbodyId, body, s, pages, start, slice.length);
 
-    /* Paging replaces rows: re-apply a saved column order on top */
-    var table = body.closest("table");
+    /* Paging replaces rows: re-apply saved visibility on top */
+    table = body.closest("table");
     if (table && window.PastarellaColumns && window.PastarellaColumns.reapplyOrder) {
       window.PastarellaColumns.reapplyOrder(table);
     }
@@ -305,6 +387,11 @@
     setRows: setRows,
     gotoPage: gotoPage,
     sortBy: sortBy,
+    setFilter: setFilter,
+    colNames: function (tbodyId) {
+      var s = state[tbodyId];
+      return s ? s.colNames.slice() : [];
+    },
     bindHeaders: bindHeaders,
     render: render
   };

@@ -67,11 +67,14 @@
         container.innerHTML = html;
         if (name !== "dashboard" && name !== "index") container.prepend(UI().pageHeadEl(item));
         renderPage(name);
-        /* Resize/reorder/sort/collapse only on section pages */
+        /* Resize/reorder/sort/collapse/search only on section pages.
+           Collapse runs before search: it gathers extra header children
+           into .recent-actions, where the searchbar must not end up. */
         if (name !== "dashboard" && name !== "index") {
           if (window.PastarellaColumns) window.PastarellaColumns.applyToPage(container, name);
           if (window.PastarellaPager) window.PastarellaPager.bindHeaders(container);
           if (window.PastarellaCollapse) window.PastarellaCollapse.applyTo(container);
+          if (window.PastarellaSearch) window.PastarellaSearch.bind(container);
         }
       })
       .catch(function () {

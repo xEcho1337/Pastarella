@@ -3,6 +3,7 @@
 
   var WIDTHS_PREFIX = "pastarella-cols:";
   var ORDER_PREFIX = "pastarella-colorder:";
+  var VIS_PREFIX = "pastarella-colvis:";
   var MIN_WIDTH = 48;
   var DRAG_THRESHOLD = 6;
 
@@ -62,10 +63,16 @@
     }
   }
 
-  function readWidthMap(table) {
+  function readWidthMap(table, keep) {
     var map = {};
+    keep = keep || {};
     headerCells(table).forEach(function (th) {
-      map[colKey(th)] = Math.round(parseFloat(th.style.width) || th.offsetWidth);
+      var name = colKey(th);
+      if (th.style.display === "none") {
+        if (keep[name]) map[name] = keep[name]; /* hidden: keep last known width */
+        return;
+      }
+      map[name] = Math.round(parseFloat(th.style.width) || th.offsetWidth);
     });
     return map;
   }
@@ -105,6 +112,165 @@
     return a.every(function (name) { return b.indexOf(name) !== -1; });
   }
 
+  /* ---- Visibility (array of hidden column names) ---- */
+
+  function visKey(page, index) {
+    return VIS_PREFIX + page + ":" + index;
+  }
+
+  function loadHidden(page, index) {
+    try {
+      var raw = localStorage.getItem(visKey(page, index));
+      if (!raw) return [];
+      var hidden = JSON.parse(raw);
+      return Array.isArray(hidden) ? hidden : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveHidden(page, index, hidden) {
+    try {
+      localStorage.setItem(visKey(page, index), JSON.stringify(hidden));
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  /* Hide header + body cells by DOM position (mirrors any saved order) */
+  function applyVisibility(table, page, index) {
+    var names = colNames(table);
+    var hidden = loadHidden(page, index).filter(function (n) {
+      return names.indexOf(n) !== -1;
+    });
+    saveHidden(page, index, hidden); /* drop stale names after schema changes */
+    headerCells(table).forEach(function (th, i) {
+      var hide = hidden.indexOf(colKey(th)) !== -1;
+      th.style.display = hide ? "none" : "";
+      table.querySelectorAll("tbody tr").forEach(function (row) {
+        var cell = row.children[i];
+        if (cell) cell.style.display = hide ? "none" : "";
+      });
+    });
+    return hidden;
+  }
+
+  function toggleColumn(table, page, index, name) {
+    var hidden = loadHidden(page, index);
+    var at = hidden.indexOf(name);
+    if (at !== -1) {
+      hidden.splice(at, 1);
+    } else {
+      /* Never hide the last visible column: with no header left there
+         would be nothing to right-click to bring columns back */
+      var visible = colNames(table).filter(function (n) {
+        return hidden.indexOf(n) === -1;
+      });
+      if (visible.length <= 1) return false;
+      hidden.push(name);
+    }
+    saveHidden(page, index, hidden);
+    applyVisibility(table, page, index);
+    return true;
+  }
+
+  function showAllColumns(table, page, index) {
+    saveHidden(page, index, []);
+    applyVisibility(table, page, index);
+  }
+
+  /* ---- Right-click column menu ---- */
+
+  var openMenu = null;
+
+  function closeMenu() {
+    if (openMenu && openMenu.parentNode) openMenu.parentNode.removeChild(openMenu);
+    openMenu = null;
+  }
+
+  /* One set of global closers for every table menu */
+  document.addEventListener("click", function (e) {
+    if (openMenu && !openMenu.contains(e.target)) closeMenu();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closeMenu();
+  });
+  window.addEventListener("scroll", closeMenu, true);
+  window.addEventListener("resize", closeMenu);
+
+  /* Canonical names (stable listing even after a reorder) */
+  function originalNames(table) {
+    try {
+      var orig = JSON.parse(table.dataset.origOrder || "null");
+      if (orig && sameSet(orig, colNames(table))) return orig;
+    } catch (e) {
+      /* fall through */
+    }
+    return colNames(table);
+  }
+
+  /* Checkbox menu: checked = visible. Hidden columns stay listed
+     so they can always be brought back, plus a Show all shortcut. */
+  function openColumnMenu(table, page, index, x, y) {
+    closeMenu();
+    var names = originalNames(table);
+    var menu = document.createElement("div");
+    menu.className = "col-menu";
+
+    names.forEach(function (name) {
+      var item = document.createElement("label");
+      item.className = "col-menu-item";
+      var box = document.createElement("input");
+      box.type = "checkbox";
+      var text = document.createElement("span");
+      text.textContent = name;
+      item.appendChild(box);
+      item.appendChild(text);
+      item.addEventListener("click", function (e) {
+        e.preventDefault();
+        if (box.disabled) return;
+        toggleColumn(table, page, index, name);
+        refreshMenuState();
+      });
+      menu.appendChild(item);
+    });
+
+    var sep = document.createElement("div");
+    sep.className = "col-menu-sep";
+    menu.appendChild(sep);
+
+    var allBtn = document.createElement("button");
+    allBtn.type = "button";
+    allBtn.className = "col-menu-all";
+    allBtn.textContent = "Show all";
+    allBtn.addEventListener("click", function () {
+      showAllColumns(table, page, index);
+      refreshMenuState();
+    });
+    menu.appendChild(allBtn);
+
+    function refreshMenuState() {
+      var hidden = loadHidden(page, index);
+      var visible = names.filter(function (n) { return hidden.indexOf(n) === -1; });
+      Array.prototype.forEach.call(menu.querySelectorAll(".col-menu-item"), function (item, i) {
+        var isHidden = hidden.indexOf(names[i]) !== -1;
+        var box = item.querySelector("input");
+        box.checked = !isHidden;
+        box.disabled = !isHidden && visible.length <= 1;
+        item.classList.toggle("is-hidden", isHidden);
+        item.title = isHidden ? "Hidden — click to show" : "Visible — click to hide";
+      });
+      allBtn.disabled = hidden.length === 0;
+    }
+    refreshMenuState();
+
+    document.body.appendChild(menu);
+    var rect = menu.getBoundingClientRect(); /* clamp inside the viewport */
+    menu.style.left = Math.max(4, Math.min(x, window.innerWidth - rect.width - 4)) + "px";
+    menu.style.top = Math.max(4, Math.min(y, window.innerHeight - rect.height - 4)) + "px";
+    openMenu = menu;
+  }
+
   /* Move one column (header + every body cell) from fromIdx to toIdx */
   function moveColumnCells(table, fromIdx, toIdx) {
     if (fromIdx === toIdx) return;
@@ -130,10 +296,13 @@
 
   /* Freeze the current automatic layout into explicit widths so that
      switching to fixed layout changes nothing visually. */
-  function freezeLayout(table, widthsByName) {
+  function freezeLayout(table, widthsByName, hidden) {
     table.classList.add("resizable");
+    hidden = hidden || [];
     headerCells(table).forEach(function (th) {
-      var w = widthsByName[colKey(th)] || th.offsetWidth;
+      var name = colKey(th);
+      if (hidden.indexOf(name) !== -1) return; /* measured width is 0 while hidden */
+      var w = widthsByName[name] || th.offsetWidth;
       th.style.width = Math.round(w) + "px";
     });
   }
@@ -146,9 +315,10 @@
     if (order && sameSet(order, colNames(table))) {
       applyOrder(table, order);
     }
+    var hidden = applyVisibility(table, page, index);
     var widths = loadWidthMap(page, index, table);
     if (widths) {
-      freezeLayout(table, widths);
+      freezeLayout(table, widths, hidden);
     }
   }
 
@@ -159,7 +329,7 @@
     e.stopPropagation();
     /* First interaction: freeze layout so the drag starts from what you see */
     if (!table.classList.contains("resizable")) {
-      freezeLayout(table, {});
+      freezeLayout(table, {}, loadHidden(page, index));
     }
 
     var startX = e.clientX;
@@ -175,7 +345,7 @@
       document.removeEventListener("pointermove", onMove);
       document.removeEventListener("pointerup", onUp);
       document.body.classList.remove("col-resizing");
-      saveWidthMap(page, index, readWidthMap(table));
+      saveWidthMap(page, index, readWidthMap(table, loadWidthMap(page, index, table)));
     }
 
     document.addEventListener("pointermove", onMove);
@@ -286,7 +456,7 @@
         else row.appendChild(cell);
       });
       saveOrder(page, index, table);
-      saveWidthMap(page, index, readWidthMap(table));
+      saveWidthMap(page, index, readWidthMap(table, loadWidthMap(page, index, table)));
       table.dataset.reorderedAt = String(Date.now()); /* let sort clicks ignore this drop */
     }
 
@@ -308,8 +478,16 @@
     var cells = headerCells(table);
     if (cells.length < 2) return;
 
-    /* Restore the user's order + widths before adding grips */
+    /* Restore the user's order + widths + visibility before adding grips */
     applySaved(table, page, index);
+
+    /* Right-click a header: checkbox menu to show/hide columns */
+    table.addEventListener("contextmenu", function (e) {
+      var th = e.target && e.target.closest ? e.target.closest("thead th") : null;
+      if (!th || !table.contains(th)) return;
+      e.preventDefault();
+      openColumnMenu(table, page, index, e.clientX, e.clientY);
+    });
 
     cells.forEach(function (th, i) {
       th.classList.add("reorderable");
@@ -331,11 +509,14 @@
     });
   }
 
-  /* Re-apply a saved order (used after the pager replaces rows) */
+  /* Re-apply a saved order + visibility (used after the pager replaces rows) */
   function reapplyOrder(table) {
     if (!table.dataset.page) return;
-    var order = loadOrder(table.dataset.page, Number(table.dataset.tindex));
+    var page = table.dataset.page;
+    var index = Number(table.dataset.tindex);
+    var order = loadOrder(page, index);
     if (order && sameSet(order, colNames(table))) applyOrder(table, order);
+    applyVisibility(table, page, index);
   }
 
   /* Apply to every dark-table inside container (called by the router) */

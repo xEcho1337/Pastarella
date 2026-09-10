@@ -57,6 +57,94 @@
   white-space: nowrap;
 }
 
+/* Per-card search: filters the full dataset (every pager page) */
+.table-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 2px 0;
+}
+
+/* Inside the card header: fill the space between title and actions */
+.recent-head .table-search {
+  flex: 1;
+  min-width: 0;
+  margin: 0 16px;
+  align-self: center;
+}
+
+.recent-head > div:first-child,
+.recent-head .recent-actions {
+  flex: none;
+}
+
+.table-search-icon {
+  flex: none;
+  font-size: 12px;
+  color: var(--muted-2);
+}
+
+.table-search-input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 10px;
+  background: #17171b;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  color: #e4e4e7;
+}
+
+.table-search-input::placeholder {
+  color: var(--muted-2);
+}
+
+.table-search-input:focus {
+  outline: none;
+  border-color: #3f3f46;
+}
+
+.table-search-select {
+  flex: none;
+  max-width: 180px;
+  padding: 6px 6px;
+  background: #17171b;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+  color: #d4d4d8;
+  cursor: pointer;
+}
+
+.table-search-clear {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.table-search-clear:hover {
+  background: #1e1e24;
+  border-color: var(--border);
+  color: #e4e4e7;
+}
+
+/* Empty result row (filter with no matches, or empty table) */
+.dark-table tbody td.no-matches {
+  padding: 16px 10px;
+  border-bottom: none;
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted-2);
+}
+
 /* Pager bar under wide tables */
 .pager-bar {
   display: flex;
@@ -222,6 +310,86 @@ body.col-resizing .col-grip::after {
   white-space: nowrap;
   color: var(--muted);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* Right-click column menu: checkbox per column + Show all */
+.col-menu {
+  position: fixed;
+  z-index: 200;
+  min-width: 190px;
+  max-width: 260px;
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px;
+  background: #1d1d22;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  scrollbar-width: thin;
+  scrollbar-color: #2e2e35 transparent;
+}
+
+.col-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 400;
+  color: #d4d4d8;
+  cursor: pointer;
+  user-select: none;
+}
+
+.col-menu-item:hover {
+  background: #26262c;
+}
+
+.col-menu-item input {
+  margin: 0;
+  accent-color: #7c9aff;
+  cursor: pointer;
+}
+
+.col-menu-item.is-hidden span {
+  color: var(--muted-2);
+}
+
+/* Last visible column cannot be hidden (nothing left to right-click) */
+.col-menu-item:has(input:disabled) {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.col-menu-sep {
+  margin: 4px 2px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.col-menu-all {
+  display: block;
+  width: 100%;
+  padding: 6px 8px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  color: #e4e4e7;
+  cursor: pointer;
+}
+
+.col-menu-all:hover:not(:disabled) {
+  background: #26262c;
+}
+
+.col-menu-all:disabled {
+  opacity: 0.35;
+  cursor: default;
 }
 
 body.col-reordering,

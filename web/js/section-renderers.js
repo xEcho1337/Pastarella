@@ -5,8 +5,57 @@
     return window.PastarellaReport;
   }
 
+  /* Canonical headers per table, in cell order. The partials carry the
+     same theads, but a stale cached partial would silently misalign every
+     row (right values under wrong headers), so the thead is enforced here
+     before any rows are rendered. Saved order/widths/visibility apply later
+     on top of the corrected thead. */
+  var HEADERS = {
+    servicesBody: ["Status", "Service Type", "Service Name", "Display Name", "Command", "Executable SHA256"],
+    portsBody: ["Protocol", "State", "Local", "Remote", "PID", "Process Name"],
+    hostsBody: ["IP", "Domain"],
+    processesBody: ["Id", "Name", "Path", "SHA256", "Signature", "Start Time", "Metadata"],
+    usersBody: ["Name", "Description", "Uid", "Home", "Disabled", "Metadata"],
+    storageBody: ["Type", "Name", "Free Space", "Total Space"],
+    persistenceBody: ["Risk Score", "Name", "Path", "Action", "Trigger", "Privilege", "Type", "Metadata"],
+    envBody: ["Key", "Value"],
+    historyBody: ["Shell", "Command"],
+    driversBody: ["Name", "Display Name", "Identifier", "Type", "Executable Path", "Version", "Loaded", "SHA256", "Signer"],
+    recentFilesBody: ["File Path", "Creation Time", "Last Write Time"]
+  };
+
+  function liveHeaderNames(headRow) {
+    return Array.prototype.map.call(headRow.querySelectorAll("th"), function (th) {
+      for (var i = 0; i < th.childNodes.length; i++) {
+        var n = th.childNodes[i];
+        if (n.nodeType === 3) return n.textContent.trim();
+      }
+      return th.textContent.trim();
+    });
+  }
+
+  function ensureHeaders(bodyId) {
+    var expected = HEADERS[bodyId];
+    if (!expected) return;
+    var body = document.getElementById(bodyId);
+    if (!body) return;
+    var table = body.closest("table");
+    if (!table) return;
+    var headRow = table.querySelector("thead tr");
+    if (!headRow) return;
+    if (liveHeaderNames(headRow).join("\0") === expected.join("\0")) return;
+    console.warn("Pastarella: stale table header for #" + bodyId + ", rebuilding");
+    headRow.innerHTML = "";
+    expected.forEach(function (name) {
+      var th = document.createElement("th");
+      th.textContent = name;
+      headRow.appendChild(th);
+    });
+  }
+
   function fillBody(id, rows) {
     /* Paged render: only the current slice hits the DOM */
+    ensureHeaders(id);
     if (window.PastarellaPager) {
       window.PastarellaPager.setRows(id, rows);
       return;
