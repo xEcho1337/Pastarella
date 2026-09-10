@@ -63,7 +63,8 @@ public class TuiCommand : Command<TuiCommand.TuiSettings>
         RunAnalysis(checks, actions);
         Export(report);
 
-        AnsiConsole.Prompt(new TextPrompt<string>("[grey]Press [green]<enter>[/] to exit...[/]"));
+        AnsiConsole.Prompt(new TextPrompt<string>("[grey]Press [green]<enter>[/] to exit...[/]")
+            .AllowEmpty());
         AnsiConsole.MarkupLine("[yellow]Bye![/] Thanks for using Pastarella [red]♥[/]");
     }
 
