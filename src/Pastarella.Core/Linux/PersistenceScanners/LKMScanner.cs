@@ -41,6 +41,23 @@ public class LKMScanner : IPersistenceScanner
         return null;
     }
 
+    private static PersistenceEntry BuildEntry(string name, string filePath, string? modulePath) {
+        return new()
+        {
+            Name = name,
+            Path = filePath,
+            Action = new ExecScheduledAction
+            {
+                Path = modulePath,
+                Sha256 = PlatformHelpers.GetSha256(modulePath),
+            },
+
+            Type = PersistenceType.LoadableKernelModule,
+            Trigger = ExecutionTrigger.SystemStartup,
+            Privilege = PersistencePrivilege.Kernel,
+        };
+    }
+
     private void ScanModulesLoad()
     {
         foreach (string dir in ModulesLoadDirs)
@@ -52,21 +69,7 @@ public class LKMScanner : IPersistenceScanner
                     if (string.IsNullOrEmpty(line) || line[0] == '#')
                         continue;
 
-                    string? modulePath = FindModulePath(line);
-                    Entries.Add(new()
-                    {
-                        Name = line,
-                        Path = filePath,
-                        Action = new ExecScheduledAction
-                        {
-                            Path = modulePath,
-                            Sha256 = PlatformHelpers.GetSha256(modulePath),
-                        },
-
-                        Type = PersistenceType.LoadableKernelModule,
-                        Trigger = ExecutionTrigger.SystemStartup,
-                        Privilege = PersistencePrivilege.Kernel,
-                    });
+                    Entries.Add(BuildEntry(line, filePath, FindModulePath(line)));
                 }
             }
         }
@@ -92,21 +95,7 @@ public class LKMScanner : IPersistenceScanner
                     if (cmd != "install" || (shell != null && (shell.EndsWith("/bin/false") || shell.EndsWith("/bin/true"))))
                         continue;
 
-                    string? modulePath = FindModulePath(moduleName);
-                    Entries.Add(new()
-                    {
-                        Name = moduleName,
-                        Path = filePath,
-                        Action = new ExecScheduledAction
-                        {
-                            Path = modulePath,
-                            Sha256 = PlatformHelpers.GetSha256(modulePath),
-                        },
-
-                        Type = PersistenceType.LoadableKernelModule,
-                        Trigger = ExecutionTrigger.SystemStartup,
-                        Privilege = PersistencePrivilege.Kernel,
-                    });
+                    Entries.Add(BuildEntry(moduleName, filePath, FindModulePath(moduleName)));
                 }
             }
         }

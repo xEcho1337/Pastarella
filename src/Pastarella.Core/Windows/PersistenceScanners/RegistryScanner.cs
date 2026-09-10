@@ -273,7 +273,13 @@ public class RegistryScanner : IPersistenceScanner
                         break;
                     case RootKey.User:
                         foreach (string sid in user_sid_cache)
-                            ScanSubkey(ref list, PersistencePrivilege.User, Registry.Users.OpenSubKey(sid), toCheck.SubkeyPath, toCheck.Values, toCheck.ShouldExist);
+                        {
+                            var user_subkey = Registry.Users.OpenSubKey(sid);
+                            if (user_subkey == null)
+                                continue;
+
+                            ScanSubkey(ref list, PersistencePrivilege.User, user_subkey, toCheck.SubkeyPath, toCheck.Values, toCheck.ShouldExist);
+                        }
                         break;
                 }
             }

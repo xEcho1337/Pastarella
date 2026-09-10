@@ -24,15 +24,18 @@ public class DriverScanner : IDriverScanner
 
                 int nativeStatus = (int)d.Status;
 
-                string filePath = PathNormalizer.Normalize(key?.GetValue("ImagePath")?.ToString() ?? "");
-                string hash = PlatformHelpers.GetSha256(filePath);
+                string? filePath = PathNormalizer.Normalize(key?.GetValue("ImagePath")?.ToString() ?? "");
+                string? hash = PlatformHelpers.GetSha256(filePath);
 
                 string? signer = null;
                 PlatformHelpers.TryDo(
                     () =>
                     {
-                        var cert = X509Certificate.CreateFromSignedFile(filePath);
-                        signer = cert.Subject;
+                        if (filePath != null)
+                        {
+                            var cert = X509Certificate.CreateFromSignedFile(filePath);
+                            signer = cert.Subject;
+                        }
                     }
                 );
 

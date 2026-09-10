@@ -15,7 +15,7 @@ public class DriverScanner : IDriverScanner
             public int version = Marshal.SizeOf<KldFileStat>();
 
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAXPATHLEN)]
-            public string name;
+            public required string name;
 
             public int refs;
             public int id;
@@ -23,7 +23,7 @@ public class DriverScanner : IDriverScanner
             public UIntPtr size;
 
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAXPATHLEN)]
-            public string pathname;
+            public required string pathname;
         }
 
         [StructLayout(LayoutKind.Explicit)]
@@ -50,7 +50,7 @@ public class DriverScanner : IDriverScanner
             public int version = Marshal.SizeOf<ModuleStat>();
 
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAXMODNAME)]
-            public string name;
+            public required string name;
 
             public int refs;
             public int id;
@@ -79,7 +79,7 @@ public class DriverScanner : IDriverScanner
 
         for (int fileid = Bindings.kldnext(0); fileid != 0; fileid = Bindings.kldnext(fileid))
         {
-            Bindings.KldFileStat stat = new();
+            var stat = default(Bindings.KldFileStat);
             if (Bindings.kldstat(fileid, ref stat) == -1)
                 throw new Exception($"kldstat failed, errno={Marshal.GetLastWin32Error()}");
 
@@ -98,7 +98,7 @@ public class DriverScanner : IDriverScanner
 
             for (int modid = Bindings.kldfirstmod(fileid); modid != 0; modid = Bindings.modfnext(modid))
             {
-                Bindings.ModuleStat modStat = new();
+                var modStat = default(Bindings.ModuleStat);
                 if (Bindings.modstat(modid, ref modStat) == -1)
                     throw new Exception($"modstat failed, errno={Marshal.GetLastWin32Error()}");
 

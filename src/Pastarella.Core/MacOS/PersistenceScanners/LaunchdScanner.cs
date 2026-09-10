@@ -11,7 +11,7 @@ public sealed class LaunchdScanner : IPersistenceScanner
         "/System/Library/LaunchAgents",
         "/Library/LaunchDaemons",
         "/Library/LaunchAgents",
-        PathNormalizer.Normalize("~/Library/LaunchAgents")
+        PathNormalizer.Normalize("~/Library/LaunchAgents")!
     ];
 
     public IEnumerable<PersistenceEntry> Scan(IProgress<ScanProgress>? progress = null)

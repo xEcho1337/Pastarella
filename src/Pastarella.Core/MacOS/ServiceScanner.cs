@@ -12,7 +12,7 @@ public class ServiceScanner : IServiceScanner
         "/System/Library/LaunchAgents",
         "/Library/LaunchDaemons",
         "/Library/LaunchAgents",
-        PathNormalizer.Normalize("~/Library/LaunchAgents")
+        PathNormalizer.Normalize("~/Library/LaunchAgents")!
     ];
 
     public IEnumerable<ServiceInfo> Scan(IProgress<ScanProgress>? progress = null)

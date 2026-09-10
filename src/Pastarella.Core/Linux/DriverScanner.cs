@@ -18,7 +18,7 @@ public class DriverScanner : IDriverScanner
             string state = parts[4];
 
             string? filePath = LKMScanner.FindModulePath(name);
-            string hash = PlatformHelpers.GetSha256(filePath);
+            string? hash = PlatformHelpers.GetSha256(filePath);
 
             list.Add(new(
                 name,

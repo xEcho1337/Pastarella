@@ -130,7 +130,11 @@ public static class PlatformHelpers
         if (Path.IsPathFullyQualified(exec))
             return exec;
 
-        foreach (string path in Environment.GetEnvironmentVariable("PATH").Split(':'))
+        string? pathEnv = Environment.GetEnvironmentVariable("PATH");
+        if (pathEnv == null)
+            return null;
+
+        foreach (string path in pathEnv.Split(':'))
         {
             foreach (string execFilePath in Directory.GetFiles(path))
             {

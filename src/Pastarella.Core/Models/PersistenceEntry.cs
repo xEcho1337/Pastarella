@@ -8,7 +8,7 @@ public class PersistenceEntry
 
     public required string Path { get; set; }
 
-    public IScheduledAction Action { get; set; }
+    public required IScheduledAction Action { get; set; }
 
     public ExecutionTrigger Trigger { get; set; }
 
@@ -39,7 +39,7 @@ public interface IScheduledAction;
 
 public class ExecScheduledAction : IScheduledAction
 {
-    public required string Path { get; set; }
+    public required string? Path { get; set; }
     public string? Sha256 { get; set; }
 }
 

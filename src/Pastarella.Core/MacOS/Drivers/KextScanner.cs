@@ -49,7 +49,7 @@ public class KextScanner : IDriverScanner
             if (File.Exists(execPath))
                 path = execPath;
 
-            string hash = PlatformHelpers.GetSha256(path);
+            string? hash = PlatformHelpers.GetSha256(path);
             bool loaded = loadedIds.Contains(identifier) || loadedIds.Contains(name);
 
             (string? teamId, string? signer) = GetSignatureInfo(execPath);
