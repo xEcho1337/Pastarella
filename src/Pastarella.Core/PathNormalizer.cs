@@ -16,7 +16,9 @@ public static class PathNormalizer
 
             if (path[0] == '\\')
             {
-                if (path.Length > 1 && path[1] != '\\')
+                if (path.StartsWith("??\\"))
+                    return path[3..];
+                else if (path.Length > 1 && path[1] != '\\')
                     throw new NotImplementedException($"Use RtlNtPathNameToDosPathName or family.\nPath: {path}");
                 else
                     return path; // paths that starts with '\\' are network drives
