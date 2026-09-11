@@ -2,26 +2,41 @@ namespace Pastarella.Core;
 
 public static class PathNormalizer
 {
-    public static string? Normalize(string path) {
+    public static string? Normalize(string path)
+    {
         if (path.Length == 0)
             return null;
 
         if (Context.Os == Context.OS.Windows)
         {
-            if (path.StartsWith(@"\SystemRoot"))
-                return Environment.GetEnvironmentVariable("SystemRoot") + path[@"\SystemRoot".Length..];
-
-            if (path.StartsWith("System32", StringComparison.OrdinalIgnoreCase))
-                return Environment.GetEnvironmentVariable("SystemRoot") + '\\' + path;
-
             if (path[0] == '\\')
             {
-                if (path.StartsWith("??\\"))
-                    return path[3..];
-                else if (path.Length > 1 && path[1] != '\\')
-                    throw new NotImplementedException($"Use RtlNtPathNameToDosPathName or family.\nPath: {path}");
-                else
-                    return path; // paths that starts with '\\' are network drives
+                // NT paths
+
+                if (path[1..].StartsWith("SystemRoot\\"))
+                    return $"{Environment.GetEnvironmentVariable("SystemRoot")}\\{string.Join('\\', path[("\\SystemRoot\\".Length + 1)..])}";
+
+                string[] split = path[1..].Split('\\');
+                string ntDevice = $"\\{string.Join('\\', split[0..2])}";
+
+                char? drive = null;
+                foreach ((char k, string v) in Windows.ForensicScanners.Storages.DriveMap)
+                {
+                    if (v == ntDevice)
+                    {
+                        drive = k;
+                        break;
+                    }
+                }
+
+                if (drive is char letter)
+                    return $"{letter}:\\{string.Join('\\', split[2..])}";
+                else if (split[1] == "Mup")
+                    return $"\\\\{string.Join('\\', split[2..])}";
+            }
+            else if (path.StartsWith("system32", StringComparison.OrdinalIgnoreCase))
+            {
+                return $"{Environment.GetEnvironmentVariable("SystemRoot")}\\{string.Join('\\', path[("\\SystemRoot\\".Length + 1)..])}";
             }
         }
         else
