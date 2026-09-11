@@ -9,7 +9,8 @@ public interface IForensicScanner
 
     IEnumerable<StorageInfo> ScanStorages()
     {
-        if (Context.Os == Context.OS.Windows) {
+        if (Context.Os == Context.OS.Windows)
+        {
             return Windows.ForensicScanners.Storages.Scan();
         }
         else
@@ -54,17 +55,7 @@ public record ProcessInfo(int Id)
 {
     public Dictionary<string, object> Metadata { get; init; } = [];
 
-    public string? CommandArgs
-    {
-        get
-        {
-            if (field != null)
-                return field + " ";
-
-            return field;
-        }
-        init;
-    }
+    public string? CommandArgs { get; init; }
 
     public string? Path { get; init; }
     public string? Sha256 { get; init; }
