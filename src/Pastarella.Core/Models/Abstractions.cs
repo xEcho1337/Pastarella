@@ -9,13 +9,19 @@ public interface IForensicScanner
 
     IEnumerable<StorageInfo> ScanStorages()
     {
-        return DriveInfo.GetDrives().Select(d =>
-            new StorageInfo(
-                d.DriveType,
-                d.Name,
-                d.IsReady ? d.TotalFreeSpace : 0,
-                d.IsReady ? d.TotalSize : 0)
-        );
+        if (Context.Os == Context.OS.Windows) {
+            return Windows.ForensicScanners.Storages.Scan();
+        }
+        else
+        {
+            return DriveInfo.GetDrives().Select(d =>
+                new StorageInfo(
+                    d.DriveType,
+                    d.Name,
+                    d.IsReady ? (ulong)d.TotalFreeSpace : 0,
+                    d.IsReady ? (ulong)d.TotalSize : 0)
+            );
+        }
     }
 }
 
@@ -77,7 +83,7 @@ public record UserInfo(string Name, string Description, string Uid, string Home,
     public Dictionary<string, object> Metadata { get; init; } = [];
 }
 
-public record StorageInfo(DriveType Type, string Name, long FreeSpace, long TotalSpace);
+public record StorageInfo(DriveType Type, string Name, ulong FreeSpace, ulong TotalSpace);
 
 public record DriverInfo(
     string Name,

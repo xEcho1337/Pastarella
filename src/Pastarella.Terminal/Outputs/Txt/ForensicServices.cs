@@ -58,8 +58,8 @@ public class ForensicServices(OutputBuffer buffer)
 
         foreach (var storage in storages)
         {
-            long free = storage.FreeSpace / (1024 * 1024 * 1024);
-            long total = storage.TotalSpace / (1024 * 1024 * 1024);
+            ulong free = storage.FreeSpace / (1024 * 1024 * 1024);
+            ulong total = storage.TotalSpace / (1024 * 1024 * 1024);
 
             Buffer.WriteLine($"{storage.Name} ({storage.Type}) -> {free} GB/{total} GB");
         }
