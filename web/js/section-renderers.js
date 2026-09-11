@@ -82,7 +82,7 @@
       return [
         R().v(d, "Id", "id", ""),
         R().v(d, "Name", "name", ""),
-        R().mono(R().v(d, "Path", "path", "")),
+        R().mono(R().v(d, "Path", "path", "") + " " + R().v(d, "CommandArgs", "commandArgs", "")),
         R().mono(R().v(d, "Sha256", "sha256", "")),
         R().centered(R().signerIcon(value(d, "Signer", "signer"))),
         R().v(d, "StartTime", "startTime", ""),
