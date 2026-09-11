@@ -18,6 +18,7 @@
     <PackageReference Include="Vanara.PInvoke.Security" Version="5.0.7" />
     <PackageReference Include="Vanara.PInvoke.NetApi32" Version="5.0.7" />
     <PackageReference Include="Vanara.PInvoke.Kernel32" Version="5.0.7" />
+    <PackageReference Include="Vanara.PInvoke.NtDll" Version="5.0.7" />
     </ItemGroup>
 
 </Project>

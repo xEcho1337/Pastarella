@@ -1,78 +1,160 @@
-using System.Management;
 using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
 using Pastarella.Core.Models;
+
+using static Vanara.PInvoke.NtDll;
+using static Vanara.PInvoke.Kernel32;
+using Vanara.PInvoke;
+using System.Security.Cryptography;
+using Vanara.InteropServices;
+using Vanara.Extensions;
+using System.Runtime.InteropServices;
 
 namespace Pastarella.Core.Windows.ForensicScanners;
 
 public static class Processes
 {
-    private static Dictionary<int, string> GetCommandLines()
+    private static HPROCESS? GetProcessHandle(int pid, ACCESS_MASK accessMask)
     {
-        var map = new Dictionary<int, string>();
-        PlatformHelpers.TryDo(() =>
+        var objAttr = new OBJECT_ATTRIBUTES()
         {
-            using var searcher = new ManagementObjectSearcher(
-                "SELECT ProcessId, CommandLine FROM Win32_Process");
+            objectName = 0 /* null */,
+        };
 
-            foreach (var mo in searcher.Get().Cast<ManagementObject>())
-            {
-                PlatformHelpers.TryDo(() =>
-                {
-                    int pid = Convert.ToInt32(mo["ProcessId"]);
-                    if (mo["CommandLine"] is string cmd && !string.IsNullOrWhiteSpace(cmd))
-                        map[pid] = cmd;
-                });
-            }
-        });
+        var clientId = new CLIENT_ID()
+        {
+            UniqueProcess = pid,
+            UniqueThread = 0 /* null */,
+        };
 
-        return map;
+        if (Native.NtDll.NtOpenProcess(out var handle, accessMask, objAttr, clientId) != NTStatus.STATUS_SUCCESS)
+            return null;
+
+        return handle;
+    }
+
+    private static string? GetProcessFilePath(HPROCESS handle)
+    {
+        var status = NtQueryInformationProcess(handle, PROCESSINFOCLASS.ProcessImageFileName, SafeHGlobalHandle.Null, 0, out uint returnLength);
+        if (status != NTStatus.STATUS_INFO_LENGTH_MISMATCH)
+            throw new Exception("Failed to get buffer size");
+
+        using var buffer = new SafeHGlobalHandle(returnLength);
+        status = NtQueryInformationProcess(handle, PROCESSINFOCLASS.ProcessImageFileName, buffer, returnLength, out returnLength);
+        if (status != NTStatus.STATUS_SUCCESS)
+            throw new Exception($"Failed to get processes: {status}");
+
+        return buffer.DangerousGetHandle().ToStructure<UNICODE_STRING>().ToString();
+    }
+
+    private static string? GetCommandLine(HPROCESS normalHandle)
+    {
+        if (Native.NtDll.Wrappers.IsWOW64(normalHandle))
+        {
+            // TODO: do WOW64
+            return null;
+        }
+        else
+        {
+            var result = NtQueryInformationProcess<PROCESS_BASIC_INFORMATION>(normalHandle, PROCESSINFOCLASS.ProcessBasicInformation);
+            if (result == null || result.Value.PebBaseAddress == 0 /* null */)
+                return null;
+
+            if (GetProcessHandle((int)result.Value.UniqueProcessId, Native.NtDll.PROCESS_VM_READ) is not HPROCESS memoryHandle)
+                return null;
+
+            using var pebBuffer = new SafeHGlobalHandle(Marshal.SizeOf<PEB>());
+            if (!ReadProcessMemory(memoryHandle, result.Value.PebBaseAddress, pebBuffer, Marshal.SizeOf<PEB>(), out _))
+                return null;
+            var peb = pebBuffer.DangerousGetHandle().ToStructure<PEB>();
+
+            using var processParamsBuffer = new SafeHGlobalHandle(Marshal.SizeOf<RTL_USER_PROCESS_PARAMETERS>());
+            if (!ReadProcessMemory(memoryHandle, peb.ProcessParameters, processParamsBuffer, Marshal.SizeOf<RTL_USER_PROCESS_PARAMETERS>(), out _))
+                return null;
+            var processParams = processParamsBuffer.DangerousGetHandle().ToStructure<RTL_USER_PROCESS_PARAMETERS>();
+
+            return processParams.CommandLine.ToString(memoryHandle);
+        }
+    }
+
+    private static string? GetSubjectCertificate(ref Dictionary<string, object> metadata, string path)
+    {
+        if (path.Length == 0)
+            return null;
+
+        try
+        {
+            var info = FileVersionInfo.GetVersionInfo(path);
+
+            if (info.CompanyName != null)
+                metadata["Company"] = info.CompanyName;
+
+            if (info.ProductName != null)
+                metadata["Product"] = info.ProductName;
+
+            return X509Certificate.CreateFromSignedFile(path).Subject;
+        }
+        catch (CryptographicException)
+        {
+            // ignore
+        }
+        catch (FileNotFoundException)
+        {
+            // ignore
+        }
+
+        return null;
     }
 
     public static IEnumerable<ProcessInfo> Scan(IProgress<ScanProgress>? progress = null)
     {
-        var result = new List<ProcessInfo>();
-        var processes = Process.GetProcesses();
-        var cmdlines = GetCommandLines();
+        var info = Native.NtDll.Wrappers.SystemProcessInformation.Get();
+
+        var result = new List<ProcessInfo>(info.Processes.Length);
         int done = 0;
 
-        foreach (var process in processes)
+        foreach (var process in info.Processes)
         {
             Dictionary<string, object> metadata = [];
-            string? signer = null;
-            string? path = PlatformHelpers.TryGet(() => process.MainModule?.FileName);
-            DateTime? startTime = PlatformHelpers.TryGet(() => process.StartTime);
+            DateTime startTime = DateTimeOffset.FromFileTime(process.CreateTime).UtcDateTime;
 
-            if (!string.IsNullOrWhiteSpace(path))
+            int pid = (int)process.UniqueProcessId;
+            string name = process.ImageName.ToString();
+
+            if (GetProcessHandle(pid, Native.NtDll.PROCESS_QUERY_LIMITED_INFORMATION) is not HPROCESS handle)
             {
-                PlatformHelpers.TryExecNotNull(
-                    () => FileVersionInfo.GetVersionInfo(path),
-                    versionInfo =>
-                    {
-                        if (versionInfo.CompanyName != null)
-                            metadata["Company"] = versionInfo.CompanyName;
+                result.Add(new ProcessInfo(pid)
+                {
+                    Metadata = metadata,
+                    CommandArgs = null,
+                    Path = name,
+                    Sha256 = null,
+                    Signer = null,
+                    StartTime = startTime,
+                });
+                progress?.Report(new ScanProgress(++done, info.Processes.Length));
 
-                        if (versionInfo.ProductName != null)
-                            metadata["Product"] = versionInfo.ProductName;
-                    });
-
-                PlatformHelpers.TryDo(() => signer = X509Certificate.CreateFromSignedFile(path).Subject);
+                continue;
             }
 
-            string? hash = PlatformHelpers.GetSha256(path);
+            string? path = name;
+            string? hash = null;
+            if (GetProcessFilePath(handle) is string ntPath)
+            {
+                path = PathNormalizer.Normalize(ntPath);
+                hash = PlatformHelpers.GetSha256(path);
+            }
 
-            cmdlines.TryGetValue(process.Id, out string? cmdline);
-
-            result.Add(new ProcessInfo(process.Id)
+            result.Add(new ProcessInfo(pid)
             {
                 Metadata = metadata,
-                CommandArgs = cmdline,
+                CommandArgs = GetCommandLine(handle),
                 Path = path,
                 Sha256 = hash,
-                Signer = signer,
+                Signer = (path != null) ? GetSubjectCertificate(ref metadata, path) : null,
                 StartTime = startTime
             });
-            progress?.Report(new ScanProgress(++done, processes.Length));
+            progress?.Report(new ScanProgress(++done, info.Processes.Length));
         }
 
         return result;
