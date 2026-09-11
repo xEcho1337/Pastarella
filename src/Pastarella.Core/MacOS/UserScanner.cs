@@ -1,10 +1,10 @@
 using Pastarella.Core.Models;
 
-namespace Pastarella.Core.MacOS.ForensicScanners;
+namespace Pastarella.Core.MacOS;
 
-public static class Users
+public class UserScanner : IUserScanner
 {
-    public static IEnumerable<UserInfo> Scan(IProgress<ScanProgress>? progress = null)
+    public IEnumerable<UserInfo> Scan(IProgress<ScanProgress>? progress = null)
     {
         var users = new List<UserInfo>();
         try

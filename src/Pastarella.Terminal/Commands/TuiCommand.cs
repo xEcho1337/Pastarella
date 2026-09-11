@@ -24,13 +24,12 @@ public class TuiCommand : Command<TuiCommand.TuiSettings>
             ["Recent Files"] = p => report.RecentFiles = RecentFileScanner.Scan(p).ToList(),
         };
 
-        if (ctx.ForensicScanner != null)
-        {
-            actions.Add("Processes", p => report.Processes = ctx.ForensicScanner.ScanProcesses(p).ToList());
-            actions.Add("Users", p => report.Users = ctx.ForensicScanner.ScanUsers(p).ToList());
-            actions.Add("Storages", p => report.Storages = ctx.ForensicScanner.ScanStorages().ToList());
-        }
-
+        if (ctx.ProcessScanner!= null)
+            actions.Add("Processes", p => report.Processes = ctx.ProcessScanner.Scan(p).ToList());
+        if (ctx.UserScanner!= null)
+            actions.Add("Users", p => report.Users = ctx.UserScanner.Scan(p).ToList());
+        if (ctx.StorageScanner!= null)
+            actions.Add("Storages", p => report.Storages = ctx.StorageScanner.Scan(p).ToList());
         if (ctx.PersistenceScanner != null)
             actions.Add("Persistence checks", p => report.Persistences = ctx.PersistenceScanner.Scan(p).ToList());
         if (ctx.NetworkScanner != null)

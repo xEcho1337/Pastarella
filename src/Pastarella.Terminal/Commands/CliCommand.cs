@@ -96,15 +96,26 @@ public class CliCommand : Command<CliCommand.CliSettings>
             if (settings.RecentFiles)
                 report.RecentFiles = RecentFileScanner.Scan().ToList();
 
-            if ((settings.Users || settings.Storages || settings.Processes) && ctx.ForensicScanner == null)
-                throw new NotImplementedException("Forensic");
-
             if (settings.Users)
-                report.Users = ctx.ForensicScanner!.ScanUsers().ToList();
+            {
+                if (ctx.UserScanner == null)
+                    throw new NotImplementedException("User");
+                report.Users = ctx.UserScanner.Scan().ToList();
+            }
+
             if (settings.Storages)
-                report.Storages = ctx.ForensicScanner!.ScanStorages().ToList();
+            {
+                if (ctx.StorageScanner == null)
+                    throw new NotImplementedException("Storage");
+                report.Storages = ctx.StorageScanner.Scan().ToList();
+            }
+
             if (settings.Processes)
-                report.Processes = ctx.ForensicScanner!.ScanProcesses().ToList();
+            {
+                if (ctx.ProcessScanner == null)
+                    throw new NotImplementedException("Process");
+                report.Processes = ctx.ProcessScanner.Scan().ToList();
+            }
 
             if (settings.Persistances)
             {

@@ -6,7 +6,7 @@ public class UsersLogonScript : IPersistenceScanner
 {
     public IEnumerable<PersistenceEntry> Scan(IProgress<ScanProgress>? progress = null)
     {
-        return ForensicScanners.Users.CachedUserInfo.Where(u => !string.IsNullOrEmpty(u.Item1.usri1_script_path)).Select(u =>
+        return UserScanner.CachedUserInfo.Where(u => !string.IsNullOrEmpty(u.Item1.usri1_script_path)).Select(u =>
         {
             var (info, _) = u;
 

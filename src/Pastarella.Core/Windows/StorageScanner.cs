@@ -3,9 +3,9 @@ using Pastarella.Core.Models;
 
 using static Vanara.PInvoke.Kernel32;
 
-namespace Pastarella.Core.Windows.ForensicScanners;
+namespace Pastarella.Core.Windows;
 
-public static class Storages
+public class StorageScanner : IStorageScanner
 {
     private static List<StorageInfo>? CachedStorageInfo;
     public static Dictionary<char, string> DriveMap
@@ -62,7 +62,7 @@ public static class Storages
         return list;
     }
 
-    public static IEnumerable<StorageInfo> Scan()
+    public IEnumerable<StorageInfo> Scan(IProgress<ScanProgress>? progress = null)
     {
         return CachedStorageInfo ??= ScanDrives();
     }

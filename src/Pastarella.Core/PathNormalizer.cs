@@ -20,7 +20,7 @@ public static class PathNormalizer
                 string ntDevice = $"\\{string.Join('\\', split[0..2])}";
 
                 char? drive = null;
-                foreach ((char k, string v) in Windows.ForensicScanners.Storages.DriveMap)
+                foreach ((char k, string v) in Windows.StorageScanner.DriveMap)
                 {
                     if (v == ntDevice)
                     {

@@ -4,9 +4,9 @@ using static Vanara.PInvoke.NetApi32;
 using static Vanara.PInvoke.AdvApi32;
 using static Vanara.PInvoke.Kernel32;
 
-namespace Pastarella.Core.Windows.ForensicScanners;
+namespace Pastarella.Core.Windows;
 
-public static class Users
+public class UserScanner : IUserScanner
 {
     public static List<(USER_INFO_1, string /* SID */)> CachedUserInfo => field ??= GetUserInfo();
 
@@ -26,7 +26,7 @@ public static class Users
         return list;
     }
 
-    public static IEnumerable<UserInfo> Scan(IProgress<ScanProgress>? progress = null)
+    public IEnumerable<UserInfo> Scan(IProgress<ScanProgress>? progress = null)
     {
         int done = 0;
 

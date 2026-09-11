@@ -1,10 +1,10 @@
 using Pastarella.Core.Models;
 
-namespace Pastarella.Core.Unix.ForensicScanners;
+namespace Pastarella.Core.Unix;
 
-public static class Users
+public class UserScanner : IUserScanner
 {
-    public static IEnumerable<UserInfo> Scan(IProgress<ScanProgress>? progress = null)
+    public IEnumerable<UserInfo> Scan(IProgress<ScanProgress>? progress = null)
     {
         List<UserInfo> list = [];
         string[] lines = File.ReadAllLines("/etc/passwd");

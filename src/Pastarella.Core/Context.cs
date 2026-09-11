@@ -29,7 +29,9 @@ public class Context
 
     public static readonly OS Os = GetOS();
 
-    public readonly IForensicScanner? ForensicScanner;
+    public readonly IProcessScanner? ProcessScanner;
+    public readonly IUserScanner? UserScanner;
+    public readonly IStorageScanner? StorageScanner;
     public readonly IPersistenceScanner? PersistenceScanner;
     public readonly INetworkScanner? NetworkScanner;
     public readonly IDriverScanner? DriverScanner;
@@ -41,7 +43,9 @@ public class Context
         switch (Os)
         {
             case OS.Windows:
-                ForensicScanner = new Windows.ForensicScanner();
+                ProcessScanner = new Windows.ProcessScanner();
+                UserScanner = new Windows.UserScanner();
+                StorageScanner = new Windows.StorageScanner();
                 PersistenceScanner = new Windows.PersistenceScanner();
                 NetworkScanner = new Windows.NetworkScanner();
                 DriverScanner = new Windows.DriverScanner();
@@ -49,7 +53,9 @@ public class Context
                 CommandHistoryScanner = new Windows.CommandHistoryScanner();
                 break;
             case OS.MacOS:
-                ForensicScanner = new MacOS.ForensicScanner();
+                ProcessScanner = new MacOS.ProcessScanner();
+                UserScanner = new MacOS.UserScanner();
+                StorageScanner = new Common.GenericStorageScanner();
                 PersistenceScanner = new MacOS.PersistenceScanner();
                 NetworkScanner = new MacOS.NetworkScanner();
                 DriverScanner = new MacOS.DriverScanner();
@@ -59,7 +65,9 @@ public class Context
             case OS.Linux:
                 Linux.Context.Setup();
 
-                ForensicScanner = new Linux.ForensicScanner();
+                ProcessScanner = new Linux.ProcessScanner();
+                UserScanner = new Linux.UserScanner();
+                StorageScanner = new Common.GenericStorageScanner();
                 PersistenceScanner = new Linux.PersistenceScanner();
                 NetworkScanner = new Linux.NetworkScanner();
                 DriverScanner = new Linux.DriverScanner();
@@ -67,7 +75,9 @@ public class Context
                 CommandHistoryScanner = new Unix.CommandHistoryScanner();
                 break;
             case OS.FreeBSD:
-                ForensicScanner = new FreeBSD.ForensicScanner();
+                ProcessScanner = null;
+                UserScanner = new Unix.UserScanner();
+                StorageScanner = new Common.GenericStorageScanner();
                 PersistenceScanner = new FreeBSD.PersistenceScanner();
                 NetworkScanner = null;
                 DriverScanner = new FreeBSD.DriverScanner();

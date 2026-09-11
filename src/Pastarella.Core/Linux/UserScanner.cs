@@ -1,15 +1,15 @@
 using Pastarella.Core.Models;
 
-namespace Pastarella.Core.Linux.ForensicScanners;
+namespace Pastarella.Core.Linux;
 
-public static class Users
+public class UserScanner : IUserScanner
 {
     public static IEnumerable<UserInfo> CachedUsersInfo
     {
-        get => field ??= new Unix.ForensicScanner().ScanUsers();
+        get => field ??= new Unix.UserScanner().Scan();
     }
 
-    public static IEnumerable<UserInfo> Scan(IProgress<ScanProgress>? progress = null)
+    public IEnumerable<UserInfo> Scan(IProgress<ScanProgress>? progress = null)
     {
         var users = CachedUsersInfo.ToList();
         progress?.Report(new ScanProgress(users.Count, users.Count));

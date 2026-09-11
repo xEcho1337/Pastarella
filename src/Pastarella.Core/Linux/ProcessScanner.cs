@@ -1,10 +1,10 @@
 using Pastarella.Core.Models;
 
-namespace Pastarella.Core.Linux.ForensicScanners;
+namespace Pastarella.Core.Linux;
 
-public static class Processes
+public class ProcessScanner : IProcessScanner
 {
-    public static IEnumerable<ProcessInfo> Scan(IProgress<ScanProgress>? progress = null)
+    public IEnumerable<ProcessInfo> Scan(IProgress<ScanProgress>? progress = null)
     {
         var list = new List<ProcessInfo>();
         int done = 0;

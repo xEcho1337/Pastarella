@@ -10,9 +10,9 @@ using Vanara.InteropServices;
 using Vanara.Extensions;
 using System.Runtime.InteropServices;
 
-namespace Pastarella.Core.Windows.ForensicScanners;
+namespace Pastarella.Core.Windows;
 
-public static class Processes
+public class ProcessScanner : IProcessScanner
 {
     private static HPROCESS? GetProcessHandle(int pid, ACCESS_MASK accessMask)
     {
@@ -110,7 +110,7 @@ public static class Processes
         return null;
     }
 
-    public static IEnumerable<ProcessInfo> Scan(IProgress<ScanProgress>? progress = null)
+    public IEnumerable<ProcessInfo> Scan(IProgress<ScanProgress>? progress = null)
     {
         var info = Native.NtDll.Wrappers.SystemProcessInformation.Get();
 

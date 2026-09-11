@@ -260,7 +260,7 @@ public class RegistryScanner : IPersistenceScanner
     public IEnumerable<PersistenceEntry> Scan(IProgress<ScanProgress>? progress = null)
     {
         List<PersistenceEntry> list = [];
-        IEnumerable<string /* SID */> user_sid_cache = ForensicScanners.Users.CachedUserInfo.Select(u => u.Item2);
+        IEnumerable<string /* SID */> user_sid_cache = UserScanner.CachedUserInfo.Select(u => u.Item2);
 
         foreach (var toCheck in KeysToCheck)
         {

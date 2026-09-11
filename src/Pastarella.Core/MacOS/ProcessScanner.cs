@@ -2,11 +2,11 @@ using System.Diagnostics;
 using Pastarella.Core.Models;
 using Pastarella.Core.MacOS.Native;
 
-namespace Pastarella.Core.MacOS.ForensicScanners;
+namespace Pastarella.Core.MacOS;
 
-public static class Processes
+public class ProcessScanner : IProcessScanner
 {
-    public static IEnumerable<ProcessInfo> Scan(IProgress<ScanProgress>? progress = null)
+    public IEnumerable<ProcessInfo> Scan(IProgress<ScanProgress>? progress = null)
     {
         var list = new List<ProcessInfo>();
         var processes = Process.GetProcesses();
