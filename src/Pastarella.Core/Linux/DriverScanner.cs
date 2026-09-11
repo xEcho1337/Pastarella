@@ -14,8 +14,7 @@ public class DriverScanner : IDriverScanner
             string[] parts = line.Split(' ', 6);
 
             string name = parts[0];
-            bool loaded = parts[2] != "0";
-            string state = parts[4];
+            bool loaded = (parts[4] == "Live") || (parts[4] == "Loading");
 
             string? filePath = LKMScanner.FindModulePath(name);
             string? hash = PlatformHelpers.GetSha256(filePath);
