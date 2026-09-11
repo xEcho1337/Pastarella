@@ -73,7 +73,11 @@ public static class Processes
                 return null;
             var processParams = processParamsBuffer.DangerousGetHandle().ToStructure<RTL_USER_PROCESS_PARAMETERS>();
 
-            return processParams.CommandLine.ToString(memoryHandle);
+            string cmdline = processParams.CommandLine.ToString(memoryHandle);
+            if (cmdline[0] == '"')
+                return cmdline[(cmdline[1..].IndexOf('"') + 2)..];
+            else
+                return cmdline[(cmdline.IndexOf(' ') + 1)..];
         }
     }
 
