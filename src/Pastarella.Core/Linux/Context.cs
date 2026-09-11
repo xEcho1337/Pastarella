@@ -1,6 +1,3 @@
-using Pastarella.Core.Common;
-using Pastarella.Core.Models;
-
 namespace Pastarella.Core.Linux;
 
 public static class Context
