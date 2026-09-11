@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Principal;
 
@@ -13,9 +12,6 @@ public static class PlatformHelpers
     private static int _cacheHits;
     public static int CacheHits => Volatile.Read(ref _cacheHits);
 
-    [DllImport("libc")]
-    private static extern uint getuid();
-
     public static bool IsElevated()
     {
         if (OperatingSystem.IsWindows())
@@ -26,7 +22,7 @@ public static class PlatformHelpers
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
-        return getuid() == 0;
+        return Unix.Native.LibC.getuid() == 0;
     }
 
     public static T? TryGet<T>(Func<T> getter)
