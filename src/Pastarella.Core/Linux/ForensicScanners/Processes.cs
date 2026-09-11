@@ -51,7 +51,7 @@ public static class Processes
                         args = string.Join(' ', cmdline_raw[1..]);
                 }
 
-                long startTime = long.Parse(stats[19])! / Unix.Bindings.sysconf(Unix.Bindings.SysconfName._SC_CLK_TCK);
+                long startTime = long.Parse(stats[19])! / Unix.Native.LibC.sysconf(Unix.Native.LibC.SysconfName._SC_CLK_TCK);
 
                 list.Add(new ProcessInfo(pid)
                 {
