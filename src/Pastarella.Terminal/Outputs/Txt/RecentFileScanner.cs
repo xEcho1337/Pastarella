@@ -1,4 +1,4 @@
-using Pastarella.Core.Models;
+using Pastarella.Core.Common;
 
 namespace Pastarella.Terminal.Outputs.Txt;
 

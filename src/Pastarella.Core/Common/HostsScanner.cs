@@ -1,6 +1,6 @@
-using Pastarella.Core.Models;
-
 namespace Pastarella.Core.Common;
+
+public record Host(string Ip, string Domain);
 
 public static class HostsScanner
 {

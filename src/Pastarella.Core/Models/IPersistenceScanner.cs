@@ -2,6 +2,39 @@ using System.Text.Json.Serialization;
 
 namespace Pastarella.Core.Models;
 
+public enum PersistenceType
+{
+    Cron,
+    ScheduledTask,
+    StartupFolder,
+    LoadableKernelModule,
+
+    // Windows-only
+    RegistryKey,
+    OfflineRegistry,
+
+    // MacOS-only
+    Launchd,
+}
+
+public enum PersistencePrivilege
+{
+    // User-mode
+    User,
+    Admin,
+
+    // Kernel-mode
+    Kernel,
+}
+
+public enum ExecutionTrigger
+{
+    Boot,
+    SystemStartup,
+    UserLogin,
+    Scheduled,
+}
+
 public class PersistenceEntry
 {
     public required string Name { get; set; }
@@ -58,4 +91,9 @@ public class MessageScheduledAction : IScheduledAction
     public required string Title { get; set; }
 
     public required string Message { get; set; }
+}
+
+public interface IPersistenceScanner
+{
+    IEnumerable<PersistenceEntry> Scan(IProgress<ScanProgress>? progress = null);
 }

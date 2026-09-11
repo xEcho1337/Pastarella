@@ -3,6 +3,8 @@ using Pastarella.Core.Models;
 
 namespace Pastarella.Core.Common;
 
+public record RecentFileInfo(string FilePath, DateTime CreationTime, DateTime LastWriteTime);
+
 public static class RecentFileScanner
 {
     private static readonly EnumerationOptions DefaultOptions = new() { IgnoreInaccessible = true };

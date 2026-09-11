@@ -1,3 +1,5 @@
+using Pastarella.Core.Common;
+
 namespace Pastarella.Core.Models;
 
 public class AnalysisReport(DateTime timestamp)
