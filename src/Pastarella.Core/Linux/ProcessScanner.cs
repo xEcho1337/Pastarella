@@ -2,7 +2,7 @@ using Pastarella.Core.Models;
 
 namespace Pastarella.Core.Linux;
 
-public class ProcessScanner : IProcessScanner
+public class ProcessScanner(Context ctx) : IProcessScanner
 {
     public IEnumerable<ProcessInfo> Scan(IProgress<ScanProgress>? progress = null)
     {
@@ -14,18 +14,12 @@ public class ProcessScanner : IProcessScanner
         string bootTime_raw = systemStat.First(x => x.StartsWith("btime"));
         long bootTime = long.Parse(bootTime_raw["btime".Length..]);
 
-        foreach (string dir in Directory.EnumerateDirectories("/proc"))
+        foreach (uint pid in ctx.PIDs)
         {
-            string basename = dir.Split('/', 3)[^1];
-
-            // Inside /proc there are also non-processes folders. Skip them
-            if (!basename.All(char.IsDigit))
-                continue;
-
-            int pid = int.Parse(basename);
+            string processDir = Path.Combine("/proc", pid.ToString());
             try
             {
-                string stats_raw = File.ReadAllLines(Path.Combine(dir, "stat"))[0];
+                string stats_raw = File.ReadAllLines(Path.Combine(processDir, "stat"))[0];
 
                 int commandNameStart = stats_raw.IndexOf('(');
                 int commandNameEnd = stats_raw.IndexOf(')');
@@ -43,17 +37,17 @@ public class ProcessScanner : IProcessScanner
                 }
                 else
                 {
-                    path = new FileInfo(Path.Combine(dir, "exe")).ResolveLinkTarget(false)!.Name;
+                    path = new FileInfo(Path.Combine(processDir, "exe")).ResolveLinkTarget(false)!.Name;
                     hash = PlatformHelpers.GetSha256(path);
 
-                    string[] cmdline_raw = File.ReadAllLines(Path.Combine(dir, "cmdline"))[0].Split('\x00', StringSplitOptions.RemoveEmptyEntries)[..^1];
+                    string[] cmdline_raw = File.ReadAllLines(Path.Combine(processDir, "cmdline"))[0].Split('\x00', StringSplitOptions.RemoveEmptyEntries)[..^1];
                     if (cmdline_raw.Length != 0)
                         args = string.Join(' ', cmdline_raw[1..]);
                 }
 
                 long startTime = long.Parse(stats[19])! / Unix.Native.LibC.sysconf(Unix.Native.LibC.SysconfName._SC_CLK_TCK);
 
-                list.Add(new ProcessInfo(pid)
+                list.Add(new ProcessInfo((int)pid)
                 {
                     Metadata = [],
                     CommandArgs = args,
@@ -74,4 +68,3 @@ public class ProcessScanner : IProcessScanner
         return list;
     }
 }
-

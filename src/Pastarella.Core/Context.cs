@@ -65,11 +65,11 @@ public class Context
             case OS.Linux:
                 var ctx = new Linux.Context();
 
-                ProcessScanner = new Linux.ProcessScanner();
+                ProcessScanner = new Linux.ProcessScanner(ctx);
                 UserScanner = new Linux.UserScanner();
                 StorageScanner = new Common.GenericStorageScanner();
                 PersistenceScanner = new Linux.PersistenceScanner(ctx);
-                NetworkScanner = new Linux.NetworkScanner();
+                NetworkScanner = new Linux.NetworkScanner(ctx);
                 DriverScanner = new Linux.DriverScanner(ctx);
                 ServiceScanner = null;
                 CommandHistoryScanner = new Unix.CommandHistoryScanner();

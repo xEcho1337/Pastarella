@@ -4,7 +4,7 @@ using Pastarella.Core.Models;
 
 namespace Pastarella.Core.Linux;
 
-public class NetworkScanner : INetworkScanner
+public class NetworkScanner(Context ctx) : INetworkScanner
 {
     private static byte[] HexIPv4ToBytes(string hex_ip)
     {
@@ -22,21 +22,16 @@ public class NetworkScanner : INetworkScanner
         return arr;
     }
 
-    private static uint? InodeToPid(ulong inode)
+    private uint? InodeToPid(ulong inode)
     {
         // TODO: optimize (calling this for every row is bad. Have an array of inodes to find).
 
-        foreach (string dir in Directory.EnumerateDirectories("/proc")) {
-            string basename = dir.Split('/', 3)[^1];
-
-            // Inside /proc there are also non-processes folders. Skip them
-            if (!basename.All(char.IsDigit))
-                continue;
-
-            uint pid = uint.Parse(basename);
+        foreach (uint pid in ctx.PIDs)
+        {
+            string processDir = Path.Combine("/proc", pid.ToString());
             try
             {
-                foreach (string fd in Directory.EnumerateFiles($"{dir}/fd"))
+                foreach (string fd in Directory.EnumerateFiles($"{processDir}/fd"))
                 {
                     try
                     {
@@ -93,7 +88,7 @@ public class NetworkScanner : INetworkScanner
             _ => throw new NotImplementedException($"TCP state: {number}"),
         };
 
-    private static void GetTcpIPv4Connections(ref List<PortInfo> list)
+    private void GetTcpIPv4Connections(ref List<PortInfo> list)
     {
         foreach (string line in File.ReadLines("/proc/net/tcp").Skip(1))
         {
@@ -121,7 +116,7 @@ public class NetworkScanner : INetworkScanner
         }
     }
 
-    private static void GetUdpIPv4Endpoints(ref List<PortInfo> list)
+    private void GetUdpIPv4Endpoints(ref List<PortInfo> list)
     {
         foreach (string line in File.ReadLines("/proc/net/udp").Skip(1))
         {
@@ -142,7 +137,7 @@ public class NetworkScanner : INetworkScanner
         }
     }
 
-    private static void GetTcpIPv6Connections(ref List<PortInfo> list)
+    private void GetTcpIPv6Connections(ref List<PortInfo> list)
     {
         foreach (string line in File.ReadLines("/proc/net/tcp6").Skip(1))
         {
@@ -170,7 +165,7 @@ public class NetworkScanner : INetworkScanner
         }
     }
 
-    private static void GetUdpIPv6Endpoints(ref List<PortInfo> list)
+    private void GetUdpIPv6Endpoints(ref List<PortInfo> list)
     {
         foreach (string line in File.ReadLines("/proc/net/udp6").Skip(1))
         {

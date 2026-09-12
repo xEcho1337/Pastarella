@@ -5,6 +5,15 @@ public class Context
     public bool UsrMerged { get; private set; }
     public string ModulesPath { get; private set; } = "/lib/modules";
 
+    public List<uint> PIDs
+    {
+        get
+        {
+            return field ??= GetPIDs();
+        }
+        private set;
+    }
+
     public Context()
     {
         if (new DirectoryInfo("/lib").LinkTarget is string target)
@@ -12,6 +21,24 @@ public class Context
 
         if (UsrMerged)
             ModulesPath = "/usr/lib/modules";
+    }
+
+    private List<uint> GetPIDs()
+    {
+        var list = new List<uint>();
+
+        foreach (string dir in Directory.EnumerateDirectories("/proc"))
+        {
+            string basename = dir.Split('/', 3)[^1];
+
+            // Inside /proc there are also non-processes folders. Skip them
+            if (!basename.All(char.IsDigit))
+                continue;
+
+            list.Add(uint.Parse(basename));
+        }
+
+        return list;
     }
 
     public static string GetKernelVersion()
@@ -33,5 +60,4 @@ public class Context
 
         return null;
     }
-
 }
