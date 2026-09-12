@@ -13,6 +13,9 @@ public static class PathNormalizer
             {
                 // NT paths
 
+                if (path[1..].StartsWith("??\\"))
+                    return path[4..];
+
                 if (path[1..].StartsWith("SystemRoot\\"))
                     return $"{Environment.GetEnvironmentVariable("SystemRoot")}\\{string.Join('\\', path[("\\SystemRoot\\".Length + 1)..])}";
 
