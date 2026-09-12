@@ -63,14 +63,14 @@ public class Context
                 CommandHistoryScanner = new Unix.CommandHistoryScanner();
                 break;
             case OS.Linux:
-                Linux.Context.Setup();
+                var ctx = new Linux.Context();
 
                 ProcessScanner = new Linux.ProcessScanner();
                 UserScanner = new Linux.UserScanner();
                 StorageScanner = new Common.GenericStorageScanner();
-                PersistenceScanner = new Linux.PersistenceScanner();
+                PersistenceScanner = new Linux.PersistenceScanner(ctx);
                 NetworkScanner = new Linux.NetworkScanner();
-                DriverScanner = new Linux.DriverScanner();
+                DriverScanner = new Linux.DriverScanner(ctx);
                 ServiceScanner = null;
                 CommandHistoryScanner = new Unix.CommandHistoryScanner();
                 break;

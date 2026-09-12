@@ -3,11 +3,11 @@ using Pastarella.Core.Models;
 
 namespace Pastarella.Core.Linux;
 
-public class PersistenceScanner : IPersistenceScanner
+public class PersistenceScanner(Context ctx) : IPersistenceScanner
 {
     public IEnumerable<PersistenceEntry> Scan(IProgress<ScanProgress>? progress = null)
     {
-        var lkml = new LKMScanner();
+        var lkml = new LKMScanner(ctx);
         var xdgAutostart = new XdgAutostart();
 
         progress?.Report(new ScanProgress(0, 2, "kernel modules"));

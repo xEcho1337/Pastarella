@@ -1,11 +1,10 @@
-using Pastarella.Core.Linux.PersistenceScanners;
 using Pastarella.Core.Models;
 
 namespace Pastarella.Core.Linux;
 
-public class DriverScanner : IDriverScanner
+public class DriverScanner(Context ctx) : IDriverScanner
 {
-    public static IEnumerable<DriverInfo> GetLoadedModules()
+    public IEnumerable<DriverInfo> GetLoadedModules()
     {
         List<DriverInfo> list = [];
 
@@ -16,7 +15,7 @@ public class DriverScanner : IDriverScanner
             string name = parts[0];
             bool loaded = (parts[4] == "Live") || (parts[4] == "Loading");
 
-            string? filePath = LKMScanner.FindModulePath(name);
+            string? filePath = ctx.FindModulePath(name);
             string? hash = PlatformHelpers.GetSha256(filePath);
 
             list.Add(new(
@@ -35,11 +34,11 @@ public class DriverScanner : IDriverScanner
         return list;
     }
 
-    public static IEnumerable<DriverInfo> GetBuiltinModules()
+    public IEnumerable<DriverInfo> GetBuiltinModules()
     {
         List<DriverInfo> list = [];
 
-        string modulesPath = $"{Context.ModulesPath}/{Context.GetKernelVersion()}";
+        string modulesPath = $"{ctx.ModulesPath}/{Context.GetKernelVersion()}";
         string kernelFilePath = $"{modulesPath}/vmlinuz";
         string? kernelSha256 = PlatformHelpers.GetSha256(kernelFilePath);
 

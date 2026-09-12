@@ -2,15 +2,15 @@ using Pastarella.Core.Models;
 
 namespace Pastarella.Core.Linux.PersistenceScanners;
 
-public class LKMScanner : IPersistenceScanner
+public class LKMScanner(Context ctx) : IPersistenceScanner
 {
     private List<PersistenceEntry> Entries { get; init; } = [];
 
-    private readonly string[] ModulesLoadDirs = Context.UsrMerged
+    private readonly string[] ModulesLoadDirs = ctx.UsrMerged
         ? ["/etc/modules-load.d/", "/usr/lib/modules-load.d/"]
         : ["/etc/modules-load.d/", "/lib/modules-load.d/", "/usr/lib/modules-load.d/"];
 
-    private readonly string[] ModprobeDirs = Context.UsrMerged
+    private readonly string[] ModprobeDirs = ctx.UsrMerged
         ? ["/etc/modprobe.d/", "/usr/lib/modprobe.d/"]
         : ["/etc/modprobe.d/", "/lib/modprobe.d/", "/usr/lib/modprobe.d/"];
 
@@ -28,20 +28,8 @@ public class LKMScanner : IPersistenceScanner
         return Entries;
     }
 
-    public static string? FindModulePath(string moduleName)
+    private static PersistenceEntry BuildEntry(string name, string filePath, string? modulePath)
     {
-        string modulesPath = $"{Context.ModulesPath}/{Context.GetKernelVersion()}";
-        foreach (string line in File.ReadLines($"{modulesPath}/modules.dep"))
-        {
-            string path = line.Split(':')[0];
-            if (path.Split('/')[^1].Split('.')[0] == moduleName)
-                return $"{modulesPath}/{path}";
-        }
-
-        return null;
-    }
-
-    private static PersistenceEntry BuildEntry(string name, string filePath, string? modulePath) {
         return new()
         {
             Name = name,
@@ -69,7 +57,7 @@ public class LKMScanner : IPersistenceScanner
                     if (string.IsNullOrEmpty(line) || line[0] == '#')
                         continue;
 
-                    Entries.Add(BuildEntry(line, filePath, FindModulePath(line)));
+                    Entries.Add(BuildEntry(line, filePath, ctx.FindModulePath(line)));
                 }
             }
         }
@@ -95,7 +83,7 @@ public class LKMScanner : IPersistenceScanner
                     if (cmd != "install" || (shell != null && (shell.EndsWith("/bin/false") || shell.EndsWith("/bin/true"))))
                         continue;
 
-                    Entries.Add(BuildEntry(moduleName, filePath, FindModulePath(moduleName)));
+                    Entries.Add(BuildEntry(moduleName, filePath, ctx.FindModulePath(moduleName)));
                 }
             }
         }
