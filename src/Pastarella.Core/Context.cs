@@ -76,7 +76,7 @@ public class Context
                 DriverScanner = new Linux.DriverScanner(ctx);
                 ServiceScanner = null;
                 CommandHistoryScanner = new Unix.CommandHistoryScanner();
-                ContainerScanner = null;
+                ContainerScanner = new Linux.ContainerScanner(ctx);
                 break;
             case OS.FreeBSD:
                 ProcessScanner = null;
