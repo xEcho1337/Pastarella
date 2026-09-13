@@ -29,4 +29,6 @@ public class AnalysisReport(DateTime timestamp)
     public List<CommandHistory> CommandHistories = [];
 
     public List<RecentFileInfo> RecentFiles = [];
+
+    public List<ContainerInfo> Containers = [];
 }

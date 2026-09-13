@@ -37,6 +37,7 @@ public class Context
     public readonly IDriverScanner? DriverScanner;
     public readonly IServiceScanner? ServiceScanner;
     public readonly ICommandHistoryScanner? CommandHistoryScanner;
+    public readonly IContainerScanner? ContainerScanner;
 
     public Context()
     {
@@ -51,6 +52,7 @@ public class Context
                 DriverScanner = new Windows.DriverScanner();
                 ServiceScanner = new Windows.ServiceScanner();
                 CommandHistoryScanner = new Windows.CommandHistoryScanner();
+                ContainerScanner = null;
                 break;
             case OS.MacOS:
                 ProcessScanner = new MacOS.ProcessScanner();
@@ -61,6 +63,7 @@ public class Context
                 DriverScanner = new MacOS.DriverScanner();
                 ServiceScanner = new MacOS.ServiceScanner();
                 CommandHistoryScanner = new Unix.CommandHistoryScanner();
+                ContainerScanner = null;
                 break;
             case OS.Linux:
                 var ctx = new Linux.Context();
@@ -73,6 +76,7 @@ public class Context
                 DriverScanner = new Linux.DriverScanner(ctx);
                 ServiceScanner = null;
                 CommandHistoryScanner = new Unix.CommandHistoryScanner();
+                ContainerScanner = null;
                 break;
             case OS.FreeBSD:
                 ProcessScanner = null;
@@ -83,6 +87,7 @@ public class Context
                 DriverScanner = new FreeBSD.DriverScanner();
                 ServiceScanner = null;
                 CommandHistoryScanner = new Unix.CommandHistoryScanner();
+                ContainerScanner = null;
                 break;
             default:
                 throw new NotImplementedException($"{RuntimeInformation.OSDescription} is currently not supported");

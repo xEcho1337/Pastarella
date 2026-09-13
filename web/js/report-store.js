@@ -38,7 +38,8 @@
       Storages: arr(data, "Storages", "storages"),
       Envs: data.Envs || data.envs || {},
       CommandHistories: arr(data, "CommandHistories", "commandHistories"),
-      RecentFiles: arr(data, "RecentFiles", "recentFiles")
+      RecentFiles: arr(data, "RecentFiles", "recentFiles"),
+      Containers: arr(data, "Containers", "containers"),
     };
   }
 

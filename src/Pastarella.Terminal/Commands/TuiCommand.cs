@@ -24,11 +24,11 @@ public class TuiCommand : Command<TuiCommand.TuiSettings>
             ["Recent Files"] = p => report.RecentFiles = RecentFileScanner.Scan(p).ToList(),
         };
 
-        if (ctx.ProcessScanner!= null)
+        if (ctx.ProcessScanner != null)
             actions.Add("Processes", p => report.Processes = ctx.ProcessScanner.Scan(p).ToList());
-        if (ctx.UserScanner!= null)
+        if (ctx.UserScanner != null)
             actions.Add("Users", p => report.Users = ctx.UserScanner.Scan(p).ToList());
-        if (ctx.StorageScanner!= null)
+        if (ctx.StorageScanner != null)
             actions.Add("Storages", p => report.Storages = ctx.StorageScanner.Scan(p).ToList());
         if (ctx.PersistenceScanner != null)
             actions.Add("Persistence checks", p => report.Persistences = ctx.PersistenceScanner.Scan(p).ToList());
@@ -40,6 +40,8 @@ public class TuiCommand : Command<TuiCommand.TuiSettings>
             actions.Add("Services", p => report.Services = ctx.ServiceScanner.Scan(p).ToList());
         if (ctx.CommandHistoryScanner != null)
             actions.Add("Command histories", p => report.CommandHistories = ctx.CommandHistoryScanner.Scan(p).ToList());
+        if (ctx.ContainerScanner != null)
+            actions.Add("Containers", p => report.Containers = ctx.ContainerScanner.Scan(p).ToList());
 
         Start(report, actions);
         return 0;

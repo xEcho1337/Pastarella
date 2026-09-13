@@ -10,6 +10,7 @@
     { id: "system", file: "system.html", title: "System", sub: "Processes, users, storage" },
     { id: "persistence", file: "persistence.html", title: "Persistence", sub: "Persistence points" },
     { id: "environment", file: "environment.html", title: "Environment", sub: "Env vars and history" },
+    { id: "containers", file: "containers.html", title: "Containers", sub: "Running containers" },
     { id: "drivers", file: "drivers.html", title: "Drivers", sub: "Drivers and kernel modules" },
     { id: "recent-files", file: "recent-files.html", title: "Recent Files", sub: "Recently accessed files" }
   ];

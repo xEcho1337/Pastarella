@@ -66,6 +66,11 @@ public class CliCommand : Command<CliCommand.CliSettings>
         [DefaultValue(false)]
         public bool CommandHistories { get; init; }
 
+        [CommandOption("-T|--containers")]
+        [Description("Show all command histories")]
+        [DefaultValue(false)]
+        public bool Containers { get; init; }
+
         [CommandArgument(0, "<output>")]
         [Description("Name of the output file")]
         public required string Output { get; init; }
@@ -150,6 +155,13 @@ public class CliCommand : Command<CliCommand.CliSettings>
                 if (ctx.CommandHistoryScanner == null)
                     throw new NotImplementedPlatformException("Command History");
                 report.CommandHistories = ctx.CommandHistoryScanner.Scan().ToList();
+            }
+
+            if (settings.Containers)
+            {
+                if (ctx.ContainerScanner == null)
+                    throw new NotImplementedPlatformException("Container");
+                report.Containers = ctx.ContainerScanner.Scan().ToList();
             }
 
             if (settings.Output.EndsWith(".json"))

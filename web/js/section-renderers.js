@@ -21,7 +21,8 @@
     envBody: ["Key", "Value"],
     historyBody: ["Shell", "Command"],
     driversBody: ["Name", "Display Name", "Identifier", "Type", "Executable Path", "Version", "Loaded", "SHA256", "Signer"],
-    recentFilesBody: ["File Path", "Creation Time", "Last Write Time"]
+    recentFilesBody: ["File Path", "Creation Time", "Last Write Time"],
+    containersBody: ["Type(s)", "Parent PID", "Children PIDs", "Metadata"],
   };
 
   function liveHeaderNames(headRow) {
@@ -238,6 +239,18 @@
     }));
   }
 
+  /* Containers: Type(s), Parent PID, Children PIDs, Metadata */
+  function renderContainers(report, bodyId) {
+    fillBody(bodyId || "containersBody", report.Containers.map(function (d) {
+      return [
+        R().mono(R().v(d, "Type", "type", "")),
+        R().v(d, "ParentPID", "parentPID", ""),
+        R().v(d, "ChildrenPIDs", "childrenPIDs", ""),
+        R().preline(R().stringifyMetadata(value(d, "Metadata", "metadata") || {}))
+      ];
+    }));
+  }
+
   var renderers = {
     services: function (report) { renderServices(report); },
     network: function (report) { renderPorts(report); renderHosts(report); },
@@ -249,7 +262,8 @@
     persistence: function (report) { renderPersistences(report); },
     environment: function (report) { renderEnvs(report); renderHistories(report); },
     drivers: function (report) { renderDrivers(report); },
-    "recent-files": function (report) { renderRecentFiles(report); }
+    "recent-files": function (report) { renderRecentFiles(report); },
+    containers: function (report) { renderContainers(report) },
   };
 
   window.PastarellaSections = {

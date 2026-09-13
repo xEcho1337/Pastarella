@@ -103,7 +103,13 @@ public class TxtWriter
             recentFiles.Write(report.RecentFiles);
         }
 
+        if (report.Containers.Count != 0)
+        {
+            var containers = new ContainerScanner(_buffer);
+            PrintTitle("Containers");
+            containers.Write(report.Containers);
+        }
+
         return _buffer.Text;
     }
 }
-
