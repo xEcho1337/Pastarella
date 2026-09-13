@@ -33,22 +33,23 @@ public static class System_ServiceProcess_ServiceControllerStatusExtensions
 public enum ServiceType
 {
     // Windows-only
-    KernelDriver,
-    FileSystemDriver,
-    Adapter,
-    RecognizerDriver,
-    Win32OwnProcess,
-    Win32ShareProcess,
-    InteractiveProcess,
+    KernelDriver = 0,
+    FileSystemDriver = 1 << 0,
+    Adapter = 1 << 1,
+    RecognizerDriver = 1 << 2,
+    Win32OwnProcess = 1 << 3,
+    Win32ShareProcess = 1 << 4,
+    InteractiveProcess = 1 << 5,
 
     // MacOS-only
-    MacOSService,
+    MacOSService = 1 << 6,
 }
 
 // For Windows
 public static class System_ServiceProcess_ServiceTypeExtensions
 {
-    public static ServiceType Into(this System.ServiceProcess.ServiceType value) {
+    public static ServiceType Into(this System.ServiceProcess.ServiceType value)
+    {
         ServiceType type = 0;
 
         if (value.HasFlag(System.ServiceProcess.ServiceType.KernelDriver))
