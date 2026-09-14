@@ -17,7 +17,7 @@ public static class PathNormalizer
                     return path[4..];
 
                 if (path[1..].StartsWith("SystemRoot\\"))
-                    return $"{Environment.GetEnvironmentVariable("SystemRoot")}\\{string.Join('\\', path[("\\SystemRoot\\".Length + 1)..])}";
+                    return $"{Environment.GetEnvironmentVariable("SystemRoot")}\\{string.Join('\\', path["\\SystemRoot\\".Length..])}";
 
                 string[] split = path[1..].Split('\\');
                 string ntDevice = $"\\{string.Join('\\', split[0..2])}";
@@ -39,7 +39,7 @@ public static class PathNormalizer
             }
             else if (path.StartsWith("system32", StringComparison.OrdinalIgnoreCase))
             {
-                return $"{Environment.GetEnvironmentVariable("SystemRoot")}\\{string.Join('\\', path[("\\SystemRoot\\".Length + 1)..])}";
+                return $"{Environment.GetEnvironmentVariable("SystemRoot")}\\System32\\{string.Join('\\', path[("SystemRoot".Length - 1)..])}";
             }
         }
         else
