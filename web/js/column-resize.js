@@ -15,8 +15,6 @@
         return ORDER_PREFIX + page + ":" + index;
     }
 
-    /* Column identity: first header text node (ignores grips and sort
-     indicators appended later) */
     function colKey(th) {
         for (var i = 0; i < th.childNodes.length; i++) {
             var n = th.childNodes[i];
@@ -33,15 +31,12 @@
         return headerCells(table).map(colKey);
     }
 
-    /* ---- Widths (object keyed by column name) ---- */
-
     function loadWidthMap(page, index, table) {
         try {
             var raw = localStorage.getItem(widthsKey(page, index));
             if (!raw) return null;
             var parsed = JSON.parse(raw);
             if (Array.isArray(parsed)) {
-                /* legacy positional format: map onto current headers, then re-save */
                 var map = {};
                 headerCells(table).forEach(function (th, i) {
                     if (parsed[i]) map[colKey(th)] = parsed[i];
@@ -58,9 +53,7 @@
     function saveWidthMap(page, index, map) {
         try {
             localStorage.setItem(widthsKey(page, index), JSON.stringify(map));
-        } catch (e) {
-            /* storage unavailable: resize still works for this session */
-        }
+        } catch (e) {}
     }
 
     function readWidthMap(table, keep) {
@@ -69,8 +62,7 @@
         headerCells(table).forEach(function (th) {
             var name = colKey(th);
             if (th.style.display === "none") {
-                if (keep[name])
-                    map[name] = keep[name]; /* hidden: keep last known width */
+                if (keep[name]) map[name] = keep[name];
                 return;
             }
             map[name] = Math.round(
@@ -79,8 +71,6 @@
         });
         return map;
     }
-
-    /* ---- Order ---- */
 
     function loadOrder(page, index) {
         try {
@@ -99,18 +89,14 @@
                 orderKey(page, index),
                 JSON.stringify(colNames(table)),
             );
-        } catch (e) {
-            /* ignore */
-        }
+        } catch (e) {}
     }
 
     function clearTableStorage(page, index) {
         try {
             localStorage.removeItem(widthsKey(page, index));
             localStorage.removeItem(orderKey(page, index));
-        } catch (e) {
-            /* ignore */
-        }
+        } catch (e) {}
     }
 
     function sameSet(a, b) {
@@ -119,8 +105,6 @@
             return b.indexOf(name) !== -1;
         });
     }
-
-    /* ---- Visibility (array of hidden column names) ---- */
 
     function visKey(page, index) {
         return VIS_PREFIX + page + ":" + index;
@@ -140,22 +124,15 @@
     function saveHidden(page, index, hidden) {
         try {
             localStorage.setItem(visKey(page, index), JSON.stringify(hidden));
-        } catch (e) {
-            /* ignore */
-        }
+        } catch (e) {}
     }
 
-    /* Hide header + body cells by DOM position (mirrors any saved order) */
     function applyVisibility(table, page, index) {
         var names = colNames(table);
         var hidden = loadHidden(page, index).filter(function (n) {
             return names.indexOf(n) !== -1;
         });
-        saveHidden(
-            page,
-            index,
-            hidden,
-        ); /* drop stale names after schema changes */
+        saveHidden(page, index, hidden);
         headerCells(table).forEach(function (th, i) {
             var hide = hidden.indexOf(colKey(th)) !== -1;
             th.style.display = hide ? "none" : "";
@@ -173,8 +150,6 @@
         if (at !== -1) {
             hidden.splice(at, 1);
         } else {
-            /* Never hide the last visible column: with no header left there
-         would be nothing to right-click to bring columns back */
             var visible = colNames(table).filter(function (n) {
                 return hidden.indexOf(n) === -1;
             });
@@ -191,8 +166,6 @@
         applyVisibility(table, page, index);
     }
 
-    /* ---- Right-click column menu ---- */
-
     var openMenu = null;
 
     function closeMenu() {
@@ -201,7 +174,6 @@
         openMenu = null;
     }
 
-    /* One set of global closers for every table menu */
     document.addEventListener("click", function (e) {
         if (openMenu && !openMenu.contains(e.target)) closeMenu();
     });
@@ -211,19 +183,14 @@
     window.addEventListener("scroll", closeMenu, true);
     window.addEventListener("resize", closeMenu);
 
-    /* Canonical names (stable listing even after a reorder) */
     function originalNames(table) {
         try {
             var orig = JSON.parse(table.dataset.origOrder || "null");
             if (orig && sameSet(orig, colNames(table))) return orig;
-        } catch (e) {
-            /* fall through */
-        }
+        } catch (e) {}
         return colNames(table);
     }
 
-    /* Checkbox menu: checked = visible. Hidden columns stay listed
-     so they can always be brought back, plus a Show all shortcut. */
     function openColumnMenu(table, page, index, x, y) {
         closeMenu();
         var names = originalNames(table);
@@ -285,7 +252,7 @@
         refreshMenuState();
 
         document.body.appendChild(menu);
-        var rect = menu.getBoundingClientRect(); /* clamp inside the viewport */
+        var rect = menu.getBoundingClientRect();
         menu.style.left =
             Math.max(4, Math.min(x, window.innerWidth - rect.width - 4)) + "px";
         menu.style.top =
@@ -294,7 +261,6 @@
         openMenu = menu;
     }
 
-    /* Move one column (header + every body cell) from fromIdx to toIdx */
     function moveColumnCells(table, fromIdx, toIdx) {
         if (fromIdx === toIdx) return;
         table.querySelectorAll("tr").forEach(function (row) {
@@ -302,7 +268,7 @@
             var cell = cells[fromIdx];
             if (!cell) return;
             row.removeChild(cell);
-            var ref = cells[toIdx]; /* live collection, already shifted */
+            var ref = cells[toIdx];
             if (ref) row.insertBefore(cell, ref);
             else row.appendChild(cell);
         });
@@ -315,17 +281,12 @@
         });
     }
 
-    /* ---- Fixed layout without visual jumps ---- */
-
-    /* Freeze the current automatic layout into explicit widths so that
-     switching to fixed layout changes nothing visually. */
     function freezeLayout(table, widthsByName, hidden) {
         table.classList.add("resizable");
         hidden = hidden || [];
         headerCells(table).forEach(function (th) {
             var name = colKey(th);
-            if (hidden.indexOf(name) !== -1)
-                return; /* measured width is 0 while hidden */
+            if (hidden.indexOf(name) !== -1) return;
             var w = widthsByName[name] || th.offsetWidth;
             th.style.width = Math.round(w) + "px";
         });
@@ -346,12 +307,10 @@
         }
     }
 
-    /* ---- Resize (grip drag) ---- */
-
     function onGripDown(e, table, page, index, th) {
         e.preventDefault();
         e.stopPropagation();
-        /* First interaction: freeze layout so the drag starts from what you see */
+
         if (!table.classList.contains("resizable")) {
             freezeLayout(table, {}, loadHidden(page, index));
         }
@@ -385,16 +344,12 @@
         try {
             var orig = JSON.parse(table.dataset.origOrder || "null");
             if (orig && sameSet(orig, colNames(table))) applyOrder(table, orig);
-        } catch (e) {
-            /* keep current order */
-        }
+        } catch (e) {}
         table.classList.remove("resizable");
         headerCells(table).forEach(function (th) {
             th.style.width = "";
         });
     }
-
-    /* ---- Reorder (header drag) ---- */
 
     function clearIndicators(table) {
         headerCells(table).forEach(function (th) {
@@ -402,7 +357,6 @@
         });
     }
 
-    /* Insertion reference among live header cells, excluding the dragged one */
     function dropTarget(table, dragTh, clientX) {
         var cells = headerCells(table).filter(function (th) {
             return th !== dragTh;
@@ -411,7 +365,7 @@
             var rect = cells[i].getBoundingClientRect();
             if (clientX < rect.left + rect.width / 2) return cells[i];
         }
-        return null; /* append at the end */
+        return null;
     }
 
     function onHeaderDown(e, table, page, index, th) {
@@ -479,7 +433,7 @@
             var ref = wasDragging ? dropTarget(table, th, ev.clientX) : null;
             cleanup();
             if (!wasDragging) return;
-            /* Reorder header + body cells, then persist order (widths are name-keyed) */
+
             var headRow = th.parentNode;
             headRow.removeChild(th);
             if (ref) headRow.insertBefore(th, ref);
@@ -499,9 +453,7 @@
                 index,
                 readWidthMap(table, loadWidthMap(page, index, table)),
             );
-            table.dataset.reorderedAt = String(
-                Date.now(),
-            ); /* let sort clicks ignore this drop */
+            table.dataset.reorderedAt = String(Date.now());
         }
 
         function onCancel() {
@@ -522,10 +474,8 @@
         var cells = headerCells(table);
         if (cells.length < 2) return;
 
-        /* Restore the user's order + widths + visibility before adding grips */
         applySaved(table, page, index);
 
-        /* Right-click a header: checkbox menu to show/hide columns */
         table.addEventListener("contextmenu", function (e) {
             var th =
                 e.target && e.target.closest
@@ -541,7 +491,7 @@
             th.addEventListener("pointerdown", function (e) {
                 onHeaderDown(e, table, page, index, th);
             });
-            if (i === cells.length - 1) return; /* last column fills the rest */
+            if (i === cells.length - 1) return;
             var grip = document.createElement("span");
             grip.className = "col-grip";
             grip.title = "Drag to resize · double-click to reset";
@@ -556,7 +506,6 @@
         });
     }
 
-    /* Re-apply a saved order + visibility (used after the pager replaces rows) */
     function reapplyOrder(table) {
         if (!table.dataset.page) return;
         var page = table.dataset.page;
@@ -566,7 +515,6 @@
         applyVisibility(table, page, index);
     }
 
-    /* Apply to every dark-table inside container (called by the router) */
     function applyToPage(container, page) {
         if (!container) return;
         var tables = container.querySelectorAll("table.dark-table");
