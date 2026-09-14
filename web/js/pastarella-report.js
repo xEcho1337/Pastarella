@@ -5,12 +5,10 @@ export class PastarellaReport {
         this.report = null;
     }
 
-    v(obj, upper, lower, fallback) {
-        if (!obj) return fallback !== undefined ? fallback : "-";
+    v(obj, upper) {
+        if (!obj) return "-";
         if (obj[upper] !== undefined && obj[upper] !== null) return obj[upper];
-        if (lower && obj[lower] !== undefined && obj[lower] !== null)
-            return obj[lower];
-        return fallback !== undefined ? fallback : "–";
+        return "-";
     }
 
     // TODO: remove this

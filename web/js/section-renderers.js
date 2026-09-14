@@ -128,18 +128,18 @@ import { pastarellaReport } from "./pastarella-report.js";
             bodyId || "processesBody",
             report.Processes.map(function (d) {
                 return [
-                    pastarellaReport.v(d, "Id", "id", ""),
-                    pastarellaReport.v(d, "Name", "name", ""),
+                    pastarellaReport.v(d, "Id"),
+                    pastarellaReport.v(d, "Name"),
                     pastarellaReport.mono(
-                        pastarellaReport.v(d, "Path", "path", "") +
+                        pastarellaReport.v(d, "Path") +
                         " " +
-                        pastarellaReport.v(d, "CommandArgs", "commandArgs", ""),
+                        pastarellaReport.v(d, "CommandArgs"),
                     ),
                     pastarellaReport.mono(pastarellaReport.v(d, "Sha256", "sha256", "")),
                     pastarellaReport.centered(
                         pastarellaReport.signerIcon(value(d, "Signer", "signer")),
                     ),
-                    pastarellaReport.v(d, "StartTime", "startTime", ""),
+                    pastarellaReport.v(d, "StartTime"),
                     pastarellaReport.preline(
                         pastarellaReport.stringifyMetadata(
                             value(d, "Metadata", "metadata") || {},
@@ -157,14 +157,14 @@ import { pastarellaReport } from "./pastarella-report.js";
             report.Services.map(function (d) {
                 var args = pastarellaReport.v(d, "Arguments", "arguments", []);
                 var cmd =
-                    pastarellaReport.v(d, "ExecPath", "execPath", "") +
+                    pastarellaReport.v(d, "ExecPath") +
                     " " +
                     (Array.isArray(args) ? args.join(" ") : args);
                 return [
-                    pastarellaReport.v(d, "Status", "status", ""),
-                    pastarellaReport.v(d, "ServiceType", "serviceType", ""),
-                    pastarellaReport.v(d, "ServiceName", "serviceName", ""),
-                    pastarellaReport.v(d, "DisplayName", "displayName", ""),
+                    pastarellaReport.v(d, "Status"),
+                    pastarellaReport.v(d, "ServiceType"),
+                    pastarellaReport.v(d, "ServiceName"),
+                    pastarellaReport.v(d, "DisplayName"),
                     pastarellaReport.mono(cmd.trim()),
                     pastarellaReport.mono(pastarellaReport.v(d, "Sha256", "sha256", "")),
                 ];
@@ -179,20 +179,20 @@ import { pastarellaReport } from "./pastarella-report.js";
             report.OpenPorts.map(function (d) {
                 var local = pastarellaReport.v(d, "Local", "local", {});
                 var remote = pastarellaReport.v(d, "Remote", "remote", null);
-                var state = pastarellaReport.v(d, "State", "state", "");
+                var state = pastarellaReport.v(d, "State");
                 return [
-                    pastarellaReport.v(d, "Protocol", "protocol", ""),
+                    pastarellaReport.v(d, "Protocol"),
                     state === "–" ? "" : state,
-                    pastarellaReport.v(local, "Ip", "ip", "") +
+                    pastarellaReport.v(local, "Ip") +
                     ":" +
-                    pastarellaReport.v(local, "Port", "port", ""),
+                    pastarellaReport.v(local, "Port"),
                     remote
-                        ? pastarellaReport.v(remote, "Ip", "ip", "") +
+                        ? pastarellaReport.v(remote, "Ip") +
                         ":" +
-                        pastarellaReport.v(remote, "Port", "port", "")
+                        pastarellaReport.v(remote, "Port")
                         : "",
-                    pastarellaReport.v(d, "ProcessId", "processId", ""),
-                    pastarellaReport.v(d, "ProcessName", "processName", ""),
+                    pastarellaReport.v(d, "ProcessId"),
+                    pastarellaReport.v(d, "ProcessName"),
                 ];
             }),
         );
@@ -205,10 +205,10 @@ import { pastarellaReport } from "./pastarella-report.js";
             report.Users.map(function (d) {
                 var disabled = value(d, "Disabled", "disabled");
                 return [
-                    pastarellaReport.v(d, "Name", "name", ""),
-                    pastarellaReport.v(d, "Description", "description", ""),
-                    pastarellaReport.v(d, "Uid", "uid", ""),
-                    pastarellaReport.mono(pastarellaReport.v(d, "Home", "home", "")),
+                    pastarellaReport.v(d, "Name"),
+                    pastarellaReport.v(d, "Description"),
+                    pastarellaReport.v(d, "Uid"),
+                    pastarellaReport.mono(pastarellaReport.v(d, "Home")),
                     pastarellaReport.centered(
                         pastarellaReport.booleanIcon(
                             disabled === true || disabled === "true",
@@ -230,8 +230,8 @@ import { pastarellaReport } from "./pastarella-report.js";
             bodyId || "hostsBody",
             report.Hosts.map(function (d) {
                 return [
-                    pastarellaReport.v(d, "Ip", "ip", ""),
-                    pastarellaReport.v(d, "Domain", "domain", ""),
+                    pastarellaReport.v(d, "Ip"),
+                    pastarellaReport.v(d, "Domain"),
                 ];
             }),
         );
@@ -244,14 +244,14 @@ import { pastarellaReport } from "./pastarella-report.js";
             report.Drivers.map(function (d) {
                 var loaded = value(d, "Loaded", "loaded");
                 return [
-                    pastarellaReport.v(d, "Name", "name", ""),
-                    pastarellaReport.v(d, "DisplayName", "displayName", ""),
-                    pastarellaReport.mono(pastarellaReport.v(d, "Identifier", "identifier", "")),
-                    pastarellaReport.v(d, "Type", "type", ""),
+                    pastarellaReport.v(d, "Name"),
+                    pastarellaReport.v(d, "DisplayName"),
+                    pastarellaReport.mono(pastarellaReport.v(d, "Identifier")),
+                    pastarellaReport.v(d, "Type"),
                     pastarellaReport.mono(
-                        pastarellaReport.v(d, "ExecutablePath", "executablePath", ""),
+                        pastarellaReport.v(d, "ExecutablePath"),
                     ),
-                    pastarellaReport.v(d, "Version", "version", ""),
+                    pastarellaReport.v(d, "Version"),
                     pastarellaReport.centered(
                         pastarellaReport.booleanIcon(
                             loaded === true || loaded === "true",
@@ -275,12 +275,12 @@ import { pastarellaReport } from "./pastarella-report.js";
             badge.textContent = String(score);
             return [
                 badge,
-                pastarellaReport.v(d, "Name", "name", ""),
-                pastarellaReport.mono(pastarellaReport.v(d, "Path", "path", "")),
+                pastarellaReport.v(d, "Name"),
+                pastarellaReport.mono(pastarellaReport.v(d, "Path")),
                 pastarellaReport.preline(pastarellaReport.actionText(value(d, "Action", "action"))),
-                pastarellaReport.v(d, "Trigger", "trigger", ""),
-                pastarellaReport.v(d, "Privilege", "privilege", ""),
-                pastarellaReport.v(d, "Type", "type", ""),
+                pastarellaReport.v(d, "Trigger"),
+                pastarellaReport.v(d, "Privilege"),
+                pastarellaReport.v(d, "Type"),
                 pastarellaReport.preline(
                     pastarellaReport.stringifyMetadata(
                         value(d, "Metadata", "metadata") || {},
@@ -306,8 +306,8 @@ import { pastarellaReport } from "./pastarella-report.js";
             bodyId || "storageBody",
             report.Storages.map(function (d) {
                 return [
-                    pastarellaReport.v(d, "Type", "type", ""),
-                    pastarellaReport.v(d, "Name", "name", ""),
+                    pastarellaReport.v(d, "Type"),
+                    pastarellaReport.v(d, "Name"),
                     pastarellaReport.fmtGB(pastarellaReport.v(d, "FreeSpace", "freeSpace", NaN)),
                     pastarellaReport.fmtGB(pastarellaReport.v(d, "TotalSpace", "totalSpace", NaN)),
                 ];
@@ -327,7 +327,7 @@ import { pastarellaReport } from "./pastarella-report.js";
     function renderHistories(report) {
         var rows = [];
         report.CommandHistories.forEach(function (history) {
-            var shell = pastarellaReport.v(history, "Shell", "shell", "");
+            var shell = pastarellaReport.v(history, "Shell");
             var commands = pastarellaReport.v(history, "Commands", "commands", []);
             (Array.isArray(commands) ? commands : [commands]).forEach(
                 function (cmd) {
@@ -344,9 +344,9 @@ import { pastarellaReport } from "./pastarella-report.js";
             bodyId || "recentFilesBody",
             report.RecentFiles.map(function (d) {
                 return [
-                    pastarellaReport.mono(pastarellaReport.v(d, "FilePath", "filePath", "")),
-                    pastarellaReport.v(d, "CreationTime", "creationTime", ""),
-                    pastarellaReport.v(d, "LastWriteTime", "lastWriteTime", ""),
+                    pastarellaReport.mono(pastarellaReport.v(d, "FilePath")),
+                    pastarellaReport.v(d, "CreationTime"),
+                    pastarellaReport.v(d, "LastWriteTime"),
                 ];
             }),
         );
@@ -358,9 +358,9 @@ import { pastarellaReport } from "./pastarella-report.js";
             bodyId || "containersBody",
             report.Containers.map(function (d) {
                 return [
-                    pastarellaReport.mono(pastarellaReport.v(d, "Type", "type", "")),
-                    pastarellaReport.v(d, "ParentPID", "parentPID", ""),
-                    pastarellaReport.v(d, "ChildrenPIDs", "childrenPIDs", ""),
+                    pastarellaReport.mono(pastarellaReport.v(d, "Type")),
+                    pastarellaReport.v(d, "ParentPID"),
+                    pastarellaReport.v(d, "ChildrenPIDs"),
                     pastarellaReport.preline(
                         pastarellaReport.stringifyMetadata(
                             value(d, "Metadata", "metadata") || {},
