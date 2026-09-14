@@ -16,15 +16,24 @@ public class ServiceScanner : IServiceScanner
         var services = Registry.LocalMachine.OpenSubKey(@"SYSTEM\\CurrentControlSet\\Services");
         var key = services?.OpenSubKey(service.ServiceName);
 
-        string[] parts = (key?.GetValue("ImagePath")?.ToString() ?? throw new NotImplementedException()).Split(' ');
+        string imagePath = key?.GetValue("ImagePath")?.ToString() ?? throw new NotImplementedException();
+        string[] parts = PathNormalizer.Unescape(imagePath);
 
-        string? hash = PlatformHelpers.GetSha256(parts[0]);
+        string? path = null;
+        string? hash = null;
+
+        if (parts.Length != 0)
+        {
+            path = parts[0];
+            hash = PlatformHelpers.GetSha256(path);
+        }
+
         return new ServiceInfo(
             service.Status.Into(),
             service.ServiceType.Into(),
             service.ServiceName,
             service.DisplayName,
-            parts[0],
+            path ?? "",
             parts.Skip(1).ToArray(),
             hash
         );
