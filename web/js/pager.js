@@ -1,3 +1,5 @@
+import { pastarellaReport } from "./pastarella-report.js";
+
 (function () {
     "use strict";
 
@@ -390,7 +392,7 @@
         if (!s) return;
         var body = document.getElementById(tbodyId);
         if (!body) return;
-        var R = window.PastarellaReport;
+        var R = pastarellaReport;
         if (!R) return;
 
         var pages = totalPages(s);

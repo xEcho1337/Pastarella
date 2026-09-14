@@ -1,9 +1,7 @@
+import { pastarellaReport } from "./pastarella-report.js";
+
 (function () {
     "use strict";
-
-    function Report() {
-        return window.PastarellaReport;
-    }
 
     var HEADERS = {
         servicesBody: [
@@ -113,7 +111,7 @@
         body.innerHTML = "";
         rows.forEach(function (cells) {
             var tr = document.createElement("tr");
-            Report().appendCells(tr, cells);
+            pastarellaReport.appendCells(tr, cells);
             body.appendChild(tr);
         });
     }
@@ -130,20 +128,20 @@
             bodyId || "processesBody",
             report.Processes.map(function (d) {
                 return [
-                    Report().v(d, "Id", "id", ""),
-                    Report().v(d, "Name", "name", ""),
-                    Report().mono(
-                        Report().v(d, "Path", "path", "") +
-                            " " +
-                            Report().v(d, "CommandArgs", "commandArgs", ""),
+                    pastarellaReport.v(d, "Id", "id", ""),
+                    pastarellaReport.v(d, "Name", "name", ""),
+                    pastarellaReport.mono(
+                        pastarellaReport.v(d, "Path", "path", "") +
+                        " " +
+                        pastarellaReport.v(d, "CommandArgs", "commandArgs", ""),
                     ),
-                    Report().mono(R().v(d, "Sha256", "sha256", "")),
-                    Report().centered(
-                        R().signerIcon(value(d, "Signer", "signer")),
+                    pastarellaReport.mono(pastarellaReport.v(d, "Sha256", "sha256", "")),
+                    pastarellaReport.centered(
+                        pastarellaReport.signerIcon(value(d, "Signer", "signer")),
                     ),
-                    Report().v(d, "StartTime", "startTime", ""),
-                    Report().preline(
-                        Report().stringifyMetadata(
+                    pastarellaReport.v(d, "StartTime", "startTime", ""),
+                    pastarellaReport.preline(
+                        pastarellaReport.stringifyMetadata(
                             value(d, "Metadata", "metadata") || {},
                         ),
                     ),
@@ -157,18 +155,18 @@
         fillBody(
             "servicesBody",
             report.Services.map(function (d) {
-                var args = Report().v(d, "Arguments", "arguments", []);
+                var args = pastarellaReport.v(d, "Arguments", "arguments", []);
                 var cmd =
-                    Report().v(d, "ExecPath", "execPath", "") +
+                    pastarellaReport.v(d, "ExecPath", "execPath", "") +
                     " " +
                     (Array.isArray(args) ? args.join(" ") : args);
                 return [
-                    Report().v(d, "Status", "status", ""),
-                    Report().v(d, "ServiceType", "serviceType", ""),
-                    Report().v(d, "ServiceName", "serviceName", ""),
-                    Report().v(d, "DisplayName", "displayName", ""),
-                    Report().mono(cmd.trim()),
-                    Report().mono(R().v(d, "Sha256", "sha256", "")),
+                    pastarellaReport.v(d, "Status", "status", ""),
+                    pastarellaReport.v(d, "ServiceType", "serviceType", ""),
+                    pastarellaReport.v(d, "ServiceName", "serviceName", ""),
+                    pastarellaReport.v(d, "DisplayName", "displayName", ""),
+                    pastarellaReport.mono(cmd.trim()),
+                    pastarellaReport.mono(pastarellaReport.v(d, "Sha256", "sha256", "")),
                 ];
             }),
         );
@@ -179,22 +177,22 @@
         fillBody(
             bodyId || "portsBody",
             report.OpenPorts.map(function (d) {
-                var local = Report().v(d, "Local", "local", {});
-                var remote = Report().v(d, "Remote", "remote", null);
-                var state = Report().v(d, "State", "state", "");
+                var local = pastarellaReport.v(d, "Local", "local", {});
+                var remote = pastarellaReport.v(d, "Remote", "remote", null);
+                var state = pastarellaReport.v(d, "State", "state", "");
                 return [
-                    Report().v(d, "Protocol", "protocol", ""),
+                    pastarellaReport.v(d, "Protocol", "protocol", ""),
                     state === "–" ? "" : state,
-                    Report().v(local, "Ip", "ip", "") +
-                        ":" +
-                        Report().v(local, "Port", "port", ""),
+                    pastarellaReport.v(local, "Ip", "ip", "") +
+                    ":" +
+                    pastarellaReport.v(local, "Port", "port", ""),
                     remote
-                        ? Report().v(remote, "Ip", "ip", "") +
-                          ":" +
-                          Report().v(remote, "Port", "port", "")
+                        ? pastarellaReport.v(remote, "Ip", "ip", "") +
+                        ":" +
+                        pastarellaReport.v(remote, "Port", "port", "")
                         : "",
-                    Report().v(d, "ProcessId", "processId", ""),
-                    Report().v(d, "ProcessName", "processName", ""),
+                    pastarellaReport.v(d, "ProcessId", "processId", ""),
+                    pastarellaReport.v(d, "ProcessName", "processName", ""),
                 ];
             }),
         );
@@ -207,17 +205,17 @@
             report.Users.map(function (d) {
                 var disabled = value(d, "Disabled", "disabled");
                 return [
-                    Report().v(d, "Name", "name", ""),
-                    Report().v(d, "Description", "description", ""),
-                    Report().v(d, "Uid", "uid", ""),
-                    Report().mono(R().v(d, "Home", "home", "")),
-                    Report().centered(
-                        Report().booleanIcon(
+                    pastarellaReport.v(d, "Name", "name", ""),
+                    pastarellaReport.v(d, "Description", "description", ""),
+                    pastarellaReport.v(d, "Uid", "uid", ""),
+                    pastarellaReport.mono(pastarellaReport.v(d, "Home", "home", "")),
+                    pastarellaReport.centered(
+                        pastarellaReport.booleanIcon(
                             disabled === true || disabled === "true",
                         ),
                     ),
-                    Report().preline(
-                        Report().stringifyMetadata(
+                    pastarellaReport.preline(
+                        pastarellaReport.stringifyMetadata(
                             value(d, "Metadata", "metadata") || {},
                         ),
                     ),
@@ -232,8 +230,8 @@
             bodyId || "hostsBody",
             report.Hosts.map(function (d) {
                 return [
-                    Report().v(d, "Ip", "ip", ""),
-                    Report().v(d, "Domain", "domain", ""),
+                    pastarellaReport.v(d, "Ip", "ip", ""),
+                    pastarellaReport.v(d, "Domain", "domain", ""),
                 ];
             }),
         );
@@ -246,22 +244,22 @@
             report.Drivers.map(function (d) {
                 var loaded = value(d, "Loaded", "loaded");
                 return [
-                    Report().v(d, "Name", "name", ""),
-                    Report().v(d, "DisplayName", "displayName", ""),
-                    Report().mono(R().v(d, "Identifier", "identifier", "")),
-                    Report().v(d, "Type", "type", ""),
-                    Report().mono(
-                        R().v(d, "ExecutablePath", "executablePath", ""),
+                    pastarellaReport.v(d, "Name", "name", ""),
+                    pastarellaReport.v(d, "DisplayName", "displayName", ""),
+                    pastarellaReport.mono(pastarellaReport.v(d, "Identifier", "identifier", "")),
+                    pastarellaReport.v(d, "Type", "type", ""),
+                    pastarellaReport.mono(
+                        pastarellaReport.v(d, "ExecutablePath", "executablePath", ""),
                     ),
-                    Report().v(d, "Version", "version", ""),
-                    Report().centered(
-                        Report().booleanIcon(
+                    pastarellaReport.v(d, "Version", "version", ""),
+                    pastarellaReport.centered(
+                        pastarellaReport.booleanIcon(
                             loaded === true || loaded === "true",
                         ),
                     ),
-                    Report().mono(R().v(d, "Sha256", "sha256", "")),
-                    Report().centered(
-                        R().signerIcon(value(d, "Signer", "signer")),
+                    pastarellaReport.mono(pastarellaReport.v(d, "Sha256", "sha256", "")),
+                    pastarellaReport.centered(
+                        pastarellaReport.signerIcon(value(d, "Signer", "signer")),
                     ),
                 ];
             }),
@@ -277,14 +275,14 @@
             badge.textContent = String(score);
             return [
                 badge,
-                Report().v(d, "Name", "name", ""),
-                Report().mono(R().v(d, "Path", "path", "")),
-                Report().preline(R().actionText(value(d, "Action", "action"))),
-                Report().v(d, "Trigger", "trigger", ""),
-                Report().v(d, "Privilege", "privilege", ""),
-                Report().v(d, "Type", "type", ""),
-                Report().preline(
-                    Report().stringifyMetadata(
+                pastarellaReport.v(d, "Name", "name", ""),
+                pastarellaReport.mono(pastarellaReport.v(d, "Path", "path", "")),
+                pastarellaReport.preline(pastarellaReport.actionText(value(d, "Action", "action"))),
+                pastarellaReport.v(d, "Trigger", "trigger", ""),
+                pastarellaReport.v(d, "Privilege", "privilege", ""),
+                pastarellaReport.v(d, "Type", "type", ""),
+                pastarellaReport.preline(
+                    pastarellaReport.stringifyMetadata(
                         value(d, "Metadata", "metadata") || {},
                     ),
                 ),
@@ -308,10 +306,10 @@
             bodyId || "storageBody",
             report.Storages.map(function (d) {
                 return [
-                    Report().v(d, "Type", "type", ""),
-                    Report().v(d, "Name", "name", ""),
-                    Report().fmtGB(R().v(d, "FreeSpace", "freeSpace", NaN)),
-                    Report().fmtGB(R().v(d, "TotalSpace", "totalSpace", NaN)),
+                    pastarellaReport.v(d, "Type", "type", ""),
+                    pastarellaReport.v(d, "Name", "name", ""),
+                    pastarellaReport.fmtGB(pastarellaReport.v(d, "FreeSpace", "freeSpace", NaN)),
+                    pastarellaReport.fmtGB(pastarellaReport.v(d, "TotalSpace", "totalSpace", NaN)),
                 ];
             }),
         );
@@ -320,7 +318,7 @@
     /* Envs: Key, Value */
     function renderEnvs(report) {
         var rows = Object.entries(report.Envs || {}).map(function (entry) {
-            return [R().mono(entry[0]), entry[1]];
+            return [pastarellaReport.mono(entry[0]), entry[1]];
         });
         fillBody("envBody", rows);
     }
@@ -329,11 +327,11 @@
     function renderHistories(report) {
         var rows = [];
         report.CommandHistories.forEach(function (history) {
-            var shell = Report().v(history, "Shell", "shell", "");
-            var commands = Report().v(history, "Commands", "commands", []);
+            var shell = pastarellaReport.v(history, "Shell", "shell", "");
+            var commands = pastarellaReport.v(history, "Commands", "commands", []);
             (Array.isArray(commands) ? commands : [commands]).forEach(
                 function (cmd) {
-                    rows.push([shell, Report().mono(cmd)]);
+                    rows.push([shell, pastarellaReport.mono(cmd)]);
                 },
             );
         });
@@ -346,9 +344,9 @@
             bodyId || "recentFilesBody",
             report.RecentFiles.map(function (d) {
                 return [
-                    Report().mono(R().v(d, "FilePath", "filePath", "")),
-                    Report().v(d, "CreationTime", "creationTime", ""),
-                    Report().v(d, "LastWriteTime", "lastWriteTime", ""),
+                    pastarellaReport.mono(pastarellaReport.v(d, "FilePath", "filePath", "")),
+                    pastarellaReport.v(d, "CreationTime", "creationTime", ""),
+                    pastarellaReport.v(d, "LastWriteTime", "lastWriteTime", ""),
                 ];
             }),
         );
@@ -360,11 +358,11 @@
             bodyId || "containersBody",
             report.Containers.map(function (d) {
                 return [
-                    Report().mono(R().v(d, "Type", "type", "")),
-                    Report().v(d, "ParentPID", "parentPID", ""),
-                    Report().v(d, "ChildrenPIDs", "childrenPIDs", ""),
-                    Report().preline(
-                        Report().stringifyMetadata(
+                    pastarellaReport.mono(pastarellaReport.v(d, "Type", "type", "")),
+                    pastarellaReport.v(d, "ParentPID", "parentPID", ""),
+                    pastarellaReport.v(d, "ChildrenPIDs", "childrenPIDs", ""),
+                    pastarellaReport.preline(
+                        pastarellaReport.stringifyMetadata(
                             value(d, "Metadata", "metadata") || {},
                         ),
                     ),

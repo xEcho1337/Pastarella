@@ -1,3 +1,5 @@
+import { pastarellaReport } from "./pastarella-report.js";
+
 (function () {
     "use strict";
 
@@ -8,7 +10,7 @@
     }
 
     function hasReport() {
-        return window.PastarellaReport && window.PastarellaReport.hasReport();
+        return pastarellaReport && pastarellaReport.hasReport();
     }
 
     function setActiveLink(name) {
@@ -38,7 +40,7 @@
         } else if (window.PastarellaSections && hasReport()) {
             window.PastarellaSections.render(
                 name,
-                window.PastarellaReport.getReport(),
+                pastarellaReport.getReport(),
             );
         }
     }
@@ -86,7 +88,8 @@
                         window.PastarellaSearch.bind(container);
                 }
             })
-            .catch(function () {
+            .catch(function (e) {
+                console.error(e);
                 container.innerHTML =
                     '<div class="panel"><div class="panel-title">Error</div><div class="panel-sub">Could not load page: ' +
                     name +

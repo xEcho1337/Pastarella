@@ -1,3 +1,5 @@
+import { pastarellaReport } from "./pastarella-report.js";
+
 (function () {
     "use strict";
 
@@ -117,11 +119,11 @@
     }
 
     function exportHashes() {
-        if (!window.PastarellaReport || !window.PastarellaReport.hasReport()) {
+        if (!pastarellaReport || !pastarellaReport.hasReport()) {
             alert("Load a report first");
             return;
         }
-        var report = window.PastarellaReport.getReport();
+        var report = pastarellaReport.getReport();
         download("pastarella-hashes-" + stamp() + ".txt", buildTxt(report));
     }
 

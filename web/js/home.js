@@ -1,3 +1,5 @@
+import { pastarellaReport } from "./pastarella-report.js";
+
 (function () {
     "use strict";
 
@@ -18,7 +20,7 @@
         var line = document.getElementById("homeReportLine");
         if (line) {
             var has =
-                window.PastarellaReport && window.PastarellaReport.hasReport();
+                pastarellaReport && pastarellaReport.hasReport();
             line.classList.toggle("d-none", !has);
             var openBtn = line.querySelector("[data-goto-dashboard]");
             if (openBtn && !openBtn.dataset.bound) {

@@ -1,8 +1,10 @@
+import { pastarellaReport } from "./pastarella-report.js";
+
 (function () {
     "use strict";
 
     function store() {
-        return window.PastarellaReport;
+        return pastarellaReport;
     }
 
     function setText(id, value) {

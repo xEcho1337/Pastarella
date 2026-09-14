@@ -1,17 +1,11 @@
-(function () {
-    "use strict";
+export class PastarellaReport {
+    report = null;
 
-    var STORAGE_KEY = "pastarellaReport";
-    var report = null;
-
-    try {
-        var saved = sessionStorage.getItem(STORAGE_KEY);
-        if (saved) report = JSON.parse(saved);
-    } catch (e) {
-        report = null;
+    constructor() {
+        this.report = null;
     }
 
-    function v(obj, upper, lower, fallback) {
+    v(obj, upper, lower, fallback) {
         if (!obj) return fallback !== undefined ? fallback : "-";
         if (obj[upper] !== undefined && obj[upper] !== null) return obj[upper];
         if (lower && obj[lower] !== undefined && obj[lower] !== null)
@@ -19,7 +13,8 @@
         return fallback !== undefined ? fallback : "–";
     }
 
-    function arr(reportObj, upper, lower) {
+    // TODO: remove this
+    arr(reportObj, upper, lower) {
         var value = reportObj
             ? reportObj[upper] !== undefined
                 ? reportObj[upper]
@@ -28,66 +23,66 @@
         return Array.isArray(value) ? value : [];
     }
 
-    function normalize(data) {
+    normalize(data) {
         if (!data || typeof data !== "object") return null;
         return {
             Timestamp: data.Timestamp || data.timestamp || null,
-            Processes: arr(data, "Processes", "processes"),
-            Services: arr(data, "Services", "services"),
-            OpenPorts: arr(data, "OpenPorts", "openPorts"),
-            Users: arr(data, "Users", "users"),
-            Hosts: arr(data, "Hosts", "hosts"),
-            Drivers: arr(data, "Drivers", "drivers"),
-            Persistences: arr(data, "Persistences", "persistences"),
-            Storages: arr(data, "Storages", "storages"),
+            Processes: this.arr(data, "Processes", "processes"),
+            Services: this.arr(data, "Services", "services"),
+            OpenPorts: this.arr(data, "OpenPorts", "openPorts"),
+            Users: this.arr(data, "Users", "users"),
+            Hosts: this.arr(data, "Hosts", "hosts"),
+            Drivers: this.arr(data, "Drivers", "drivers"),
+            Persistences: this.arr(data, "Persistences", "persistences"),
+            Storages: this.arr(data, "Storages", "storages"),
             Envs: data.Envs || data.envs || {},
-            CommandHistories: arr(data, "CommandHistories", "commandHistories"),
-            RecentFiles: arr(data, "RecentFiles", "recentFiles"),
-            Containers: arr(data, "Containers", "containers"),
+            CommandHistories: this.arr(
+                data,
+                "CommandHistories",
+                "commandHistories",
+            ),
+            RecentFiles: this.arr(data, "RecentFiles", "recentFiles"),
+            Containers: this.arr(data, "Containers", "containers"),
         };
     }
 
-    function hasReport() {
-        return report !== null;
+    hasReport() {
+        return this.report !== null;
     }
 
-    function getReport() {
-        return report;
+    getReport() {
+        return this.report;
     }
 
-    function setReport(data) {
-        var normalized = normalize(data);
+    setReport(data) {
+        var normalized = this.normalize(data);
         if (!normalized) return false;
-        report = normalized;
-        try {
-            sessionStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
-        } catch (e) {}
+        this.report = normalized;
         window.dispatchEvent(new CustomEvent("pastarella:report"));
         return true;
     }
 
-    function clearReport() {
-        report = null;
-        try {
-            sessionStorage.removeItem(STORAGE_KEY);
-        } catch (e) {}
+    clearReport() {
+        this.report = null;
         window.dispatchEvent(new CustomEvent("pastarella:report"));
     }
 
-    function pickFile(callback) {
+    pickFile(callback) {
         var input = document.createElement("input");
         input.type = "file";
         input.accept = "application/json,.json";
-        input.addEventListener("change", function () {
+        input.addEventListener("change", () => {
             var file = input.files && input.files[0];
             if (!file) return;
             var reader = new FileReader();
-            reader.onload = function () {
+            reader.onload = () => {
                 try {
                     var data = JSON.parse(reader.result);
-                    if (!setReport(data)) alert("Invalid AnalysisReport JSON");
-                    else if (callback) callback(getReport());
+                    if (!this.setReport(data))
+                        alert("Invalid AnalysisReport JSON");
+                    else if (callback) callback(this.getReport());
                 } catch (e) {
+                    console.error(e);
                     alert("Invalid AnalysisReport JSON");
                 }
             };
@@ -96,22 +91,12 @@
         input.click();
     }
 
-    document.addEventListener("click", function (e) {
-        var el = e.target.closest
-            ? e.target.closest('[data-action="load-report"]')
-            : null;
-        if (el) {
-            e.preventDefault();
-            pickFile();
-        }
-    });
-
-    function esc(value) {
+    esc(value) {
         return value === null || value === undefined ? "" : String(value);
     }
 
-    function appendCells(tr, cells) {
-        cells.forEach(function (cell) {
+    appendCells(tr, cells) {
+        cells.forEach((cell) => {
             var td = document.createElement("td");
             if (cell && cell.__element) {
                 td.appendChild(cell.__element);
@@ -122,7 +107,7 @@
             ) {
                 td.appendChild(cell);
             } else {
-                td.textContent = esc(cell);
+                td.textContent = this.esc(cell);
             }
             if (cell && cell.__mono) td.className = "cell-path";
             if (cell && cell.__preline) td.style.whiteSpace = "pre-line";
@@ -131,26 +116,26 @@
         });
     }
 
-    function mono(text) {
-        var s = new String(esc(text));
+    mono(text) {
+        var s = new String(this.esc(text));
         s.__mono = true;
         return s;
     }
 
-    function preline(text) {
-        var s = new String(esc(text));
+    preline(text) {
+        var s = new String(this.esc(text));
         s.__preline = true;
         return s;
     }
 
-    function centered(element) {
+    centered(element) {
         var s = new String("");
         s.__center = true;
         s.__element = element;
         return s;
     }
 
-    function signerIcon(signer) {
+    signerIcon(signer) {
         var i = document.createElement("i");
         if (signer) {
             i.className = "bi bi-check-circle-fill text-success";
@@ -161,7 +146,7 @@
         return i;
     }
 
-    function booleanIcon(bool) {
+    booleanIcon(bool) {
         var i = document.createElement("i");
         i.className = bool
             ? "bi bi-check-circle-fill text-success"
@@ -169,27 +154,27 @@
         return i;
     }
 
-    function stringifyMetadata(metadata) {
+    stringifyMetadata(metadata) {
         if (!metadata) return "";
         var str = "";
         var entries = Array.isArray(metadata)
-            ? metadata.map(function (m, i) {
+            ? metadata.map((m, i) => {
                   return [i, m];
               })
             : Object.entries(metadata);
-        entries.forEach(function (entry) {
+        entries.forEach((entry) => {
             str += entry[0] + ": " + entry[1] + "\n";
         });
         return str.trimEnd();
     }
 
-    function fmtGB(bytes) {
+    fmtGB(bytes) {
         var n = Number(bytes);
         if (isNaN(n)) return "–";
         return (n / Math.pow(1024, 3)).toFixed(2) + " GB";
     }
 
-    function actionText(action) {
+    actionText(action) {
         if (!action) return "None";
         if (action.Path !== undefined || action.path !== undefined) {
             var p = action.Path !== undefined ? action.Path : action.path;
@@ -215,23 +200,15 @@
         }
         return "Scheduled email";
     }
+}
 
-    window.PastarellaReport = {
-        hasReport: hasReport,
-        getReport: getReport,
-        setReport: setReport,
-        clearReport: clearReport,
-        pickFile: pickFile,
-        v: v,
-        arr: arr,
-        appendCells: appendCells,
-        mono: mono,
-        preline: preline,
-        centered: centered,
-        signerIcon: signerIcon,
-        booleanIcon: booleanIcon,
-        stringifyMetadata: stringifyMetadata,
-        fmtGB: fmtGB,
-        actionText: actionText,
-    };
-})();
+export var pastarellaReport = new PastarellaReport();
+document.addEventListener("click", (e) => {
+    var el = e.target.closest
+        ? e.target.closest('[data-action="load-report"]')
+        : null;
+    if (el) {
+        e.preventDefault();
+        pastarellaReport.pickFile();
+    }
+});
