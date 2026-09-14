@@ -1,191 +1,311 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Pastarella — Analyzer</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="./css/variables.css">
-    <link rel="stylesheet" href="./css/base.css">
-    <link rel="stylesheet" href="./css/sidebar.css">
-    <link rel="stylesheet" href="./css/topbar.css">
-    <link rel="stylesheet" href="./css/content.css">
-    <link rel="stylesheet" href="./css/cards.css">
-    <link rel="stylesheet" href="./css/panels.css">
-    <link rel="stylesheet" href="./css/table.css">
-    <link rel="stylesheet" href="./css/home.css">
-    <link rel="stylesheet" href="./css/responsive.css">
-</head>
-<body>
-    <div class="app">
-    <aside class="sidebar">
-        <div class="brand">
-        <div class="brand-text">
-            <div class="brand-name">Pastarella</div>
-        </div>
-        </div>
-
-        <nav class="side-nav home-nav">
-            <a href="#" class="side-link" data-page="index">
-                <i class="bi bi-house"></i>
-                <span>Home</span>
-                <i class="bi bi-dot active-dot ms-auto" style="visibility:hidden"></i>
-            </a>
-        </nav>
-
-        <div class="sections-label">Sections</div>
-        <nav class="side-nav">
-            <a href="#" class="side-link" data-page="dashboard">
-                <i class="bi bi-grid"></i>
-                <span>Dashboard</span>
-                <i class="bi bi-dot active-dot ms-auto"></i>
-            </a>
-
-            <!-- services -->
-            <a href="#" class="side-link" data-page="services">
-                <i class="bi bi-activity"></i>
-                <span>Services</span>
-                <i class="bi bi-dot active-dot ms-auto" style="visibility:hidden"></i>
-            </a>
-
-            <!-- open ports, hosts -->
-            <a href="#" class="side-link" data-page="network">
-                <i class="bi bi-wifi"></i>
-                <span>Network</span>
-                <i class="bi bi-dot active-dot ms-auto" style="visibility:hidden"></i>
-            </a>
-
-            <!-- system: processes, users, storage -->
-            <a href="#" class="side-link" data-page="system">
-                <i class="bi bi-pc-display"></i>
-                <span>System</span>
-                <i class="bi bi-dot active-dot ms-auto" style="visibility:hidden"></i>
-            </a>
-
-            <!-- persistence -->
-            <a href="#" class="side-link" data-page="persistence">
-                <i class="bi bi-hdd-fill"></i>
-                <span>Persistence</span>
-                <i class="bi bi-dot active-dot ms-auto" style="visibility:hidden"></i>
-            </a>
-
-            <!-- environment variables, history -->
-            <a href="#" class="side-link" data-page="environment">
-                <i class="bi bi-cpu"></i>
-                <span>Environment</span>
-                <i class="bi bi-dot active-dot ms-auto" style="visibility:hidden"></i>
-            </a>
-
-            <!-- containers -->
-            <a href="#" class="side-link" data-page="containers">
-                <i class="bi bi-box-seam-fill"></i>
-                <span>Containers</span>
-                <i class="bi bi-dot active-dot ms-auto" style="visibility:hidden"></i>
-            </a>
-
-            <!-- drivers -->
-            <a href="#" class="side-link" data-page="drivers">
-                <i class="bi bi-tools"></i>
-                <span>Drivers</span>
-                <i class="bi bi-dot active-dot ms-auto" style="visibility:hidden"></i>
-            </a>
-
-            <!-- recent files -->
-            <a href="#" class="side-link" data-page="recent-files">
-                <i class="bi bi-file-earmark-fill"></i>
-                <span>Recent Files</span>
-                <i class="bi bi-dot active-dot ms-auto" style="visibility:hidden"></i>
-            </a>
-        </nav>
-    </aside>
-
-    <div class="main-col">
-        <header class="topbar">
-        <div class="topbar-left">
-            <div class="topbar-title" id="topbarTitle">Home</div>
-            <div class="topbar-sub" id="topbarSub">Welcome</div>
-        </div>
-        <div class="topbar-right">
-            <button class="btn-navbar" type="button" data-action="load-report"><i class="bi bi-upload"></i> Load report</button>
-            <button class="btn-navbar" type="button" data-bs-toggle="modal" data-bs-target="#feedbackModal"><i class="bi bi-chat-left-fill"></i> Feedback</button>
-            <button class="btn-navbar" type="button" data-action="export-hashes"><i class="bi bi-download"></i> Export hashes</button>
-            <a class="btn-navbar" href="https://github.com/xEcho1337/Pastarella" target="_blank" rel="noopener noreferrer" title="GitHub" aria-label="GitHub"><i class="bi bi-github"></i></a>
-            <a class="btn-navbar" href="https://github.com/xEcho1337/Pastarella/releases" target="_blank" rel="noopener noreferrer" title="Download latest release" aria-label="Download latest release"><i class="bi bi-download"></i></a>
-        </div>
-        </header>
-
-        <main class="content">
-        <div class="content-inner" id="pageContent">
-            <!-- Page partials from ./pages/ are loaded here by js/router.js -->
-        </div>
-        </main>
-    </div>
-    </div>
-
-    <!-- Feedback modal (ported from the old site) -->
-    <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content dark-modal">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="feedbackModalLabel">Send feedback</h1>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="feedbackSubject" class="form-label">Subject</label>
-                        <input type="text" class="form-control dark-input" id="feedbackSubject" placeholder="Report title">
-                    </div>
-                    <div class="mb-3">
-                        <label for="feedbackMessage" class="form-label">Message</label>
-                        <textarea class="form-control dark-input" id="feedbackMessage" rows="6"></textarea>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Pastarella — Analyzer</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+            crossorigin="anonymous"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+        />
+        <link rel="stylesheet" href="./css/variables.css" />
+        <link rel="stylesheet" href="./css/base.css" />
+        <link rel="stylesheet" href="./css/sidebar.css" />
+        <link rel="stylesheet" href="./css/topbar.css" />
+        <link rel="stylesheet" href="./css/content.css" />
+        <link rel="stylesheet" href="./css/cards.css" />
+        <link rel="stylesheet" href="./css/panels.css" />
+        <link rel="stylesheet" href="./css/table.css" />
+        <link rel="stylesheet" href="./css/home.css" />
+        <link rel="stylesheet" href="./css/responsive.css" />
+    </head>
+    <body>
+        <div class="app">
+            <aside class="sidebar">
+                <div class="brand">
+                    <div class="brand-text">
+                        <div class="brand-name">Pastarella</div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-refresh" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn-refresh" id="sendFeedbackBtn">Send</button>
+
+                <nav class="side-nav home-nav">
+                    <a href="#" class="side-link" data-page="index">
+                        <i class="bi bi-house"></i>
+                        <span>Home</span>
+                        <i
+                            class="bi bi-dot active-dot ms-auto"
+                            style="visibility: hidden"
+                        ></i>
+                    </a>
+                </nav>
+
+                <div class="sections-label">Sections</div>
+                <nav class="side-nav">
+                    <a href="#" class="side-link" data-page="dashboard">
+                        <i class="bi bi-grid"></i>
+                        <span>Dashboard</span>
+                        <i class="bi bi-dot active-dot ms-auto"></i>
+                    </a>
+
+                    <!-- services -->
+                    <a href="#" class="side-link" data-page="services">
+                        <i class="bi bi-activity"></i>
+                        <span>Services</span>
+                        <i
+                            class="bi bi-dot active-dot ms-auto"
+                            style="visibility: hidden"
+                        ></i>
+                    </a>
+
+                    <!-- open ports, hosts -->
+                    <a href="#" class="side-link" data-page="network">
+                        <i class="bi bi-wifi"></i>
+                        <span>Network</span>
+                        <i
+                            class="bi bi-dot active-dot ms-auto"
+                            style="visibility: hidden"
+                        ></i>
+                    </a>
+
+                    <!-- system: processes, users, storage -->
+                    <a href="#" class="side-link" data-page="system">
+                        <i class="bi bi-pc-display"></i>
+                        <span>System</span>
+                        <i
+                            class="bi bi-dot active-dot ms-auto"
+                            style="visibility: hidden"
+                        ></i>
+                    </a>
+
+                    <!-- persistence -->
+                    <a href="#" class="side-link" data-page="persistence">
+                        <i class="bi bi-hdd-fill"></i>
+                        <span>Persistence</span>
+                        <i
+                            class="bi bi-dot active-dot ms-auto"
+                            style="visibility: hidden"
+                        ></i>
+                    </a>
+
+                    <!-- environment variables, history -->
+                    <a href="#" class="side-link" data-page="environment">
+                        <i class="bi bi-cpu"></i>
+                        <span>Environment</span>
+                        <i
+                            class="bi bi-dot active-dot ms-auto"
+                            style="visibility: hidden"
+                        ></i>
+                    </a>
+
+                    <!-- containers -->
+                    <a href="#" class="side-link" data-page="containers">
+                        <i class="bi bi-box-seam-fill"></i>
+                        <span>Containers</span>
+                        <i
+                            class="bi bi-dot active-dot ms-auto"
+                            style="visibility: hidden"
+                        ></i>
+                    </a>
+
+                    <!-- drivers -->
+                    <a href="#" class="side-link" data-page="drivers">
+                        <i class="bi bi-tools"></i>
+                        <span>Drivers</span>
+                        <i
+                            class="bi bi-dot active-dot ms-auto"
+                            style="visibility: hidden"
+                        ></i>
+                    </a>
+
+                    <!-- recent files -->
+                    <a href="#" class="side-link" data-page="recent-files">
+                        <i class="bi bi-file-earmark-fill"></i>
+                        <span>Recent Files</span>
+                        <i
+                            class="bi bi-dot active-dot ms-auto"
+                            style="visibility: hidden"
+                        ></i>
+                    </a>
+                </nav>
+            </aside>
+
+            <div class="main-col">
+                <header class="topbar">
+                    <div class="topbar-left">
+                        <div class="topbar-title" id="topbarTitle">Home</div>
+                        <div class="topbar-sub" id="topbarSub">Welcome</div>
+                    </div>
+                    <div class="topbar-right">
+                        <button
+                            class="btn-navbar"
+                            type="button"
+                            data-action="load-report"
+                        >
+                            <i class="bi bi-upload"></i> Load report
+                        </button>
+                        <button
+                            class="btn-navbar"
+                            type="button"
+                            data-bs-toggle="modal"
+                            data-bs-target="#feedbackModal"
+                        >
+                            <i class="bi bi-chat-left-fill"></i> Feedback
+                        </button>
+                        <button
+                            class="btn-navbar"
+                            type="button"
+                            data-action="export-hashes"
+                        >
+                            <i class="bi bi-download"></i> Export hashes
+                        </button>
+                        <a
+                            class="btn-navbar"
+                            href="https://github.com/xEcho1337/Pastarella"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="GitHub"
+                            aria-label="GitHub"
+                            ><i class="bi bi-github"></i
+                        ></a>
+                        <a
+                            class="btn-navbar"
+                            href="https://github.com/xEcho1337/Pastarella/releases"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="Download latest release"
+                            aria-label="Download latest release"
+                            ><i class="bi bi-download"></i
+                        ></a>
+                    </div>
+                </header>
+
+                <main class="content">
+                    <div class="content-inner" id="pageContent">
+                        <!-- Page partials from ./pages/ are loaded here by js/router.js -->
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <!-- Feedback modal (ported from the old site) -->
+        <div
+            class="modal fade"
+            id="feedbackModal"
+            tabindex="-1"
+            aria-labelledby="feedbackModalLabel"
+            aria-hidden="true"
+        >
+            <div class="modal-dialog">
+                <div class="modal-content dark-modal">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="feedbackModalLabel">
+                            Send feedback
+                        </h1>
+                        <button
+                            type="button"
+                            class="btn-close btn-close-white"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                        ></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="feedbackSubject" class="form-label"
+                                >Subject</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control dark-input"
+                                id="feedbackSubject"
+                                placeholder="Report title"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="feedbackMessage" class="form-label"
+                                >Message</label
+                            >
+                            <textarea
+                                class="form-control dark-input"
+                                id="feedbackMessage"
+                                rows="6"
+                            ></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button
+                            type="button"
+                            class="btn-refresh"
+                            data-bs-dismiss="modal"
+                        >
+                            Close
+                        </button>
+                        <button
+                            type="button"
+                            class="btn-refresh"
+                            id="sendFeedbackBtn"
+                        >
+                            Send
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Shared markup templates (vanilla): cloned by js/components.js, never rendered directly -->
-    <template id="tpl-page-head">
-        <div class="page-head">
-            <div>
-                <h1 class="page-title"></h1>
-                <p class="page-sub"></p>
+        <!-- Shared markup templates (vanilla): cloned by js/components.js, never rendered directly -->
+        <template id="tpl-page-head">
+            <div class="page-head">
+                <div>
+                    <h1 class="page-title"></h1>
+                    <p class="page-sub"></p>
+                </div>
             </div>
-        </div>
-    </template>
+        </template>
 
-    <template id="tpl-empty-state">
-        <div class="page-head">
-            <div>
-                <h1 class="page-title"></h1>
-                <p class="page-sub"></p>
+        <template id="tpl-empty-state">
+            <div class="page-head">
+                <div>
+                    <h1 class="page-title"></h1>
+                    <p class="page-sub"></p>
+                </div>
             </div>
-        </div>
-        <div class="empty-report">
-            <div class="empty-report-icon"><i class="bi bi-file-earmark-arrow-up"></i></div>
-            <div class="empty-report-title">No report loaded</div>
-            <div class="empty-report-text"></div>
-            <button class="btn-navbar" type="button" data-action="load-report"><i class="bi bi-upload"></i> Load report</button>
-        </div>
-    </template>
+            <div class="empty-report">
+                <div class="empty-report-icon">
+                    <i class="bi bi-file-earmark-arrow-up"></i>
+                </div>
+                <div class="empty-report-title">No report loaded</div>
+                <div class="empty-report-text"></div>
+                <button
+                    class="btn-navbar"
+                    type="button"
+                    data-action="load-report"
+                >
+                    <i class="bi bi-upload"></i> Load report
+                </button>
+            </div>
+        </template>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-    <script src="./js/report-store.js"></script>
-    <script src="./js/components.js"></script>
-    <script src="./js/pager.js"></script>
-    <script src="./js/table-search.js"></script>
-    <script src="./js/section-renderers.js"></script>
-    <script src="./js/column-resize.js"></script>
-    <script src="./js/collapse.js"></script>
-    <script src="./js/export-hashes.js"></script>
-    <script src="./js/feedback.js"></script>
-    <script src="./js/home.js"></script>
-    <script src="./js/dashboard.js"></script>
-    <script src="./js/router.js"></script>
-</body>
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+            crossorigin="anonymous"
+        ></script>
+        <script src="./js/report-store.js"></script>
+        <script src="./js/components.js"></script>
+        <script src="./js/pager.js"></script>
+        <script src="./js/table-search.js"></script>
+        <script src="./js/section-renderers.js"></script>
+        <script src="./js/column-resize.js"></script>
+        <script src="./js/collapse.js"></script>
+        <script src="./js/export-hashes.js"></script>
+        <script src="./js/feedback.js"></script>
+        <script src="./js/home.js"></script>
+        <script src="./js/dashboard.js"></script>
+        <script src="./js/router.js"></script>
+    </body>
 </html>
