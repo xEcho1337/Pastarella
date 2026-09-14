@@ -6,9 +6,9 @@ export class PastarellaReport {
     }
 
     v(obj, upper) {
-        if (!obj) return "-";
+        if (!obj) return "";
         if (obj[upper] !== undefined && obj[upper] !== null) return obj[upper];
-        return "-";
+        return "";
     }
 
     // TODO: remove this
