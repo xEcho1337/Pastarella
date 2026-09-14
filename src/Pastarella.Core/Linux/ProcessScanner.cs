@@ -40,7 +40,7 @@ public class ProcessScanner(Context ctx) : IProcessScanner
                     path = new FileInfo(Path.Combine(processDir, "exe")).ResolveLinkTarget(false)!.Name;
                     hash = PlatformHelpers.GetSha256(path);
 
-                    string[] cmdline_raw = File.ReadAllLines(Path.Combine(processDir, "cmdline"))[0].Split('\x00', StringSplitOptions.RemoveEmptyEntries)[..^1];
+                    string[] cmdline_raw = File.ReadAllLines(Path.Combine(processDir, "cmdline"))[0].Split('\x00', StringSplitOptions.RemoveEmptyEntries);
                     if (cmdline_raw.Length != 0)
                         args = string.Join(' ', cmdline_raw[1..]);
                 }
