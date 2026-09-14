@@ -16,8 +16,7 @@ public class UsersLogonScript : IPersistenceScanner
                 Path = info.usri1_script_path!,
                 Action = new ExecScheduledAction()
                 {
-                    Path = info.usri1_script_path,
-                    Sha256 = PlatformHelpers.GetSha256(info.usri1_script_path),
+                    ExePath = new(info.usri1_script_path!),
                 },
                 Privilege = PersistencePrivilege.User,
                 Type = PersistenceType.ScheduledTask,

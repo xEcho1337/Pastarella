@@ -17,25 +17,15 @@ public class ServiceScanner : IServiceScanner
         var key = services?.OpenSubKey(service.ServiceName);
 
         string imagePath = key?.GetValue("ImagePath")?.ToString() ?? throw new NotImplementedException();
-        string[] parts = PathNormalizer.Unescape(imagePath);
-
-        string? path = null;
-        string? hash = null;
-
-        if (parts.Length != 0)
-        {
-            path = parts[0];
-            hash = PlatformHelpers.GetSha256(path);
-        }
+        var exePath = ExePath.FromCmdline(imagePath, out string[] args);
 
         return new ServiceInfo(
             service.Status.Into(),
             service.ServiceType.Into(),
             service.ServiceName,
             service.DisplayName,
-            path ?? "",
-            parts.Skip(1).ToArray(),
-            hash
+            exePath,
+            args
         );
     }
 }

@@ -72,8 +72,8 @@ public interface IScheduledAction;
 
 public class ExecScheduledAction : IScheduledAction
 {
-    public required string? Path { get; set; }
-    public string? Sha256 { get; set; }
+    public required ExePath? ExePath { get; set; }
+    public string[] Arguments { get; set; } = [];
 }
 
 public class ComScheduledAction : IScheduledAction

@@ -131,13 +131,13 @@ import { pastarellaReport } from "./pastarella-report.js";
                     pastarellaReport.v(d, "Id"),
                     pastarellaReport.v(d, "Name"),
                     pastarellaReport.mono(
-                        pastarellaReport.v(d, "Path") +
+                        pastarellaReport.v(d, "ExePath").NormalizedValue +
                         " " +
-                        pastarellaReport.v(d, "CommandArgs"),
+                        pastarellaReport.v(d, "CommandArgs", ""),
                     ),
-                    pastarellaReport.mono(pastarellaReport.v(d, "Sha256", "sha256", "")),
+                    pastarellaReport.mono(pastarellaReport.v(d, "ExePath").Sha256),
                     pastarellaReport.centered(
-                        pastarellaReport.signerIcon(value(d, "Signer", "signer")),
+                        pastarellaReport.signerIcon(value(d, "ExePath", "exePath").Signature),
                     ),
                     pastarellaReport.v(d, "StartTime"),
                     pastarellaReport.preline(
@@ -157,7 +157,7 @@ import { pastarellaReport } from "./pastarella-report.js";
             report.Services.map(function (d) {
                 var args = pastarellaReport.v(d, "Arguments", "arguments", []);
                 var cmd =
-                    pastarellaReport.v(d, "ExecPath") +
+                    pastarellaReport.v(d, "ExePath").NormalizedValue +
                     " " +
                     (Array.isArray(args) ? args.join(" ") : args);
                 return [
@@ -166,7 +166,7 @@ import { pastarellaReport } from "./pastarella-report.js";
                     pastarellaReport.v(d, "ServiceName"),
                     pastarellaReport.v(d, "DisplayName"),
                     pastarellaReport.mono(cmd.trim()),
-                    pastarellaReport.mono(pastarellaReport.v(d, "Sha256", "sha256", "")),
+                    pastarellaReport.mono(pastarellaReport.v(d, "ExePath").Sha256),
                 ];
             }),
         );
@@ -243,13 +243,14 @@ import { pastarellaReport } from "./pastarella-report.js";
             "driversBody",
             report.Drivers.map(function (d) {
                 var loaded = value(d, "Loaded", "loaded");
+                var exePath = value(d, "ExePath", "exePath");
                 return [
                     pastarellaReport.v(d, "Name"),
                     pastarellaReport.v(d, "DisplayName"),
                     pastarellaReport.mono(pastarellaReport.v(d, "Identifier")),
                     pastarellaReport.v(d, "Type"),
                     pastarellaReport.mono(
-                        pastarellaReport.v(d, "ExecutablePath"),
+                        pastarellaReport.v(d, "ExePath").NormalizedValue,
                     ),
                     pastarellaReport.v(d, "Version"),
                     pastarellaReport.centered(
@@ -257,9 +258,9 @@ import { pastarellaReport } from "./pastarella-report.js";
                             loaded === true || loaded === "true",
                         ),
                     ),
-                    pastarellaReport.mono(pastarellaReport.v(d, "Sha256", "sha256", "")),
+                    pastarellaReport.mono(pastarellaReport.v(d, "ExePath").Sha256),
                     pastarellaReport.centered(
-                        pastarellaReport.signerIcon(value(d, "Signer", "signer")),
+                        pastarellaReport.signerIcon(exePath === null ? null : exePath.Signature),
                     ),
                 ];
             }),

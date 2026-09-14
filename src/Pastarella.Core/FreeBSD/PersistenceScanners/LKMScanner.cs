@@ -22,10 +22,8 @@ public class LKMScanner : IPersistenceScanner
                 Path = "/boot/loader.conf",
                 Action = new ExecScheduledAction
                 {
-                    Path = modulePath,
-                    Sha256 = PlatformHelpers.GetSha256(modulePath),
+                    ExePath = new(modulePath, true),
                 },
-
                 Type = PersistenceType.LoadableKernelModule,
                 Trigger = ExecutionTrigger.Boot,
                 Privilege = PersistencePrivilege.Kernel,

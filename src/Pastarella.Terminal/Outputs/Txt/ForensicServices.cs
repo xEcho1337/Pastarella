@@ -12,7 +12,9 @@ public class ForensicServices(OutputBuffer buffer)
 
         foreach (var p in processes.OrderBy(p => p.Id))
         {
-            Buffer.WriteLine($"[{p.Id}] {p.Path} {p.CommandArgs}[{p.Signer ?? "Unsigned"}] - {p.Sha256} - {p.StartTime}");
+            bool signed = !(p.ExePath == null || p.ExePath.Signature == null);
+
+            Buffer.WriteLine($"[{p.Id}] {p.ExePath!.NormalizedValue} {p.CommandArgs}[{(signed ? "Unsigned" : "Signed")}] - {p.ExePath.Sha256 ?? "N/A"} - {p.StartTime}");
             TxtWriter.BasicPrintMetadata(Buffer, p.Metadata);
         }
     }
@@ -26,8 +28,8 @@ public class ForensicServices(OutputBuffer buffer)
 
             Buffer.Indent();
             Buffer.WriteLine($"|> Display: {service.DisplayName}");
-            Buffer.WriteLine($"|> Command: {service.ExecPath} {string.Join(' ', service.Arguments)}");
-            Buffer.WriteLine($"|> Hash: {service.Sha256}");
+            TxtWriter.PrintExePath(buffer, service.ExePath);
+            Buffer.WriteLine($"|> Arguments: {string.Join(' ', service.Arguments)}");
             Buffer.Unindent();
         }
     }

@@ -22,11 +22,9 @@ public record DriverInfo(
     string DisplayName,
     string Identifier,
     DriverType Type,
-    string? ExecutablePath,
+    ExePath? ExePath,
     string? Version,
-    bool Loaded,
-    string? Sha256,
-    string? Signer
+    bool Loaded
 );
 
 public interface IDriverScanner

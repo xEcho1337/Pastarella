@@ -15,19 +15,17 @@ public class DriverScanner(Context ctx) : IDriverScanner
             string name = parts[0];
             bool loaded = (parts[4] == "Live") || (parts[4] == "Loading");
 
-            string? filePath = ctx.FindModulePath(name);
-            string? hash = PlatformHelpers.GetSha256(filePath);
-
+            string? modulePath = ctx.FindModulePath(name);
             list.Add(new(
                 name,
                 "",
                 name,
                 DriverType.KernelModule,
-                filePath,
+                (modulePath != null)
+                    ? new(modulePath, true)
+                    : null,
                 null,
-                loaded,
-                hash,
-                null
+                loaded
             ));
         }
 
@@ -39,8 +37,7 @@ public class DriverScanner(Context ctx) : IDriverScanner
         List<DriverInfo> list = [];
 
         string modulesPath = $"{ctx.ModulesPath}/{Context.GetKernelVersion()}";
-        string kernelFilePath = $"{modulesPath}/vmlinuz";
-        string? kernelSha256 = PlatformHelpers.GetSha256(kernelFilePath);
+        ExePath kernelImage = new($"{modulesPath}/vmlinuz");
 
         string? previousModule = null;
         string displayName = "";
@@ -63,11 +60,9 @@ public class DriverScanner(Context ctx) : IDriverScanner
                     displayName,
                     identifier ?? previousModule,
                     DriverType.BuiltinKernelModule,
-                    kernelFilePath,
+                    kernelImage,
                     version,
-                    true,
-                    kernelSha256,
-                    null
+                    true
                 ));
 
                 displayName = "";

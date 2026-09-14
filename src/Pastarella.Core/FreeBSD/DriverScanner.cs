@@ -15,17 +15,14 @@ public class DriverScanner : IDriverScanner
             if (Native.LibC.kldstat(fileid, ref stat) == -1)
                 throw new Exception($"kldstat failed, errno={Marshal.GetLastWin32Error()}");
 
-            string? modHash = PlatformHelpers.GetSha256(stat.pathname);
             list.Add(new(
                 stat.name,
                 stat.name,
                 $"file_{stat.id}",
                 DriverType.KernelModule,
-                stat.pathname,
+                new(stat.pathname, true),
                 null /* TODO */,
-                true,
-                modHash,
-                null
+                true
             ));
 
             for (int modid = Native.LibC.kldfirstmod(fileid); modid != 0; modid = Native.LibC.modfnext(modid))
@@ -39,11 +36,9 @@ public class DriverScanner : IDriverScanner
                     modStat.name,
                     $"mod_{modStat.id}",
                     DriverType.KernelModule,
-                    stat.pathname,
+                    new(stat.pathname, true),
                     null /* TODO */,
-                    true,
-                    modHash,
-                    null
+                    true
                 ));
             }
         }

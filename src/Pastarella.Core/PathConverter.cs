@@ -2,12 +2,12 @@ using System.Text;
 
 namespace Pastarella.Core;
 
-public static class PathNormalizer
+public static class PathConverter
 {
-    public static string? Normalize(string path)
+    public static string Normalize(string path)
     {
         if (path.Length == 0)
-            return null;
+            return path;
 
         if (Context.Os == Context.OS.Windows)
         {

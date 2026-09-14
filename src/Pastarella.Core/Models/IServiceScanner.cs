@@ -76,9 +76,8 @@ public record ServiceInfo(
     ServiceType ServiceType,
     string ServiceName,
     string DisplayName,
-    string ExecPath,
-    string[] Arguments,
-    string? Sha256
+    ExePath? ExePath,
+    string[] Arguments
 );
 
 public interface IServiceScanner

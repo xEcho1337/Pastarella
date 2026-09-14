@@ -11,7 +11,7 @@ public sealed class LaunchdScanner : IPersistenceScanner
         "/System/Library/LaunchAgents",
         "/Library/LaunchDaemons",
         "/Library/LaunchAgents",
-        PathNormalizer.Normalize("~/Library/LaunchAgents")!
+        PathConverter.Normalize("~/Library/LaunchAgents")!
     ];
 
     public IEnumerable<PersistenceEntry> Scan(IProgress<ScanProgress>? progress = null)
@@ -72,8 +72,7 @@ public sealed class LaunchdScanner : IPersistenceScanner
                 Path = plistPath,
                 Action = new ExecScheduledAction
                 {
-                    Path = executable,
-                    Sha256 = PlatformHelpers.GetSha256(executable),
+                    ExePath = new(executable),
                 },
 
                 Type = PersistenceType.Launchd,

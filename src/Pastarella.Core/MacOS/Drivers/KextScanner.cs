@@ -26,7 +26,7 @@ public class KextScanner : IDriverScanner
             if (!File.Exists(plistPath))
                 return null;
 
-            var plist = (NSDictionary) PropertyListParser.Parse(plistPath);
+            var plist = (NSDictionary)PropertyListParser.Parse(plistPath);
 
             string name = Path.GetFileNameWithoutExtension(kextDir);
             string identifier = GetPlistString(plist, "CFBundleIdentifier")
@@ -43,26 +43,22 @@ public class KextScanner : IDriverScanner
             string? version = GetPlistString(plist, "CFBundleShortVersionString")
                 ?? GetPlistString(plist, "CFBundleVersion");
 
-            string path = plistPath;
-
+            ExePath exePath;
             if (File.Exists(execPath))
-                path = execPath;
+                exePath = new(execPath, signature: GetSignatureInfo(execPath));
+            else
+                exePath = new FakeExePath(plistPath);
 
-            string? hash = PlatformHelpers.GetSha256(path);
             bool loaded = loadedIds.Contains(identifier) || loadedIds.Contains(name);
-
-            (string? teamId, string? signer) = GetSignatureInfo(execPath);
 
             return new DriverInfo(
                 Name: name,
                 DisplayName: displayName,
                 Identifier: identifier,
                 Type: DriverType.KernelExtension,
-                ExecutablePath: execPath,
+                ExePath: exePath,
                 Version: version,
-                Loaded: loaded,
-                Sha256: hash,
-                Signer: signer
+                Loaded: loaded
             );
         }
         catch
@@ -116,10 +112,10 @@ public class KextScanner : IDriverScanner
         }
     }
 
-    private static (string? TeamId, string? Signer) GetSignatureInfo(string? binaryPath)
+    private static ISignature? GetSignatureInfo(string? binaryPath)
     {
         if (string.IsNullOrWhiteSpace(binaryPath) || !File.Exists(binaryPath))
-            return (null, null);
+            return null;
 
         try
         {
@@ -138,11 +134,11 @@ public class KextScanner : IDriverScanner
                     authority = line["Authority=".Length..].Trim();
             }
 
-            return (teamId, authority);
+            return new MacOSSignature(teamId, authority);
         }
         catch
         {
-            return (null, null);
+            return null;
         }
     }
 

@@ -26,19 +26,17 @@ public class ProcessScanner(Context ctx) : IProcessScanner
 
                 string[] stats = stats_raw[(commandNameEnd + 2)..].Split(' ');
 
-                string path;
-                string? hash = null;
+                ExePath exePath;
                 string? args = null;
 
                 char state = stats[0][0];
                 if (state == 'Z')
                 {
-                    path = stats_raw[(commandNameStart + 1)..commandNameEnd];
+                    exePath = new FakeExePath(stats_raw[(commandNameStart + 1)..commandNameEnd]);
                 }
                 else
                 {
-                    path = new FileInfo(Path.Combine(processDir, "exe")).ResolveLinkTarget(false)!.Name;
-                    hash = PlatformHelpers.GetSha256(path);
+                    exePath = new(new FileInfo(Path.Combine(processDir, "exe")).ResolveLinkTarget(false)!.Name, true);
 
                     string[] cmdline_raw = File.ReadAllLines(Path.Combine(processDir, "cmdline"))[0].Split('\x00', StringSplitOptions.RemoveEmptyEntries);
                     if (cmdline_raw.Length != 0)
@@ -51,9 +49,7 @@ public class ProcessScanner(Context ctx) : IProcessScanner
                 {
                     Metadata = [],
                     CommandArgs = args,
-                    Path = path,
-                    Sha256 = hash,
-                    Signer = null,
+                    ExePath = exePath,
                     StartTime = DateTimeOffset.FromUnixTimeSeconds(bootTime + startTime).UtcDateTime,
                 });
                 progress?.Report(new ScanProgress(++done));

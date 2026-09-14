@@ -81,35 +81,6 @@ public class ProcessScanner : IProcessScanner
         }
     }
 
-    private static string? GetSubjectCertificate(ref Dictionary<string, object> metadata, string path)
-    {
-        if (path.Length == 0)
-            return null;
-
-        try
-        {
-            var info = FileVersionInfo.GetVersionInfo(path);
-
-            if (info.CompanyName != null)
-                metadata["Company"] = info.CompanyName;
-
-            if (info.ProductName != null)
-                metadata["Product"] = info.ProductName;
-
-            return X509Certificate.CreateFromSignedFile(path).Subject;
-        }
-        catch (CryptographicException)
-        {
-            // ignore
-        }
-        catch (FileNotFoundException)
-        {
-            // ignore
-        }
-
-        return null;
-    }
-
     public IEnumerable<ProcessInfo> Scan(IProgress<ScanProgress>? progress = null)
     {
         var info = Native.NtDll.Wrappers.SystemProcessInformation.Get();
@@ -129,33 +100,42 @@ public class ProcessScanner : IProcessScanner
             {
                 result.Add(new ProcessInfo(pid)
                 {
-                    Metadata = metadata,
+                    ExePath = new FakeExePath(name),
                     CommandArgs = null,
-                    Path = name,
-                    Sha256 = null,
-                    Signer = null,
                     StartTime = startTime,
+                    Metadata = metadata,
                 });
                 progress?.Report(new ScanProgress(++done, info.Processes.Length));
 
                 continue;
             }
 
-            string? path = name;
-            string? hash = null;
-            if (GetProcessFilePath(handle) is string ntPath)
+            ExePath exePath;
+            if (GetProcessFilePath(handle) is string ntPath && ntPath.Length > 0)
             {
-                path = PathNormalizer.Normalize(ntPath);
-                hash = PlatformHelpers.GetSha256(path);
+                exePath = new(ntPath);
+
+                if (exePath.Exist())
+                {
+                    var exeInfo = FileVersionInfo.GetVersionInfo(exePath.NormalizedValue);
+
+                    if (exeInfo.CompanyName != null)
+                        metadata["Company"] = exeInfo.CompanyName;
+
+                    if (exeInfo.ProductName != null)
+                        metadata["Product"] = exeInfo.ProductName;
+                }
+            }
+            else
+            {
+                exePath = new FakeExePath(name);
             }
 
             result.Add(new ProcessInfo(pid)
             {
                 Metadata = metadata,
                 CommandArgs = GetCommandLine(handle),
-                Path = path,
-                Sha256 = hash,
-                Signer = (path != null) ? GetSubjectCertificate(ref metadata, path) : null,
+                ExePath = exePath,
                 StartTime = startTime
             });
             progress?.Report(new ScanProgress(++done, info.Processes.Length));

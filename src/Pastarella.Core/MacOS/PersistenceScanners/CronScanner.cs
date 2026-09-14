@@ -122,8 +122,7 @@ public sealed class CronScanner : IPersistenceScanner
 
             Action = new ExecScheduledAction
             {
-                Path = filePath,
-                Sha256 = PlatformHelpers.GetSha256(filePath),
+                ExePath = new(filePath),
             },
 
             Trigger = schedule.StartsWith("@reboot", StringComparison.OrdinalIgnoreCase)

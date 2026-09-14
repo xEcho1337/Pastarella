@@ -36,10 +36,8 @@ public class LKMScanner(Context ctx) : IPersistenceScanner
             Path = filePath,
             Action = new ExecScheduledAction
             {
-                Path = modulePath,
-                Sha256 = PlatformHelpers.GetSha256(modulePath),
+                ExePath = (modulePath == null) ? null : new(modulePath, true),
             },
-
             Type = PersistenceType.LoadableKernelModule,
             Trigger = ExecutionTrigger.SystemStartup,
             Privilege = PersistencePrivilege.Kernel,

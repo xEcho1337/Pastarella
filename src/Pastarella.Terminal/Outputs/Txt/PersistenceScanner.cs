@@ -24,7 +24,7 @@ public class PersistenceScanner(OutputBuffer buffer)
             switch (persistence.Action)
             {
                 case ExecScheduledAction exec:
-                    Buffer.WriteLine($"  |>  File: {exec.Path} [{exec.Sha256 ?? "N/A"}]");
+                    TxtWriter.PrintExePath(buffer, exec.ExePath);
                     break;
                 case ComScheduledAction com:
                     Buffer.WriteLine($"  |>  Class name: {com.ClassName}");
@@ -42,4 +42,3 @@ public class PersistenceScanner(OutputBuffer buffer)
         }
     }
 }
-

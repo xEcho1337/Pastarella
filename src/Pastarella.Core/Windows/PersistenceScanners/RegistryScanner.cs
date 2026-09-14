@@ -164,7 +164,7 @@ public class RegistryScanner : IPersistenceScanner
             case RegistryValueKind.MultiString:
                 string val = value is string[] multiline_val ? string.Join('\n', multiline_val) : (string)value!;
                 string _checkerVal = checkerValue is string[] multiline_checker ? string.Join('\n', multiline_checker) : (string)checkerValue!;
-                string checkerVal = PathNormalizer.Normalize(_checkerVal) ?? _checkerVal;
+                string checkerVal = PathConverter.Normalize(_checkerVal) ?? _checkerVal;
 
                 if (val == checkerVal)
                     return 0;
@@ -201,7 +201,7 @@ public class RegistryScanner : IPersistenceScanner
                 var entry = ReadRegistryValue(root, path, key);
                 if (entry != null)
                 {
-                    string? filePath = entry.Value.Value?.ToString();
+                    string filePath = entry.Value.Value?.ToString()!;
                     int riskScore = GetRiskScore(entry.Value.Kind, entry.Value.Value, checkValue, shouldExist);
 
                     if (riskScore != 0)
@@ -212,8 +212,7 @@ public class RegistryScanner : IPersistenceScanner
                             Path = path,
                             Action = new ExecScheduledAction
                             {
-                                Path = filePath ?? "",
-                                Sha256 = PlatformHelpers.GetSha256(filePath),
+                                ExePath = new(filePath)
                             },
 
                             Privilege = privilege,
@@ -233,15 +232,14 @@ public class RegistryScanner : IPersistenceScanner
         {
             foreach (var (key, kind, val) in ReadRegistryValues(root, path))
             {
-                string? filePath = val?.ToString();
+                string filePath = val?.ToString()!;
                 list.Add(new PersistenceEntry
                 {
                     Name = key,
                     Path = path,
                     Action = new ExecScheduledAction
                     {
-                        Path = filePath ?? "",
-                        Sha256 = PlatformHelpers.GetSha256(filePath),
+                        ExePath = new(filePath)
                     },
 
                     Privilege = privilege,
@@ -293,7 +291,7 @@ public class RegistryScanner : IPersistenceScanner
                 Path = regPath,
                 Action = new ExecScheduledAction
                 {
-                    Path = "" // TODO:
+                    ExePath = new(regPath, true) // TODO:
                 },
 
                 Privilege = PersistencePrivilege.User,

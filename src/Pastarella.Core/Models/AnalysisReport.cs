@@ -4,7 +4,7 @@ namespace Pastarella.Core.Models;
 
 public class AnalysisReport(DateTime timestamp)
 {
-    public uint Version = 1;
+    public uint Version = 2;
 
     public DateTime Timestamp = timestamp;
 

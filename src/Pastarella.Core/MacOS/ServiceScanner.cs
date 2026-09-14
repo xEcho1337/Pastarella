@@ -12,7 +12,7 @@ public class ServiceScanner : IServiceScanner
         "/System/Library/LaunchAgents",
         "/Library/LaunchDaemons",
         "/Library/LaunchAgents",
-        PathNormalizer.Normalize("~/Library/LaunchAgents")!
+        PathConverter.Normalize("~/Library/LaunchAgents")!
     ];
 
     public IEnumerable<ServiceInfo> Scan(IProgress<ScanProgress>? progress = null)
@@ -136,17 +136,15 @@ public class ServiceScanner : IServiceScanner
             if (!string.IsNullOrWhiteSpace(label) && runtimeStates.TryGetValue(label, out LaunchctlState runtime))
                 status = runtime.Pid is > 0 ? ServiceStatus.Running : ServiceStatus.Stopped;
 
-            string shaSource = File.Exists(executablePath)
-                ? executablePath
-                : serviceName;
+            ExePath exePath = new(File.Exists(executablePath) ? executablePath : serviceName);
 
             serviceInfo = new ServiceInfo(
                 status,
                 ServiceType.MacOSService,
                 serviceName,
                 displayName,
-                executablePath, [],
-                PlatformHelpers.GetSha256(shaSource)
+                exePath,
+                []
             );
 
             return true;
@@ -159,15 +157,14 @@ public class ServiceScanner : IServiceScanner
 
     private static ServiceInfo CreateRuntimeOnlyService(string label, LaunchctlState state)
     {
-        string executablePath = GetLaunchctlProgramPath(label) ?? "N/A";
-
+        string? executablePath = GetLaunchctlProgramPath(label);
         return new ServiceInfo(
             state.Pid is > 0 ? ServiceStatus.Running : ServiceStatus.Stopped,
             ServiceType.MacOSService,
             label,
             label,
-            executablePath, [],
-            PlatformHelpers.GetSha256(executablePath)
+            (executablePath == null) ? null : new(executablePath),
+            []
         );
     }
 

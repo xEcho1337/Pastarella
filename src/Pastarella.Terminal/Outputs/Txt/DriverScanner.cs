@@ -17,14 +17,9 @@ public class DriverScanner(OutputBuffer buffer)
             Buffer.WriteLine($"[{driver.Type}] {driver.Identifier}/{driver.DisplayName}");
             Buffer.WriteLine($"  > State: {loaded}");
             Buffer.WriteLine($"  > Version: {version}");
-            Buffer.WriteLine($"  > Path: {driver.ExecutablePath ?? "N/A"}");
-            Buffer.WriteLine($"  > SHA256: {driver.Sha256}");
-
-            if (driver.Signer is not null)
-                Buffer.WriteLine($"  > Signer: {driver.Signer}");
+            TxtWriter.PrintExePath(buffer, driver.ExePath);
 
             Buffer.WriteLine("");
         }
     }
 }
-

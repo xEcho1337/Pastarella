@@ -1,3 +1,4 @@
+using Pastarella.Core;
 using Pastarella.Core.Models;
 using Pastarella.Terminal.Outputs.Txt;
 
@@ -16,6 +17,39 @@ public class TxtWriter
         buffer.Indent();
         foreach (var (k, v) in dict)
             buffer.WriteLine($"|> {k}: {v}");
+        buffer.Unindent();
+    }
+
+    public static void PrintExePath(OutputBuffer buffer, ExePath? _exePath)
+    {
+        if (_exePath is not ExePath exePath)
+            return;
+
+        buffer.WriteLine($"Executable path: {exePath.NormalizedValue}");
+        buffer.Indent();
+
+        if (exePath.Sha256 is string hash)
+            buffer.WriteLine($"|> SHA256: {hash}");
+
+        if (exePath.Signature is ISignature signature)
+        {
+            buffer.WriteLine("|> Signature:");
+            switch (signature)
+            {
+                case WindowsSignature sign:
+                    buffer.WriteLine($"|> Issuer: {sign.Issuer}");
+                    buffer.WriteLine($"|> Subject: {sign.Subject}");
+                    break;
+                case MacOSSignature sign:
+                    if (sign.TeamIdentifier is string teamId)
+                        buffer.WriteLine($"|> Team Identifier: {teamId}");
+                    if (sign.Autority is string autority)
+                        buffer.WriteLine($"|> Autority: {autority}");
+                    break;
+                default:
+                    break;
+            }
+        }
         buffer.Unindent();
     }
 

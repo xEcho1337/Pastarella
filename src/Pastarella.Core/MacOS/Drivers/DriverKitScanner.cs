@@ -96,11 +96,9 @@ public class DriverKitScanner : IDriverScanner
                 DisplayName: name,
                 Identifier: bundleId,
                 Type: currentType.Value,
-                ExecutablePath: null,
+                ExePath: null,
                 Version: version,
-                Loaded: loaded,
-                Sha256: "N/A",
-                Signer: null
+                Loaded: loaded
             );
         }
     }

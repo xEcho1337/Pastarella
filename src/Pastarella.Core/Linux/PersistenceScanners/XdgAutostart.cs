@@ -53,15 +53,16 @@ public class XdgAutostart : IPersistenceScanner
                     if (name == null || exec == null)
                         continue;
 
-                    string execPath = PlatformHelpers.FindExecutableInPath(exec) ?? exec;
+                    string? executablePath = PlatformHelpers.FindExecutableInPath(exec);
                     list.Add(new PersistenceEntry()
                     {
                         Name = name,
                         Path = desktopFile,
                         Action = new ExecScheduledAction()
                         {
-                            Path = execPath,
-                            Sha256 = PlatformHelpers.GetSha256(execPath),
+                            ExePath = (executablePath == null)
+                                ? new FakeExePath(exec)
+                                : new(executablePath),
                         },
                         Trigger = ExecutionTrigger.UserLogin,
                         Privilege = PersistencePrivilege.User,

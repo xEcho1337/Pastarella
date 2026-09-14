@@ -23,8 +23,8 @@ public class TaskScanner : IPersistenceScanner
                         },
                         ExecAction exec => new ExecScheduledAction
                         {
-                            Path = $"{exec.Path} {exec.Arguments}",
-                            Sha256 = PlatformHelpers.GetSha256(exec.Path),
+                            ExePath = (exec.Path == null) ? null : new(exec.Path),
+                            Arguments = exec.Arguments?.Split(' ') ?? []
                         },
                         EmailAction => new EmailScheduledAction(),
                         ShowMessageAction message => new MessageScheduledAction()

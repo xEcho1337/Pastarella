@@ -133,11 +133,11 @@ export class PastarellaReport {
         return s;
     }
 
-    signerIcon(signer) {
+    signerIcon(signature) {
         var i = document.createElement("i");
-        if (signer) {
+        if (signature) {
             i.className = "bi bi-check-circle-fill text-success";
-            i.title = String(signer);
+            i.title = String(this.stringifyMetadata(signature));
         } else {
             i.className = "bi bi-x-circle-fill text-danger";
         }
@@ -157,8 +157,8 @@ export class PastarellaReport {
         var str = "";
         var entries = Array.isArray(metadata)
             ? metadata.map((m, i) => {
-                  return [i, m];
-              })
+                return [i, m];
+            })
             : Object.entries(metadata);
         entries.forEach((entry) => {
             str += entry[0] + ": " + entry[1] + "\n";
@@ -174,11 +174,11 @@ export class PastarellaReport {
 
     actionText(action) {
         if (!action) return "None";
-        if (action.Path !== undefined || action.path !== undefined) {
-            var p = action.Path !== undefined ? action.Path : action.path;
-            var sha =
-                action.Sha256 !== undefined ? action.Sha256 : action.sha256;
-            return "Scheduled run executable\nPath: " + p + "\nSHA256: " + sha;
+        if (action.ExePath !== undefined) {
+            var p = action.ExePath;
+            if (p === null)
+                return "Scheduled run executable";
+            return `Scheduled run executable\nPath: ${p.NormalizedValue}\nSha256: ${p.Sha256}\n${this.stringifyMetadata(p.Signature || {})}`
         }
         if (action.ClassId !== undefined || action.classId !== undefined) {
             var id =

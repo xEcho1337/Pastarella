@@ -24,32 +24,18 @@ public class DriverScanner : IDriverScanner
 
                 int nativeStatus = (int)d.Status;
 
-                string? filePath = PathNormalizer.Normalize(key?.GetValue("ImagePath")?.ToString() ?? "");
-                string? hash = PlatformHelpers.GetSha256(filePath);
-
-                string? signer = null;
-                PlatformHelpers.TryDo(
-                    () =>
-                    {
-                        if (filePath != null)
-                        {
-                            var cert = X509Certificate.CreateFromSignedFile(filePath);
-                            signer = cert.Subject;
-                        }
-                    }
-                );
-
+                ExePath? exePath = null;
+                if (key?.GetValue("ImagePath")?.ToString() is string imagePath)
+                    exePath = new(imagePath);
 
                 return new DriverInfo(
                     d.ServiceName,
                     d.DisplayName,
                     d.ServiceName,
                     type,
-                    filePath,
+                    exePath,
                     null,
-                    true,
-                    hash,
-                    signer
+                    true
                 );
             });
     }

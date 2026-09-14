@@ -39,15 +39,12 @@ public class ProcessScanner : IProcessScanner
                 // TODO: macOS code signing
             }
 
-            string? hash = PlatformHelpers.GetSha256(path);
             list.Add(new ProcessInfo(proc.Id)
             {
                 Metadata = metadata,
                 CommandArgs = cmdline,
-                Path = path,
-                Sha256 = hash,
+                ExePath = (path == null) ? null : new(path),
                 StartTime = start
-
             });
             progress?.Report(new ScanProgress(++done, processes.Length));
         }
