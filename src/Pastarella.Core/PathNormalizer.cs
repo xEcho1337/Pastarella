@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace Pastarella.Core;
 
 public static class PathNormalizer
@@ -51,5 +53,75 @@ public static class PathNormalizer
         }
 
         return path;
+    }
+
+    public static string[] Unescape(string path)
+    {
+        var parts = new List<string>();
+        var builder = new StringBuilder(path.Length / 2);
+
+        int i = 0;
+        while (i < path.Length)
+        {
+            switch (path[i])
+            {
+                case '"':
+                    {
+                        int start = i + 1;
+                        int lastQuote;
+                        do
+                        {
+                            lastQuote = path[start..].IndexOf('"');
+                            if (lastQuote == -1)
+                            {
+                                builder.Append(path[start..]);
+                                builder.Clear();
+
+                                return [.. parts];
+                            }
+
+                            if (path[lastQuote - 1] == '\\')
+                            {
+                                builder.Append(path[start..(lastQuote - 1)]);
+                                start = lastQuote + 1;
+                                continue;
+                            }
+
+                            i = lastQuote + 1;
+
+                            if ((lastQuote + 1) < path.Length && path[lastQuote + 1] == ' ')
+                            {
+                                builder.Append(path[start..lastQuote]);
+                                goto outer;
+                            }
+
+                            builder.Append(path[start..(lastQuote + 1)]);
+
+                            parts.Add(builder.ToString());
+                            builder.Clear();
+
+                            goto outer;
+                        } while (true);
+                    }
+                case ' ':
+                    parts.Add(builder.ToString());
+                    builder.Clear();
+                    break;
+                case '\\':
+                    if (path[i + 1] == ' ')
+                        i++;
+                    goto default;
+                default:
+                    builder.Append(path[i]);
+                    break;
+            }
+        outer:
+            i++;
+        }
+
+        parts.Add(builder.ToString());
+        builder.Clear();
+
+        return [.. parts];
     }
 }
