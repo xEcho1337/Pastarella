@@ -124,6 +124,9 @@ import { pastarellaReport } from "./pastarella-report.js";
     }
 
     function renderProcesses(report, bodyId) {
+        if (report.Processes == null)
+            return;
+
         fillBody(
             bodyId || "processesBody",
             report.Processes.map(function (d) {
@@ -152,6 +155,9 @@ import { pastarellaReport } from "./pastarella-report.js";
 
     /* Services: Status, Service Type, Service Name, Display Name, Command, Executable SHA256 */
     function renderServices(report) {
+        if (report.Services == null)
+            return;
+
         fillBody(
             "servicesBody",
             report.Services.map(function (d) {
@@ -174,6 +180,9 @@ import { pastarellaReport } from "./pastarella-report.js";
 
     /* Open Ports: Protocol, State, Local, Remote, PID, Process Name */
     function renderPorts(report, bodyId) {
+        if (report.OpenPorts == null)
+            return;
+
         fillBody(
             bodyId || "portsBody",
             report.OpenPorts.map(function (d) {
@@ -200,6 +209,9 @@ import { pastarellaReport } from "./pastarella-report.js";
 
     /* Users: Name, Description, Uid, Home, Disabled, Metadata */
     function renderUsers(report, bodyId) {
+        if (report.Users == null)
+            return;
+
         fillBody(
             bodyId || "usersBody",
             report.Users.map(function (d) {
@@ -226,6 +238,9 @@ import { pastarellaReport } from "./pastarella-report.js";
 
     /* Hosts: IP, Domain */
     function renderHosts(report, bodyId) {
+        if (report.Hosts == null)
+            return;
+
         fillBody(
             bodyId || "hostsBody",
             report.Hosts.map(function (d) {
@@ -239,6 +254,9 @@ import { pastarellaReport } from "./pastarella-report.js";
 
     /* Drivers: Name, Display Name, Identifier, Type, Executable Path, Version, Loaded, SHA256, Signer */
     function renderDrivers(report) {
+        if (report.Drivers == null)
+            return;
+
         fillBody(
             "driversBody",
             report.Drivers.map(function (d) {
@@ -269,6 +287,9 @@ import { pastarellaReport } from "./pastarella-report.js";
 
     /* Persistences: Risk Score, Name, Path, Action, Trigger, Privilege, Type, Metadata */
     function renderPersistences(report, bodyId) {
+        if (report.Persistences == null)
+            return;
+
         var rows = report.Persistences.map(function (d) {
             var score = Number(value(d, "RiskScore", "riskScore")) || 0;
             var badge = document.createElement("span");
@@ -303,6 +324,9 @@ import { pastarellaReport } from "./pastarella-report.js";
 
     /* Storages: Type, Name, Free Space, Total Space */
     function renderStorages(report, bodyId) {
+        if (report.Storages == null)
+            return;
+
         fillBody(
             bodyId || "storageBody",
             report.Storages.map(function (d) {
@@ -318,7 +342,10 @@ import { pastarellaReport } from "./pastarella-report.js";
 
     /* Envs: Key, Value */
     function renderEnvs(report) {
-        var rows = Object.entries(report.Envs || {}).map(function (entry) {
+        if (report.Envs == null)
+            return;
+
+        var rows = Object.entries(report.Envs).map(function (entry) {
             return [pastarellaReport.mono(entry[0]), entry[1]];
         });
         fillBody("envBody", rows);
@@ -326,6 +353,9 @@ import { pastarellaReport } from "./pastarella-report.js";
 
     /* Command Histories: Shell, Command */
     function renderHistories(report) {
+        if (report.CommandHistories == null)
+            return;
+
         var rows = [];
         report.CommandHistories.forEach(function (history) {
             var shell = pastarellaReport.v(history, "Shell");
@@ -341,6 +371,9 @@ import { pastarellaReport } from "./pastarella-report.js";
 
     /* Recent Files: File Path, Creation Time, Last Write Time */
     function renderRecentFiles(report, bodyId) {
+        if (report.RecentFiles == null)
+            return;
+
         fillBody(
             bodyId || "recentFilesBody",
             report.RecentFiles.map(function (d) {
@@ -355,6 +388,9 @@ import { pastarellaReport } from "./pastarella-report.js";
 
     /* Containers: Type(s), Parent PID, Children PIDs, Metadata */
     function renderContainers(report, bodyId) {
+        if (report.Containers == null)
+            return;
+
         fillBody(
             bodyId || "containersBody",
             report.Containers.map(function (d) {

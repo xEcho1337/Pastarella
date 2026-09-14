@@ -11,39 +11,6 @@ export class PastarellaReport {
         return "";
     }
 
-    // TODO: remove this
-    arr(reportObj, upper, lower) {
-        var value = reportObj
-            ? reportObj[upper] !== undefined
-                ? reportObj[upper]
-                : reportObj[lower]
-            : undefined;
-        return Array.isArray(value) ? value : [];
-    }
-
-    normalize(data) {
-        if (!data || typeof data !== "object") return null;
-        return {
-            Timestamp: data.Timestamp || data.timestamp || null,
-            Processes: this.arr(data, "Processes", "processes"),
-            Services: this.arr(data, "Services", "services"),
-            OpenPorts: this.arr(data, "OpenPorts", "openPorts"),
-            Users: this.arr(data, "Users", "users"),
-            Hosts: this.arr(data, "Hosts", "hosts"),
-            Drivers: this.arr(data, "Drivers", "drivers"),
-            Persistences: this.arr(data, "Persistences", "persistences"),
-            Storages: this.arr(data, "Storages", "storages"),
-            Envs: data.Envs || data.envs || {},
-            CommandHistories: this.arr(
-                data,
-                "CommandHistories",
-                "commandHistories",
-            ),
-            RecentFiles: this.arr(data, "RecentFiles", "recentFiles"),
-            Containers: this.arr(data, "Containers", "containers"),
-        };
-    }
-
     hasReport() {
         return this.report !== null;
     }
@@ -53,9 +20,7 @@ export class PastarellaReport {
     }
 
     setReport(data) {
-        var normalized = this.normalize(data);
-        if (!normalized) return false;
-        this.report = normalized;
+        this.report = data;
         window.dispatchEvent(new CustomEvent("pastarella:report"));
         return true;
     }
