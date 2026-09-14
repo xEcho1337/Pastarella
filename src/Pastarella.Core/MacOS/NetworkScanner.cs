@@ -148,24 +148,24 @@ public class NetworkScanner : INetworkScanner
 
             if (idx < 0) return;
 
+            // we have to handle "*" differently, according to the IP version
             string allInterfaces = version.Equals("ipv6", StringComparison.CurrentCultureIgnoreCase)
                 ? "[::]" : "0.0.0.0";
 
-            string[] parts = endpoint.Split(':');
+            // split by the last semi-column to account for both IPv4 and IPv6
+            string ipStr = endpoint[..idx].Replace("*", allInterfaces);
+            string portStr = endpoint[(idx + 1)..];
 
-            // * is tricky and we have to handle it differently, according to the IP version
-            string ip = parts[^2].Replace("*", allInterfaces);
-            string portStr = parts[^1];
-
-            if (version == "ipv6")
+            // lsof may return an IPv4 address for IPv6 connections
+            if (version == "ipv6" && !ipStr.Contains('[') && !ipStr.Contains(']'))
             {
-                // lsof returns IPv4 addresses even for IPv6 connections
-                IPAddress address = IPAddress.Parse(ip);
-                ip = address.MapToIPv6().ToString();
+                var address = IPAddress.Parse(ipStr);
+                ipStr = address.MapToIPv6().ToString();
             }
 
+            Console.WriteLine($"endpoint = {endpoint}, ip = {ipStr}:{portStr}");
             if (ushort.TryParse(portStr, out ushort port))
-                ipPort = new IpPort(ip, port);
+                ipPort = new IpPort(ipStr, port);
         }
     }
 }
