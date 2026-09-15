@@ -149,7 +149,7 @@ import { pastarellaReport } from "./pastarella-report.js";
 
     function renderAll() {
         if (!store() || !store().hasReport()) return;
-        var report = store().getReport();
+        var report = store().data;
         renderStats(report);
         renderChart(report);
         renderSummary(report);

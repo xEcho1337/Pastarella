@@ -40,7 +40,7 @@ import { pastarellaReport } from "./pastarella-report.js";
         } else if (window.PastarellaSections && hasReport()) {
             window.PastarellaSections.render(
                 name,
-                pastarellaReport.getReport(),
+                pastarellaReport.data,
             );
         }
     }

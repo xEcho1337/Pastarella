@@ -123,7 +123,7 @@ import { pastarellaReport } from "./pastarella-report.js";
             alert("Load a report first");
             return;
         }
-        var report = pastarellaReport.getReport();
+        var report = pastarellaReport.data;
         download("pastarella-hashes-" + stamp() + ".txt", buildTxt(report));
     }
 

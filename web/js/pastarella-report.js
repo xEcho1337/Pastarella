@@ -1,8 +1,8 @@
 export class PastarellaReport {
-    report = null;
+    data = null;
 
     constructor() {
-        this.report = null;
+        this.data = null;
     }
 
     v(obj, upper) {
@@ -12,21 +12,17 @@ export class PastarellaReport {
     }
 
     hasReport() {
-        return this.report !== null;
-    }
-
-    getReport() {
-        return this.report;
+        return this.data !== null;
     }
 
     setReport(data) {
-        this.report = data;
+        this.data = data;
         window.dispatchEvent(new CustomEvent("pastarella:report"));
         return true;
     }
 
     clearReport() {
-        this.report = null;
+        this.data = null;
         window.dispatchEvent(new CustomEvent("pastarella:report"));
     }
 
@@ -43,7 +39,7 @@ export class PastarellaReport {
                     var data = JSON.parse(reader.result);
                     if (!this.setReport(data))
                         alert("Invalid AnalysisReport JSON");
-                    else if (callback) callback(this.getReport());
+                    else if (callback) callback(this.data);
                 } catch (e) {
                     console.error(e);
                     alert("Invalid AnalysisReport JSON");
