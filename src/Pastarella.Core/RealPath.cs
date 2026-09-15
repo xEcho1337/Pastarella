@@ -37,8 +37,11 @@ public class ExePath(
     bool isRealPath = true
 ) : RealPath(path, normalized)
 {
-    public string? Sha256 => (isRealPath && Exist()) ? PlatformHelpers.GetSha256(NormalizedValue) : null;
-    public ISignature? Signature => signature ??= (isRealPath && Exist()) ? GetSignature(NormalizedValue) : null;
+    public string? Sha256 => isRealPath && Exist() ? PlatformHelpers.GetSha256(NormalizedValue) : null;
+    public ISignature? Signature
+    {
+        get => field ??= isRealPath && Exist() ? GetSignature(NormalizedValue) : null;
+    } = signature;
 
     private static ISignature? GetSignature(string path)
     {
