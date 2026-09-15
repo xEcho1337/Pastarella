@@ -7,18 +7,17 @@ namespace Pastarella.Terminal.Outputs;
 
 public static class JsonWriter
 {
+    private static readonly JsonSerializerOptions Options = new()
+    {
+        WriteIndented = true,
+        IncludeFields = true
+    };
+
     public static string Serialize(AnalysisReport report)
     {
+        Options.Converters.Add(new JsonStringEnumConverter());
+        Options.Converters.Add(new PortInfoConverter());
 
-        var options = new JsonSerializerOptions
-        {
-            WriteIndented = true,
-            IncludeFields = true
-        };
-
-        options.Converters.Add(new JsonStringEnumConverter());
-        options.Converters.Add(new PortInfoConverter());
-
-        return JsonSerializer.Serialize(report, options);
+        return JsonSerializer.Serialize(report, Options);
     }
 }

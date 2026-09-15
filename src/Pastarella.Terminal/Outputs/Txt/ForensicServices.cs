@@ -4,66 +4,85 @@ namespace Pastarella.Terminal.Outputs.Txt;
 
 public class ForensicServices(OutputBuffer buffer)
 {
-    private readonly OutputBuffer Buffer = buffer;
-
     public void WriteProcesses(IEnumerable<ProcessInfo> processes)
     {
-        Buffer.WriteLine("[PID] Name (Path) [Signed/Unsigned] - SHA256 - Start Time");
+        buffer.WriteLine("[Start Time] [PID] [Path] (Command Args) [Signed/Unsigned] (SHA256)");
 
         foreach (var p in processes.OrderBy(p => p.Id))
         {
-            bool signed = !(p.ExePath == null || p.ExePath.Signature == null);
+            bool signed = p.ExePath.Signature != null;
 
-            Buffer.WriteLine($"[{p.Id}] {p.ExePath!.NormalizedValue} {p.CommandArgs}[{(signed ? "Unsigned" : "Signed")}] - {p.ExePath.Sha256 ?? "N/A"} - {p.StartTime}");
-            TxtWriter.BasicPrintMetadata(Buffer, p.Metadata);
+            var outBuf = new TxtAppender();
+
+            outBuf.Append(p.StartTime?.ToString(), Presence.Required);
+            outBuf.Append($"{p.Id}", Presence.Required);
+            outBuf.Append(p.ExePath.NormalizedValue, Presence.Required);
+            outBuf.Append(p.CommandArgs, Presence.Optional);
+            outBuf.Append(signed ? "Signed" : "Unsigned", Presence.Required);
+            outBuf.Append(p.ExePath.Sha256, Presence.Optional);
+
+            buffer.WriteLine(outBuf.ToString());
+            TxtWriter.BasicPrintMetadata(buffer, p.Metadata);
         }
     }
 
     public void WriteServices(IEnumerable<ServiceInfo> services)
     {
-        Buffer.WriteLine("[Status] Service Name (Display Name) --> Path - SHA256");
+        buffer.WriteLine("[Status] [Service Name] (Display Name) [Type] [Path] (Arguments) [Signed/Unsigned] (SHA256)");
         foreach (var service in services.OrderBy(p => p.ServiceName))
         {
-            Buffer.WriteLine($"[{service.Status}] {service.ServiceName}");
+            bool signed = service.ExePath?.Signature != null;
 
-            Buffer.Indent();
-            Buffer.WriteLine($"|> Display: {service.DisplayName}");
+            var outBuf = new TxtAppender();
+
+            outBuf.Append(service.ServiceType.ToString(), Presence.Required);
+            outBuf.Append(service.Status.ToString(), Presence.Required);
+            outBuf.Append(service.ServiceName, Presence.Required);
+
+            outBuf.Append(service.ExePath?.NormalizedValue, Presence.Required);
+            outBuf.Append(string.Join(' ', service.Arguments), Presence.Optional);
+            outBuf.Append(signed ? "Signed" : "Unsigned", Presence.Required);
+            outBuf.Append(service.ExePath?.Sha256, Presence.Optional);
+
+            buffer.WriteLine(outBuf.ToString());
             TxtWriter.PrintExePath(buffer, service.ExePath);
-            Buffer.WriteLine($"|> Arguments: {string.Join(' ', service.Arguments)}");
-            Buffer.Unindent();
         }
     }
 
     public void WriteUsers(IEnumerable<UserInfo> users)
     {
-        Buffer.WriteLine("[ID] User (disabled): description");
+        buffer.WriteLine("[UID] [Name] (Description) [Home] [Enabled/Disabled]");
         foreach (var user in users.OrderBy(u => u.Uid))
         {
-            Buffer.WriteLine($"[{user.Uid}] {user.Name}");
+            var outBuf = new TxtAppender();
 
-            Buffer.Indent();
+            outBuf.Append(user.Uid, Presence.Required);
+            outBuf.Append(user.Name, Presence.Required);
+            outBuf.Append(user.Description, Presence.Optional);
+            outBuf.Append(user.Home, Presence.Required);
+            outBuf.Append(user.Disabled ? "Disabled" : "Enabled", Presence.Required);
 
-            if (!string.IsNullOrWhiteSpace(user.Description))
-                buffer.WriteLine($"|> Description: {user.Description}");
-
-            buffer.WriteLine($"|> Home: {user.Home}");
-            buffer.WriteLine($"|> Disabled: {user.Disabled}");
-            TxtWriter.BasicPrintMetadata(Buffer, user.Metadata);
-
-            Buffer.Unindent();
+            buffer.WriteLine(outBuf.ToString());
+            TxtWriter.BasicPrintMetadata(buffer, user.Metadata);
         }
     }
 
     public void WriteStorages(IEnumerable<StorageInfo> storages)
     {
-        Buffer.WriteLine("Name (Type) -> Free/Total");
+        buffer.WriteLine("[Name] [Type] [Free/Total]");
 
         foreach (var storage in storages)
         {
             ulong free = storage.FreeSpace / (1024 * 1024 * 1024);
             ulong total = storage.TotalSpace / (1024 * 1024 * 1024);
 
-            Buffer.WriteLine($"{storage.Name} ({storage.Type}) -> {free} GB/{total} GB");
+            var outBuf = new TxtAppender();
+
+            outBuf.Append(storage.Name, Presence.Required);
+            outBuf.Append(storage.Type.ToString(), Presence.Required);
+            outBuf.Append($"{free} GB/{total} GB", Presence.Required);
+
+            buffer.WriteLine(outBuf.ToString());
         }
     }
 }

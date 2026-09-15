@@ -22,33 +22,22 @@ public class TxtWriter
 
     public static void PrintExePath(OutputBuffer buffer, ExePath? _exePath)
     {
-        if (_exePath is not ExePath exePath)
-            return;
+        if (_exePath?.Signature is not { } signature) return;
 
-        buffer.WriteLine($"Executable path: {exePath.NormalizedValue}");
         buffer.Indent();
-
-        if (exePath.Sha256 is string hash)
-            buffer.WriteLine($"|> SHA256: {hash}");
-
-        if (exePath.Signature is ISignature signature)
+        buffer.WriteLine("=> Signature:");
+        switch (signature)
         {
-            buffer.WriteLine("|> Signature:");
-            switch (signature)
-            {
-                case WindowsSignature sign:
-                    buffer.WriteLine($"|> Issuer: {sign.Issuer}");
-                    buffer.WriteLine($"|> Subject: {sign.Subject}");
-                    break;
-                case MacOSSignature sign:
-                    if (sign.TeamIdentifier is string teamId)
-                        buffer.WriteLine($"|> Team Identifier: {teamId}");
-                    if (sign.Autority is string autority)
-                        buffer.WriteLine($"|> Autority: {autority}");
-                    break;
-                default:
-                    break;
-            }
+            case WindowsSignature sign:
+                buffer.WriteLine($"=> Issuer: {sign.Issuer}");
+                buffer.WriteLine($"=> Subject: {sign.Subject}");
+                break;
+            case MacOSSignature sign:
+                if (sign.TeamIdentifier is string teamId)
+                    buffer.WriteLine($"=> Team Identifier: {teamId}");
+                if (sign.Autority is string autority)
+                    buffer.WriteLine($"=> Autority: {autority}");
+                break;
         }
         buffer.Unindent();
     }
