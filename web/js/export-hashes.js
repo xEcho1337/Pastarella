@@ -7,13 +7,10 @@ import { pastarellaReport } from "./pastarella-report.js";
         return v === null || v === undefined ? "" : String(v).trim();
     }
 
-    function pick(obj, upper, lower) {
-        if (!obj) return "";
-        if (obj[upper] !== undefined && obj[upper] !== null)
-            return str(obj[upper]);
-        if (obj[lower] !== undefined && obj[lower] !== null)
-            return str(obj[lower]);
-        return "";
+    function pick(d, key) {
+        if (d[key] == null)
+            return null;
+        return d[key];
     }
 
     function metadataSha256(metadata) {
@@ -31,19 +28,20 @@ import { pastarellaReport } from "./pastarella-report.js";
 
     function collectProcesses(report) {
         return report.Processes.map(function (p) {
-            return pick(p, "Sha256", "sha256");
+            console.log(p);
+            return pick(p, "ExePath")?.Sha256 ?? "";
         });
     }
 
     function collectServices(report) {
         return report.Services.map(function (s) {
-            return pick(s, "Sha256", "sha256");
+            return pick(s, "ExePath")?.Sha256 ?? "";
         });
     }
 
     function collectDrivers(report) {
         return report.Drivers.map(function (d) {
-            return pick(d, "Sha256", "sha256");
+            return pick(d, "ExePath")?.Sha256 ?? "";
         });
     }
 
@@ -51,8 +49,9 @@ import { pastarellaReport } from "./pastarella-report.js";
         return report.Persistences.map(function (p) {
             var act = p.Action !== undefined ? p.Action : p.action;
             if (act && typeof act === "object") {
-                var sha = pick(act, "Sha256", "sha256");
-                if (sha) return sha;
+                const hash = pick(p, "ExePath")?.Sha256 ?? null;
+                if (hash !== null)
+                    return hash;
             }
             var md = p.Metadata !== undefined ? p.Metadata : p.metadata;
             return metadataSha256(md);
@@ -62,6 +61,7 @@ import { pastarellaReport } from "./pastarella-report.js";
     function buildTxt(report) {
         var lines = [];
         lines.push("Pastarella hashes export");
+        console.log(report);
         var ts = report.Timestamp || "unknown";
         try {
             if (ts !== "unknown") ts = new Date(ts).toLocaleString();
@@ -119,26 +119,12 @@ import { pastarellaReport } from "./pastarella-report.js";
     }
 
     function exportHashes() {
-        if (!pastarellaReport || !pastarellaReport.hasReport()) {
+        if (!pastarellaReport.hasReport()) {
             alert("Load a report first");
             return;
         }
-        var report = pastarellaReport.data;
-        download("pastarella-hashes-" + stamp() + ".txt", buildTxt(report));
+        download(`pastarella-hashes-${stamp()}.txt`, buildTxt(pastarellaReport.data));
     }
 
-    document.addEventListener("click", function (e) {
-        var el = e.target.closest
-            ? e.target.closest('[data-action="export-hashes"]')
-            : null;
-        if (el) {
-            e.preventDefault();
-            exportHashes();
-        }
-    });
-
-    window.PastarellaExport = {
-        exportHashes: exportHashes,
-        buildTxt: buildTxt,
-    };
+    window.exportHashes = exportHashes;
 })();
