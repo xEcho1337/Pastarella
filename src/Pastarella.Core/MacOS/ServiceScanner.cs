@@ -12,7 +12,7 @@ public class ServiceScanner : IServiceScanner
         "/System/Library/LaunchAgents",
         "/Library/LaunchDaemons",
         "/Library/LaunchAgents",
-        PathConverter.Normalize("~/Library/LaunchAgents")!
+        PathConverter.Normalize("~/Library/LaunchAgents")
     ];
 
     public IEnumerable<ServiceInfo> Scan(IProgress<ScanProgress>? progress = null)
@@ -112,9 +112,6 @@ public class ServiceScanner : IServiceScanner
                 return false;
 
             label = GetString(dict, "Label");
-            string displayName = GetString(dict, "DisplayName")
-                                 ?? label
-                                 ?? Path.GetFileNameWithoutExtension(plistPath);
 
             string? executablePath = GetString(dict, "Program");
 
@@ -142,7 +139,6 @@ public class ServiceScanner : IServiceScanner
                 status,
                 ServiceType.MacOSService,
                 serviceName,
-                displayName,
                 exePath,
                 []
             );
@@ -162,8 +158,7 @@ public class ServiceScanner : IServiceScanner
             state.Pid is > 0 ? ServiceStatus.Running : ServiceStatus.Stopped,
             ServiceType.MacOSService,
             label,
-            label,
-            (executablePath == null) ? null : new(executablePath),
+            executablePath == null ? null : new ExePath(executablePath),
             []
         );
     }

@@ -23,7 +23,6 @@ public class ServiceScanner : IServiceScanner
             service.Status.Into(),
             service.ServiceType.Into(),
             service.ServiceName,
-            service.DisplayName,
             exePath,
             args
         );

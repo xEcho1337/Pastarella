@@ -75,7 +75,6 @@ public record ServiceInfo(
     ServiceStatus Status,
     ServiceType ServiceType,
     string ServiceName,
-    string DisplayName,
     ExePath? ExePath,
     string[] Arguments
 );
