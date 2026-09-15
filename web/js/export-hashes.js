@@ -1,22 +1,30 @@
 import { pastarellaReport } from "./pastarella-report.js";
 
-function collectHashes(report, arr) {
-    function push(hash) {
-        if (hash !== null && hash !== undefined)
-            arr.push(hash);
-    }
+function push(hashes, hash) {
+    if (hash !== null && hash !== undefined)
+        hashes.add(hash);
+}
 
-    report.Processes.forEach(v => push(v.ExePath?.Sha256));
-    report.Services.forEach(v => push(v.ExePath?.Sha256));
-    report.Drivers.forEach(v => push(v.ExePath?.Sha256));
+function collectSessionHashes(iterable, section, lines, action) {
+    const hashes = new Set();
+    iterable.forEach(v => action(hashes, v));
 
-    report.Persistences.forEach(v => {
+    lines.push(`=========== ${section} ===========`)
+    lines.push(...hashes)
+    lines.push(` `)
+}
+
+function collectHashes(report, lines) {
+    collectSessionHashes(report.Processes, "Processes", lines, (h, v) => push(h, v.ExePath?.Sha256));
+    collectSessionHashes(report.Services, "Services", lines, (h, v) => push(h, v.ExePath?.Sha256));
+    collectSessionHashes(report.Drivers, "Drivers", lines, (h, v) => push(h, v.ExePath?.Sha256));
+    collectSessionHashes(report.Persistences, "Persistences", lines, (h, v) => {
         const action = v.Action;
         if (action === undefined)
             return;
 
-        push(action.ExePath?.Sha256);
-    });
+        push(h, action.ExePath?.Sha256);
+    })
 }
 
 function buildTxt(report) {
@@ -67,7 +75,7 @@ function download(filename, text) {
     document.body.appendChild(a);
     a.click();
 
-    setTimeout(function () {
+    setTimeout(function() {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     }, 100);
