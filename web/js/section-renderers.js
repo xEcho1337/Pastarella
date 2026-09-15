@@ -74,25 +74,26 @@ function renderServices(report, tbody) {
     );
 }
 
-/* Open Ports: Protocol, State, Local, Remote, PID, Process Name */
-function renderOpenPorts(report, tbody) {
-    if (report.OpenPorts == null)
+/* Sockets: Protocol, State, Local, Remote, PID, Process Name */
+function renderSockets(report, tbody) {
+    if (report.Sockets == null)
         return;
 
     fillBody(
         tbody,
-        report.OpenPorts.map(function (d) {
-            let local = value(d, "Local");
-            let remote = value(d, "Remote");
+        report.Sockets.map(function (d) {
+            const protocol = value(d, "Protocol");
+            const local = value(d, "Local");
+            const remote = value(d, "Remote");
 
             return [
-                value(d, "Protocol", "-"),
-                value(d, "State"),
-                `${value(local, "Ip")}:${value(local, "Port")}`,
+                protocol.Name,
+                protocol.State ?? "-",
+                pastarellaReport.stringifyAddress(local),
                 remote
-                    ? `${value(remote, "Ip")}:${value(remote, "Port")}`
-                    : "",
-                value(d, "ProcessId", "-"),
+                    ? pastarellaReport.stringifyAddress(remote)
+                    : "-",
+                value(d, "PID", "-"),
                 value(d, "ProcessName", "-"),
             ];
         }),
@@ -332,7 +333,7 @@ export function renderSection(parentElement, section, template) {
 export var renderers = {
     services: (report, tbody) => renderServices(report, tbody),
     hosts: (report, tbody) => renderHosts(report, tbody),
-    openPorts: (report, tbody) => renderOpenPorts(report, tbody),
+    sockets: (report, tbody) => renderSockets(report, tbody),
     users: (report, tbody) => renderUsers(report, tbody),
     storage: (report, tbody) => renderStorage(report, tbody),
     processes: (report, tbody) => renderProcesses(report, tbody),

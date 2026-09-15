@@ -1,29 +1,38 @@
+using System.Text.Json.Serialization;
+
 namespace Pastarella.Core.Models;
 
-public record IpPort(string Ip, ushort Port);
+[JsonDerivedType(typeof(TcpProtocol))]
+[JsonDerivedType(typeof(UdpProtocol))]
+public abstract record Protocol(string Name);
 
-public abstract record PortInfo(
-    string Protocol,
-    string ProcessName,
-    uint ProcessId,
-    IpPort Local
+public record TcpProtocol(string State) : Protocol("TCP");
+public record UdpProtocol() : Protocol("UDP");
+
+[JsonDerivedType(typeof(IPv4Address))]
+[JsonDerivedType(typeof(IPv6Address))]
+public abstract record AddressFamily(string Type);
+
+public record IPv4Address(
+    string Ip,
+    ushort Port
+) : AddressFamily("IPv4");
+
+public record IPv6Address(
+    string Ip,
+    ushort Port,
+    string? Scope
+) : AddressFamily("IPv6");
+
+public record Socket(
+    AddressFamily Local,
+    AddressFamily? Remote,
+    Protocol Protocol,
+    uint PID,
+    string ProcessName // TODO: remove this. For getting this the PID should be used by programs
 );
-
-public record TcpPortInfo(
-    string ProcessName,
-    uint ProcessId,
-    string State,
-    IpPort Local,
-    IpPort? Remote
-) : PortInfo("TCP", ProcessName, ProcessId, Local);
-
-public record UdpPortInfo(
-    string ProcessName,
-    uint ProcessId,
-    IpPort Local
-) : PortInfo("UDP", ProcessName, ProcessId, Local);
 
 public interface INetworkScanner
 {
-    IEnumerable<PortInfo> Scan(IProgress<ScanProgress>? progress = null);
+    IEnumerable<Socket> Scan(IProgress<ScanProgress>? progress = null);
 }

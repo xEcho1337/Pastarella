@@ -122,6 +122,17 @@ export class PastarellaReport {
         return str.trimEnd();
     }
 
+    stringifyAddress(address) {
+        switch (address.Type) {
+            case "IPv4":
+                return `${address.Ip}:${address.Port}`;
+            case "IPv6":
+                return `[${address.Ip}${(address.Scope === null ? "" : `%${address.Scope}`)}]:${address.Port}`;
+            default:
+                throw new Error(`Address type '${address.Type}' not implemented`);
+        }
+    }
+
     fmtGB(bytes) {
         var n = Number(bytes);
         if (isNaN(n)) return "–";

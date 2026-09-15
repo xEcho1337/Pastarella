@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Net;
 using Pastarella.Core.Models;
 
@@ -88,7 +87,7 @@ public class NetworkScanner(Context ctx) : INetworkScanner
             _ => throw new NotImplementedException($"TCP state: {number}"),
         };
 
-    private void GetTcpIPv4Connections(ref List<PortInfo> list)
+    private void GetTcpIPv4Connections(ref List<Socket> list)
     {
         foreach (string line in File.ReadLines("/proc/net/tcp").Skip(1))
         {
@@ -106,17 +105,23 @@ public class NetworkScanner(Context ctx) : INetworkScanner
             ulong inode = Convert.ToUInt64(parts[9]);
 
             uint? pid = InodeToPid(inode);
-            list.Add(new TcpPortInfo(
-                (pid == null) ? "N/A" : PidToProcessName(pid.Value),
+            list.Add(new(
+                new IPv4Address(
+                    localAddr.ToString(),
+                    localPort
+                ),
+                new IPv4Address(
+                    remoteAddr.ToString(),
+                    remotePort
+                ),
+                new TcpProtocol(ParseTcpState(connectionState)),
                 pid ?? 0,
-                ParseTcpState(connectionState),
-                new IpPort(localAddr.ToString(), localPort),
-                new IpPort(remoteAddr.ToString(), remotePort)
+                (pid == null) ? "N/A" : PidToProcessName(pid.Value)
             ));
         }
     }
 
-    private void GetUdpIPv4Endpoints(ref List<PortInfo> list)
+    private void GetUdpIPv4Endpoints(ref List<Socket> list)
     {
         foreach (string line in File.ReadLines("/proc/net/udp").Skip(1))
         {
@@ -129,15 +134,20 @@ public class NetworkScanner(Context ctx) : INetworkScanner
             ulong inode = Convert.ToUInt64(parts[9]);
 
             uint? pid = InodeToPid(inode);
-            list.Add(new UdpPortInfo(
-                (pid == null) ? "N/A" : PidToProcessName(pid.Value),
+            list.Add(new(
+                new IPv4Address(
+                    localAddr.ToString(),
+                    localPort
+                ),
+                null,
+                new UdpProtocol(),
                 pid ?? 0,
-                new IpPort(localAddr.ToString(), localPort)
+                (pid == null) ? "N/A" : PidToProcessName(pid.Value)
             ));
         }
     }
 
-    private void GetTcpIPv6Connections(ref List<PortInfo> list)
+    private void GetTcpIPv6Connections(ref List<Socket> list)
     {
         foreach (string line in File.ReadLines("/proc/net/tcp6").Skip(1))
         {
@@ -155,17 +165,25 @@ public class NetworkScanner(Context ctx) : INetworkScanner
             ulong inode = Convert.ToUInt64(parts[9]);
 
             uint? pid = InodeToPid(inode);
-            list.Add(new TcpPortInfo(
-                (pid == null) ? "N/A" : PidToProcessName(pid.Value),
+            list.Add(new(
+                new IPv6Address(
+                    localAddr.ToString(),
+                    localPort,
+                    null
+                ),
+                new IPv6Address(
+                    remoteAddr.ToString(),
+                    remotePort,
+                    null
+                ),
+                new TcpProtocol(ParseTcpState(connectionState)),
                 pid ?? 0,
-                ParseTcpState(connectionState),
-                new IpPort(localAddr.ToString(), localPort),
-                new IpPort(remoteAddr.ToString(), remotePort)
+                (pid == null) ? "N/A" : PidToProcessName(pid.Value)
             ));
         }
     }
 
-    private void GetUdpIPv6Endpoints(ref List<PortInfo> list)
+    private void GetUdpIPv6Endpoints(ref List<Socket> list)
     {
         foreach (string line in File.ReadLines("/proc/net/udp6").Skip(1))
         {
@@ -178,17 +196,23 @@ public class NetworkScanner(Context ctx) : INetworkScanner
             ulong inode = Convert.ToUInt64(parts[9]);
 
             uint? pid = InodeToPid(inode);
-            list.Add(new UdpPortInfo(
-                (pid == null) ? "N/A" : PidToProcessName(pid.Value),
+            list.Add(new(
+                new IPv6Address(
+                    localAddr.ToString(),
+                    localPort,
+                    null
+                ),
+                null,
+                new UdpProtocol(),
                 pid ?? 0,
-                new IpPort(localAddr.ToString(), localPort)
+                (pid == null) ? "N/A" : PidToProcessName(pid.Value)
             ));
         }
     }
 
-    public IEnumerable<PortInfo> Scan(IProgress<ScanProgress>? progress = null)
+    public IEnumerable<Socket> Scan(IProgress<ScanProgress>? progress = null)
     {
-        List<PortInfo> list = [];
+        List<Socket> list = [];
 
         GetTcpIPv4Connections(ref list);
         GetUdpIPv4Endpoints(ref list);

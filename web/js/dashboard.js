@@ -15,7 +15,7 @@ import { pastarellaReport } from "./pastarella-report.js";
     function renderStats(report) {
         setText("statProcesses", report.Processes.length);
         setText("statServices", report.Services.length);
-        setText("statPorts", report.OpenPorts.length);
+        setText("statSockets", report.Sockets.length);
         setText("statUsers", report.Users.length);
         setText("statPersistences", report.Persistences.length);
         setText("statDrivers", report.Drivers.length);
@@ -41,7 +41,7 @@ import { pastarellaReport } from "./pastarella-report.js";
         var data = [
             { label: "Procs", value: report.Processes.length },
             { label: "Svcs", value: report.Services.length },
-            { label: "Ports", value: report.OpenPorts.length },
+            { label: "Sockets", value: report.Sockets.length },
             { label: "Users", value: report.Users.length },
             { label: "Persist", value: report.Persistences.length },
             { label: "Drivers", value: report.Drivers.length },

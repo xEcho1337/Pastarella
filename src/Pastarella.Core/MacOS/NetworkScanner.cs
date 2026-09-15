@@ -6,7 +6,7 @@ namespace Pastarella.Core.MacOS;
 
 public class NetworkScanner : INetworkScanner
 {
-    public IEnumerable<PortInfo> Scan(IProgress<ScanProgress>? progress = null)
+    public IEnumerable<Socket> Scan(IProgress<ScanProgress>? progress = null)
     {
         var psi = new ProcessStartInfo
         {
@@ -22,7 +22,7 @@ public class NetworkScanner : INetworkScanner
         if (process == null)
             return [];
 
-        var ports = new List<PortInfo>();
+        var sockets = new List<Socket>();
 
         string output = process.StandardOutput.ReadToEnd();
         string[] lines = output.Split("\n");
@@ -51,7 +51,7 @@ public class NetworkScanner : INetworkScanner
 
                 case 'f':
                     if (info != null)
-                        AddToPorts(processId, processName, ports, info);
+                        AddToPorts(processId, processName, sockets, info);
 
                     info = new RecordInfo();
                     break;
@@ -78,19 +78,19 @@ public class NetworkScanner : INetworkScanner
             }
         }
 
-        AddToPorts(processId, processName, ports, info);
+        AddToPorts(processId, processName, sockets, info);
 
-        return ports;
+        return sockets;
     }
 
-    private void AddToPorts(uint processId, string processName, List<PortInfo> ports, RecordInfo? info)
+    private void AddToPorts(uint processId, string processName, List<Socket> sockets, RecordInfo? info)
     {
         if (info == null) return;
 
-        var portInfo = info.ToPortInfo(processId, processName);
+        var socket = info.ToSocket(processId, processName);
 
-        if (portInfo is not null)
-            ports.Add(portInfo);
+        if (socket is not null)
+            sockets.Add(socket);
     }
 
     private class RecordInfo
@@ -100,7 +100,7 @@ public class NetworkScanner : INetworkScanner
         public string State { get; set; } = string.Empty;
         public string Version { get; set; } = string.Empty;
 
-        public PortInfo? ToPortInfo(uint processId, string processName)
+        public Socket? ToSocket(uint processId, string processName)
         {
             if (Connection == "*:*")
                 return null;
@@ -110,16 +110,23 @@ public class NetworkScanner : INetworkScanner
                 out var local,
                 out var remote);
 
-            if (local is null)
-                return null;
-
             return ConnectionType switch
             {
-                "TCP" => new TcpPortInfo(
-                    processName, processId, State, local, remote
+                "TCP" => new(
+                    local,
+                    remote,
+                    new TcpProtocol(State),
+                    processId,
+                    processName
                 ),
 
-                "UDP" => new UdpPortInfo(processName, processId, local),
+                "UDP" => new(
+                    local,
+                    remote,
+                    new UdpProtocol(),
+                    processId,
+                    processName
+                ),
 
                 _ => null
             };
@@ -128,25 +135,25 @@ public class NetworkScanner : INetworkScanner
         private static void ParseConnection(
             string value,
             string version,
-            out IpPort? local,
-            out IpPort? remote
+            out AddressFamily local,
+            out AddressFamily? remote
         )
         {
             remote = null;
             string[] endpoints = value.Split("->", 2);
 
-            ParseEndpoint(endpoints[0], version, out local);
+            local = ParseEndpoint(endpoints[0], version)!;
 
             if (endpoints.Length == 2)
-                ParseEndpoint(endpoints[1], version, out remote);
+                remote = ParseEndpoint(endpoints[1], version);
         }
 
-        private static void ParseEndpoint(string endpoint, string version, out IpPort? ipPort)
+        private static AddressFamily? ParseEndpoint(string endpoint, string version)
         {
-            ipPort = null;
             int idx = endpoint.LastIndexOf(':');
 
-            if (idx < 0) return;
+            if (idx < 0)
+                return null;
 
             // we have to handle "*" differently, according to the IP version
             string allInterfaces = version.Equals("ipv6", StringComparison.CurrentCultureIgnoreCase)
@@ -156,15 +163,22 @@ public class NetworkScanner : INetworkScanner
             string ipStr = endpoint[..idx].Replace("*", allInterfaces);
             string portStr = endpoint[(idx + 1)..];
 
-            // lsof may return an IPv4 address for IPv6 connections
-            if (version == "ipv6" && !ipStr.Contains('[') && !ipStr.Contains(']'))
+            if (ushort.TryParse(portStr, out ushort port))
             {
-                var address = IPAddress.Parse(ipStr);
-                ipStr = address.MapToIPv6().ToString();
+                switch (version)
+                {
+                    case "ipv6":
+                        // lsof may return an IPv4 address for IPv6 connections
+                        if (!ipStr.Contains('[') && !ipStr.Contains(']'))
+                            ipStr = IPAddress.Parse(ipStr).MapToIPv6().ToString();
+
+                        return new IPv6Address(ipStr, port, null);
+                    case "ipv4":
+                        return new IPv4Address(ipStr, port);
+                }
             }
 
-            if (ushort.TryParse(portStr, out ushort port))
-                ipPort = new IpPort(ipStr, port);
+            return null;
         }
     }
 }

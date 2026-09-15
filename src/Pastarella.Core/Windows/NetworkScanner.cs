@@ -27,21 +27,23 @@ public class NetworkScanner : INetworkScanner
             _ => throw new NotImplementedException($"TCP state: {state}"),
         };
 
-    private static void GetTcpConnections(ref List<PortInfo> list)
+    private static void GetTcpConnections(ref List<Socket> list)
     {
         foreach (var entry in GetExtendedTcpTable<MIB_TCPTABLE_OWNER_PID>(TCP_TABLE_CLASS.TCP_TABLE_OWNER_PID_ALL, ADDRESS_FAMILY.AF_INET))
         {
             list.Add(
-                new TcpPortInfo(
-                    Process.GetProcessById((int)entry.dwOwningPid).ProcessName,
-                    entry.dwOwningPid,
-                    StringifyTcpState(entry.dwState),
-                    new IpPort(
+                new(
+                    new IPv4Address(
                         new IPAddress(entry.dwLocalAddr.S_un_b).ToString(),
-                        (ushort)entry.dwLocalPort),
-                    new IpPort(
+                        (ushort)entry.dwLocalPort
+                    ),
+                    new IPv4Address(
                         new IPAddress(entry.dwRemoteAddr.S_un_b).ToString(),
-                        (ushort)entry.dwRemotePort)
+                        (ushort)entry.dwRemotePort
+                    ),
+                    new TcpProtocol(StringifyTcpState(entry.dwState)),
+                    entry.dwOwningPid,
+                    Process.GetProcessById((int)entry.dwOwningPid).ProcessName
                 )
             );
         }
@@ -49,53 +51,64 @@ public class NetworkScanner : INetworkScanner
         foreach (var entry in GetExtendedTcpTable<MIB_TCP6TABLE_OWNER_PID>(TCP_TABLE_CLASS.TCP_TABLE_OWNER_PID_ALL, ADDRESS_FAMILY.AF_INET6))
         {
             list.Add(
-                new TcpPortInfo(
-                    Process.GetProcessById((int)entry.dwOwningPid).ProcessName,
+                new(
+                    new IPv6Address(
+                        new IPAddress(entry.ucLocalAddr.bytes).ToString(),
+                        (ushort)entry.dwLocalPort,
+                        entry.dwLocalScopeId.ToString()
+                    ),
+                    new IPv6Address(
+                        new IPAddress(entry.ucRemoteAddr.bytes).ToString(),
+                        (ushort)entry.dwRemotePort,
+                        entry.dwRemoteScopeId.ToString()
+                    ),
+                    new TcpProtocol(StringifyTcpState(entry.dwState)),
                     entry.dwOwningPid,
-                    StringifyTcpState(entry.dwState),
-                    new IpPort(
-                        $"[{new IPAddress(entry.ucLocalAddr.bytes, entry.dwLocalScopeId)}]",
-                        (ushort)entry.dwLocalPort),
-                    new IpPort(
-                        $"[{new IPAddress(entry.ucRemoteAddr.bytes, entry.dwRemoteScopeId)}]",
-                        (ushort)entry.dwRemotePort)
+                    Process.GetProcessById((int)entry.dwOwningPid).ProcessName
                 )
             );
         }
     }
 
-    private static void GetUdpEndpoints(ref List<PortInfo> list)
+    private static void GetUdpEndpoints(ref List<Socket> list)
     {
         foreach (var entry in GetExtendedUdpTable<MIB_UDPTABLE_OWNER_PID>(UDP_TABLE_CLASS.UDP_TABLE_OWNER_PID, ADDRESS_FAMILY.AF_INET))
         {
-            string ip = new IPAddress(entry.dwLocalAddr.S_un_b).ToString();
-            ushort port = (ushort)entry.dwLocalPort;
             list.Add(
-                new UdpPortInfo(
-                    Process.GetProcessById((int)entry.dwOwningPid).ProcessName,
+                new(
+                    new IPv4Address(
+                        new IPAddress(entry.dwLocalAddr.S_un_b).ToString(),
+                        (ushort)entry.dwLocalPort
+                    ),
+                    null,
+                    new UdpProtocol(),
                     entry.dwOwningPid,
-                    new IpPort(ip, port)
+                    Process.GetProcessById((int)entry.dwOwningPid).ProcessName
                 )
             );
         }
 
         foreach (var entry in GetExtendedUdpTable<MIB_UDP6TABLE_OWNER_PID>(UDP_TABLE_CLASS.UDP_TABLE_OWNER_PID, ADDRESS_FAMILY.AF_INET6))
         {
-            string ip = new IPAddress(entry.ucLocalAddr.bytes, entry.dwLocalScopeId).ToString();
-            ushort port = (ushort)entry.dwLocalPort;
             list.Add(
-                new UdpPortInfo(
-                    Process.GetProcessById((int)entry.dwOwningPid).ProcessName,
+                new(
+                    new IPv6Address(
+                        new IPAddress(entry.ucLocalAddr.bytes).ToString(),
+                        (ushort)entry.dwLocalPort,
+                        entry.dwLocalScopeId.ToString()
+                    ),
+                    null,
+                    new UdpProtocol(),
                     entry.dwOwningPid,
-                    new IpPort($"[{ip}]", port)
+                    Process.GetProcessById((int)entry.dwOwningPid).ProcessName
                 )
             );
         }
     }
 
-    public IEnumerable<PortInfo> Scan(IProgress<ScanProgress>? progress = null)
+    public IEnumerable<Socket> Scan(IProgress<ScanProgress>? progress = null)
     {
-        List<PortInfo> list = [];
+        List<Socket> list = [];
 
         GetTcpConnections(ref list);
         GetUdpEndpoints(ref list);

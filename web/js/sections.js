@@ -18,7 +18,7 @@ export var sections = [
     {
         id: "network",
         name: "Network",
-        description: "Open ports and hosts",
+        description: "Open sockets and hosts",
         tables: [
             {
                 id: "hosts",
@@ -31,9 +31,9 @@ export var sections = [
                 renderer: renderers.hosts,
             },
             {
-                id: "openPorts",
-                name: "Open ports",
-                description: "What ports are opened and by who",
+                id: "sockets",
+                name: "Open sockets",
+                description: "What sockets are opened and by who",
                 tableHeaders: [
                     "Protocol",
                     "State",
@@ -42,7 +42,7 @@ export var sections = [
                     "PID",
                     "Process Name",
                 ],
-                renderer: renderers.openPorts,
+                renderer: renderers.sockets,
             },
         ]
     },

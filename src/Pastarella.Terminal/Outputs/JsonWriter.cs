@@ -1,6 +1,5 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Pastarella.Core;
 using Pastarella.Core.Models;
 
 namespace Pastarella.Terminal.Outputs;
@@ -16,7 +15,6 @@ public static class JsonWriter
     public static string Serialize(AnalysisReport report)
     {
         Options.Converters.Add(new JsonStringEnumConverter());
-        Options.Converters.Add(new PortInfoConverter());
 
         return JsonSerializer.Serialize(report, Options);
     }

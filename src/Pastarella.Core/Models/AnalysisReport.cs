@@ -12,7 +12,7 @@ public class AnalysisReport(DateTime timestamp)
 
     public List<ServiceInfo> Services = [];
 
-    public List<PortInfo> OpenPorts = [];
+    public List<Socket> Sockets = [];
 
     public List<UserInfo> Users = [];
 

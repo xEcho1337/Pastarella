@@ -52,9 +52,9 @@ public class CliCommand : Command<CliCommand.CliSettings>
         public bool Storages { get; init; }
 
         [CommandOption("-c|--connections")]
-        [Description("Show all active connections")]
+        [Description("Show all active sockets")]
         [DefaultValue(false)]
-        public bool OpenConnections { get; init; }
+        public bool OpenSockets { get; init; }
 
         [CommandOption("-P|--persistance")]
         [Description("Show all persistances")]
@@ -129,11 +129,11 @@ public class CliCommand : Command<CliCommand.CliSettings>
                 report.Persistences = ctx.PersistenceScanner.Scan().ToList();
             }
 
-            if (settings.OpenConnections)
+            if (settings.OpenSockets)
             {
                 if (ctx.NetworkScanner == null)
                     throw new NotImplementedPlatformException("Network");
-                report.OpenPorts = ctx.NetworkScanner.Scan().ToList();
+                report.Sockets = ctx.NetworkScanner.Scan().ToList();
             }
 
             if (settings.Drivers)

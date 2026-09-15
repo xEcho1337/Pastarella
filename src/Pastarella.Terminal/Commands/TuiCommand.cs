@@ -33,7 +33,7 @@ public class TuiCommand : Command<TuiCommand.TuiSettings>
         if (ctx.PersistenceScanner != null)
             actions.Add("Persistence checks", p => report.Persistences = ctx.PersistenceScanner.Scan(p).ToList());
         if (ctx.NetworkScanner != null)
-            actions.Add("Open connections", p => report.OpenPorts = ctx.NetworkScanner.Scan(p).ToList());
+            actions.Add("Open sockets", p => report.Sockets = ctx.NetworkScanner.Scan(p).ToList());
         if (ctx.DriverScanner != null)
             actions.Add("Drivers", p => report.Drivers = ctx.DriverScanner.Scan(p).ToList());
         if (ctx.ServiceScanner != null)

@@ -77,11 +77,11 @@ public class TxtWriter
             forensic.WriteStorages(report.Storages);
         }
 
-        if (report.OpenPorts.Count != 0)
+        if (report.Sockets.Count != 0)
         {
             var network = new NetworkService(_buffer);
-            PrintTitle("Open connections");
-            network.WritePorts(report.OpenPorts);
+            PrintTitle("Open sockets");
+            network.WriteSockets(report.Sockets);
         }
 
         if (report.Hosts.Count != 0)
