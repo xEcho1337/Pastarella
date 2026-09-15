@@ -163,7 +163,6 @@ public class NetworkScanner : INetworkScanner
                 ipStr = address.MapToIPv6().ToString();
             }
 
-            Console.WriteLine($"endpoint = {endpoint}, ip = {ipStr}:{portStr}");
             if (ushort.TryParse(portStr, out ushort port))
                 ipPort = new IpPort(ipStr, port);
         }
