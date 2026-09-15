@@ -123,12 +123,12 @@ import { pastarellaReport } from "./pastarella-report.js";
     }
 
     /* Processes: Id, Name, Path, SHA256, Signature, Start Time, Metadata */
-    function renderProcesses(report, bodyId) {
+    function renderProcesses(report) {
         if (report.Processes == null)
             return;
 
         fillBody(
-            bodyId || "processesBody",
+            "processesBody",
             report.Processes.map(function (d) {
                 let exePath = value(d, "ExePath");
 
@@ -178,12 +178,12 @@ import { pastarellaReport } from "./pastarella-report.js";
     }
 
     /* Open Ports: Protocol, State, Local, Remote, PID, Process Name */
-    function renderPorts(report, bodyId) {
+    function renderPorts(report) {
         if (report.OpenPorts == null)
             return;
 
         fillBody(
-            bodyId || "portsBody",
+            "portsBody",
             report.OpenPorts.map(function (d) {
                 let local = value(d, "Local");
                 let remote = value(d, "Remote");
@@ -203,12 +203,12 @@ import { pastarellaReport } from "./pastarella-report.js";
     }
 
     /* Users: Name, Description, Uid, Home, Disabled, Metadata */
-    function renderUsers(report, bodyId) {
+    function renderUsers(report) {
         if (report.Users == null)
             return;
 
         fillBody(
-            bodyId || "usersBody",
+            "usersBody",
             report.Users.map(function (d) {
                 return [
                     value(d, "Name"),
@@ -229,12 +229,12 @@ import { pastarellaReport } from "./pastarella-report.js";
     }
 
     /* Hosts: IP, Domain */
-    function renderHosts(report, bodyId) {
+    function renderHosts(report) {
         if (report.Hosts == null)
             return;
 
         fillBody(
-            bodyId || "hostsBody",
+            "hostsBody",
             report.Hosts.map(function (d) {
                 return [
                     value(d, "Ip"),
@@ -276,7 +276,7 @@ import { pastarellaReport } from "./pastarella-report.js";
     }
 
     /* Persistences: Risk Score, Name, Path, Action, Trigger, Privilege, Type, Metadata */
-    function renderPersistences(report, bodyId) {
+    function renderPersistences(report) {
         if (report.Persistences == null)
             return;
 
@@ -305,7 +305,7 @@ import { pastarellaReport } from "./pastarella-report.js";
         rows.sort(function (a, b) {
             return Number(b[0].textContent) - Number(a[0].textContent);
         });
-        fillBody(bodyId || "persistenceBody", rows);
+        fillBody("persistenceBody", rows);
     }
 
     function riskClass(score) {
@@ -315,12 +315,12 @@ import { pastarellaReport } from "./pastarella-report.js";
     }
 
     /* Storages: Type, Name, Free Space, Total Space */
-    function renderStorages(report, bodyId) {
+    function renderStorages(report) {
         if (report.Storages == null)
             return;
 
         fillBody(
-            bodyId || "storageBody",
+            "storageBody",
             report.Storages.map(function (d) {
                 return [
                     value(d, "Type", "-"),
@@ -359,12 +359,12 @@ import { pastarellaReport } from "./pastarella-report.js";
     }
 
     /* Recent Files: File Path, Creation Time, Last Write Time */
-    function renderRecentFiles(report, bodyId) {
+    function renderRecentFiles(report) {
         if (report.RecentFiles == null)
             return;
 
         fillBody(
-            bodyId || "recentFilesBody",
+            "recentFilesBody",
             report.RecentFiles.map(function (d) {
                 return [
                     pastarellaReport.mono(value(d, "FilePath", "-")),
@@ -376,12 +376,12 @@ import { pastarellaReport } from "./pastarella-report.js";
     }
 
     /* Containers: Type(s), Parent PID, Children PIDs, Metadata */
-    function renderContainers(report, bodyId) {
+    function renderContainers(report) {
         if (report.Containers == null)
             return;
 
         fillBody(
-            bodyId || "containersBody",
+            "containersBody",
             report.Containers.map(function (d) {
                 return [
                     pastarellaReport.mono(value(d, "Type", "-")),
