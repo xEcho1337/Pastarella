@@ -15,7 +15,7 @@
         return title ? title.textContent.trim() : "";
     }
 
-    function buildBar(table, tbodyId, columns) {
+    function buildBar(table, tbody, columns) {
         var bar = document.createElement("div");
         bar.className = "table-search";
 
@@ -27,7 +27,7 @@
         input.type = "text";
         input.className = "table-search-input";
         var name = cardTitle(table);
-        input.placeholder = name ? "Search " + name + "\u2026" : "Search\u2026";
+        input.placeholder = name ? `Search ${name}\u2026` : "Search\u2026";
         input.setAttribute("aria-label", "Search table");
         bar.appendChild(input);
 
@@ -56,7 +56,7 @@
 
         var timer = null;
         function apply() {
-            pager().setFilter(tbodyId, input.value, Number(select.value));
+            pager().setFilter(tbody, input.value, Number(select.value));
             clear.style.display = input.value ? "" : "none";
         }
         input.addEventListener("input", function () {
@@ -83,7 +83,7 @@
                 var columns = pager().colNames(tbody.id);
                 if (!columns.length) return;
                 table.dataset.searchbound = "1";
-                var bar = buildBar(table, tbody.id, columns);
+                var bar = buildBar(table, tbody, columns);
                 var panel = table.closest
                     ? table.closest(".recent-panel")
                     : null;

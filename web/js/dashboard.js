@@ -127,7 +127,7 @@ import { pastarellaReport } from "./pastarella-report.js";
             var badge = document.createElement("span");
             badge.className =
                 "status-badge " +
-                window.PastarellaSections.riskClass(Number(p.RiskScore));
+                pastarellaReport.riskClass(Number(p.RiskScore));
             badge.textContent = String(p.RiskScore);
 
             store().appendCells(tr, [
@@ -172,23 +172,8 @@ import { pastarellaReport } from "./pastarella-report.js";
         });
     }
 
-    function bindGoto() {
-        document.querySelectorAll("[data-goto]").forEach(function (el) {
-            if (el.dataset.bound === "1") return;
-            el.dataset.bound = "1";
-            el.addEventListener("click", function (e) {
-                e.preventDefault();
-                if (window.PastarellaRouter)
-                    window.PastarellaRouter.loadPage(
-                        el.getAttribute("data-goto"),
-                    );
-            });
-        });
-    }
-
     window.initDashboardPage = function () {
         renderAll();
         bindRefresh();
-        bindGoto();
     };
 })();

@@ -20,7 +20,7 @@ import { pastarellaReport } from "./pastarella-report.js";
     function storePerPage(n) {
         try {
             localStorage.setItem("pastarella-perpage", String(n));
-        } catch (e) {}
+        } catch (e) { }
     }
 
     function totalPages(s) {
@@ -31,12 +31,12 @@ import { pastarellaReport } from "./pastarella-report.js";
         return Number(n).toLocaleString("en-US");
     }
 
-    function setRows(tbodyId, rows) {
-        var prev = state[tbodyId];
-        state[tbodyId] = {
+    function setRows(tbody, rows) {
+        var prev = state[tbody.id];
+        state[tbody.id] = {
             rows: rows,
             original: rows.slice(),
-            colNames: canonicalColNames(tbodyId),
+            colNames: canonicalColNames(tbody),
             sortIdx: -1,
             sortDir: "",
             filterText: "",
@@ -44,13 +44,11 @@ import { pastarellaReport } from "./pastarella-report.js";
             page: 1,
             perPage: prev ? prev.perPage : storedPerPage(),
         };
-        render(tbodyId);
+        render(tbody);
     }
 
-    function canonicalColNames(tbodyId) {
-        var body = document.getElementById(tbodyId);
-        if (!body) return [];
-        var table = body.closest("table");
+    function canonicalColNames(tbody) {
+        var table = tbody.closest("table");
         if (!table) return [];
         return Array.prototype.map.call(
             table.querySelectorAll("thead th"),
@@ -140,22 +138,20 @@ import { pastarellaReport } from "./pastarella-report.js";
         }
     }
 
-    function setFilter(tbodyId, text, colIdx) {
-        var s = state[tbodyId];
+    function setFilter(tbody, text, colIdx) {
+        var s = state[tbody.id];
         if (!s) return;
         s.filterText = text ? String(text).trim() : "";
         s.filterCol = typeof colIdx === "number" ? colIdx : -1;
         refreshRows(s);
         s.page = 1;
-        render(tbodyId);
+        render(tbody);
     }
 
-    function sortBy(tbodyId, domIdx) {
-        var s = state[tbodyId];
+    function sortBy(tbody, domIdx) {
+        var s = state[tbody.id];
         if (!s) return;
-        var body = document.getElementById(tbodyId);
-        if (!body) return;
-        var table = body.closest("table");
+        var table = tbody.closest("table");
         if (!table) return;
         var ths = table.querySelectorAll("thead th");
         if (!ths[domIdx]) return;
@@ -170,7 +166,7 @@ import { pastarellaReport } from "./pastarella-report.js";
                 s.sortDir = "";
                 refreshRows(s);
                 s.page = 1;
-                render(tbodyId);
+                render(tbody);
                 updateIndicators(table, -1, "");
                 return;
             }
@@ -181,7 +177,7 @@ import { pastarellaReport } from "./pastarella-report.js";
 
         refreshRows(s);
         s.page = 1;
-        render(tbodyId);
+        render(tbody);
         updateIndicators(table, domIdx, s.sortDir);
     }
 
@@ -220,12 +216,13 @@ import { pastarellaReport } from "./pastarella-report.js";
                                 return;
                             if (
                                 Date.now() -
-                                    Number(table.dataset.reorderedAt || 0) <
+                                Number(table.dataset.reorderedAt || 0) <
                                 350
                             )
                                 return;
                             var tbody = table.querySelector("tbody");
-                            if (tbody && tbody.id) sortBy(tbody.id, domIdx);
+                            if (tbody)
+                                sortBy(tbody, domIdx);
                         });
                     },
                 );
@@ -233,20 +230,20 @@ import { pastarellaReport } from "./pastarella-report.js";
         );
     }
 
-    function gotoPage(tbodyId, page) {
-        var s = state[tbodyId];
+    function gotoPage(tbody, page) {
+        var s = state[tbody.id];
         if (!s) return;
         s.page = Math.min(Math.max(1, page), totalPages(s));
-        render(tbodyId);
+        render(tbody);
     }
 
-    function setPerPage(tbodyId, n) {
-        var s = state[tbodyId];
+    function setPerPage(tbody, n) {
+        var s = state[tbody.id];
         if (!s) return;
         s.perPage = n;
         s.page = 1;
         storePerPage(n);
-        render(tbodyId);
+        render(tbody);
     }
 
     function pageList(page, pages) {
@@ -280,8 +277,8 @@ import { pastarellaReport } from "./pastarella-report.js";
         return btn;
     }
 
-    function renderBar(tbodyId, body, s, pages, start, shown) {
-        var resp = body.closest(".table-responsive");
+    function renderBar(tbody, s, pages, start, shown) {
+        var resp = tbody.parentNode.parentNode;
         if (!resp || !resp.parentNode) return;
         var bar = resp.parentNode.querySelector(":scope > .pager-bar");
         if (!bar) {
@@ -303,22 +300,22 @@ import { pastarellaReport } from "./pastarella-report.js";
             s.rows.length === 0
                 ? "No entries"
                 : fmt(start + 1) +
-                  "–" +
-                  fmt(start + shown) +
-                  " of " +
-                  fmt(s.rows.length);
+                "–" +
+                fmt(start + shown) +
+                " of " +
+                fmt(s.rows.length);
         bar.appendChild(info);
 
         var controls = document.createElement("div");
         controls.className = "pager-controls";
         controls.appendChild(
             makeButton("«", "First page", s.page === 1, function () {
-                gotoPage(tbodyId, 1);
+                gotoPage(tbody, 1);
             }),
         );
         controls.appendChild(
             makeButton("‹", "Previous page", s.page === 1, function () {
-                gotoPage(tbodyId, s.page - 1);
+                gotoPage(tbody, s.page - 1);
             }),
         );
         pageList(s.page, pages).forEach(function (n) {
@@ -334,7 +331,7 @@ import { pastarellaReport } from "./pastarella-report.js";
                         "Page " + n,
                         false,
                         function () {
-                            gotoPage(tbodyId, n);
+                            gotoPage(tbody, n);
                         },
                         n === s.page,
                     ),
@@ -343,12 +340,12 @@ import { pastarellaReport } from "./pastarella-report.js";
         });
         controls.appendChild(
             makeButton("›", "Next page", s.page === pages, function () {
-                gotoPage(tbodyId, s.page + 1);
+                gotoPage(tbody, s.page + 1);
             }),
         );
         controls.appendChild(
             makeButton("»", "Last page", s.page === pages, function () {
-                gotoPage(tbodyId, pages);
+                gotoPage(tbody, pages);
             }),
         );
 
@@ -363,7 +360,7 @@ import { pastarellaReport } from "./pastarella-report.js";
             select.appendChild(opt);
         });
         select.addEventListener("change", function () {
-            setPerPage(tbodyId, Number(select.value));
+            setPerPage(tbody, Number(select.value));
         });
         controls.appendChild(select);
 
@@ -387,34 +384,30 @@ import { pastarellaReport } from "./pastarella-report.js";
         return map;
     }
 
-    function render(tbodyId) {
-        var s = state[tbodyId];
+    function render(tbody) {
+        var s = state[tbody.id];
         if (!s) return;
-        var body = document.getElementById(tbodyId);
-        if (!body) return;
-        var R = pastarellaReport;
-        if (!R) return;
 
         var pages = totalPages(s);
         if (s.page > pages) s.page = pages;
         var start = (s.page - 1) * s.perPage;
         var slice = s.rows.slice(start, start + s.perPage);
 
-        var table = body.closest("table");
+        var table = tbody.closest("table");
         var order = displayOrder(table, s);
 
-        body.innerHTML = "";
+        tbody.innerHTML = "";
         slice.forEach(function (cells) {
             var tr = document.createElement("tr");
-            R.appendCells(
+            pastarellaReport.appendCells(
                 tr,
                 order
                     ? order.map(function (i) {
-                          return cells[i];
-                      })
+                        return cells[i];
+                    })
                     : cells,
             );
-            body.appendChild(tr);
+            tbody.appendChild(tr);
         });
 
         if (slice.length === 0) {
@@ -428,12 +421,12 @@ import { pastarellaReport } from "./pastarella-report.js";
                 ? "No matches for \u201c" + s.filterText + "\u201d"
                 : "No entries";
             empty.appendChild(td);
-            body.appendChild(empty);
+            tbody.appendChild(empty);
         }
 
-        renderBar(tbodyId, body, s, pages, start, slice.length);
+        renderBar(tbody, s, pages, start, slice.length);
 
-        table = body.closest("table");
+        table = tbody.closest("table");
         if (
             table &&
             window.PastarellaColumns &&
@@ -446,13 +439,11 @@ import { pastarellaReport } from "./pastarella-report.js";
     window.PastarellaPager = {
         setRows: setRows,
         gotoPage: gotoPage,
-        sortBy: sortBy,
         setFilter: setFilter,
         colNames: function (tbodyId) {
             var s = state[tbodyId];
             return s ? s.colNames.slice() : [];
         },
         bindHeaders: bindHeaders,
-        render: render,
     };
 })();

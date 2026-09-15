@@ -1,3 +1,5 @@
+import { Router } from "./Router.js";
+
 export class PastarellaReport {
     data = null;
 
@@ -11,13 +13,12 @@ export class PastarellaReport {
 
     setReport(data) {
         this.data = data;
-        window.dispatchEvent(new CustomEvent("pastarella:report"));
-        return true;
-    }
 
-    clearReport() {
-        this.data = null;
-        window.dispatchEvent(new CustomEvent("pastarella:report"));
+        let line = document.getElementById("homeReportLine");
+        if (line !== null)
+            line.classList.toggle("d-none", false);
+
+        return true;
     }
 
     pickFile(callback) {
@@ -152,6 +153,12 @@ export class PastarellaReport {
             return "Scheduled message\nTitle: " + title + "\nMessage: " + msg;
         }
         return "Scheduled email";
+    }
+
+    riskClass(score) {
+        if (score >= 70) return "status-err";
+        if (score >= 40) return "status-warn";
+        return "status-ok";
     }
 }
 

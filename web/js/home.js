@@ -17,20 +17,9 @@ import { pastarellaReport } from "./pastarella-report.js";
             });
         }
 
-        var line = document.getElementById("homeReportLine");
-        if (line) {
-            var has =
-                pastarellaReport && pastarellaReport.hasReport();
-            line.classList.toggle("d-none", !has);
-            var openBtn = line.querySelector("[data-goto-dashboard]");
-            if (openBtn && !openBtn.dataset.bound) {
-                openBtn.dataset.bound = "1";
-                openBtn.addEventListener("click", function () {
-                    if (window.PastarellaRouter)
-                        window.PastarellaRouter.loadPage("dashboard");
-                });
-            }
-        }
+        let line = document.getElementById("homeReportLine");
+        if (line !== null)
+            line.classList.toggle("d-none", !pastarellaReport.hasReport());
     }
 
     window.initHomePage = initHomePage;
