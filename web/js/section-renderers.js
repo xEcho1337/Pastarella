@@ -116,13 +116,13 @@ import { pastarellaReport } from "./pastarella-report.js";
         });
     }
 
-    /* Processes: Id, Name, Path, SHA256, Signature, Start Time, Metadata */
-    function value(d, upper, lower) {
-        if (d[upper] !== undefined && d[upper] !== null) return d[upper];
-        if (d[lower] !== undefined && d[lower] !== null) return d[lower];
-        return null;
+    function value(d, key) {
+        if (d[key] == null)
+            return null;
+        return d[key];
     }
 
+    /* Processes: Id, Name, Path, SHA256, Signature, Start Time, Metadata */
     function renderProcesses(report, bodyId) {
         if (report.Processes == null)
             return;
@@ -140,12 +140,12 @@ import { pastarellaReport } from "./pastarella-report.js";
                     ),
                     pastarellaReport.mono(pastarellaReport.v(d, "ExePath").Sha256),
                     pastarellaReport.centered(
-                        pastarellaReport.signerIcon(value(d, "ExePath", "exePath").Signature),
+                        pastarellaReport.signerIcon(value(d, "ExePath").Signature),
                     ),
                     pastarellaReport.v(d, "StartTime"),
                     pastarellaReport.preline(
                         pastarellaReport.stringifyMetadata(
-                            value(d, "Metadata", "metadata") || {},
+                            value(d, "Metadata") || {},
                         ),
                     ),
                 ];
@@ -215,7 +215,7 @@ import { pastarellaReport } from "./pastarella-report.js";
         fillBody(
             bodyId || "usersBody",
             report.Users.map(function (d) {
-                var disabled = value(d, "Disabled", "disabled");
+                var disabled = value(d, "Disabled");
                 return [
                     pastarellaReport.v(d, "Name"),
                     pastarellaReport.v(d, "Description"),
@@ -228,7 +228,7 @@ import { pastarellaReport } from "./pastarella-report.js";
                     ),
                     pastarellaReport.preline(
                         pastarellaReport.stringifyMetadata(
-                            value(d, "Metadata", "metadata") || {},
+                            value(d, "Metadata") || {},
                         ),
                     ),
                 ];
@@ -260,8 +260,8 @@ import { pastarellaReport } from "./pastarella-report.js";
         fillBody(
             "driversBody",
             report.Drivers.map(function (d) {
-                var loaded = value(d, "Loaded", "loaded");
-                var exePath = value(d, "ExePath", "exePath");
+                var loaded = value(d, "Loaded");
+                var exePath = value(d, "ExePath");
                 return [
                     pastarellaReport.v(d, "Name"),
                     pastarellaReport.v(d, "DisplayName"),
@@ -291,7 +291,7 @@ import { pastarellaReport } from "./pastarella-report.js";
             return;
 
         var rows = report.Persistences.map(function (d) {
-            var score = Number(value(d, "RiskScore", "riskScore")) || 0;
+            var score = Number(value(d, "RiskScore")) || 0;
             var badge = document.createElement("span");
             badge.className = "status-badge " + riskClass(score);
             badge.textContent = String(score);
@@ -299,13 +299,13 @@ import { pastarellaReport } from "./pastarella-report.js";
                 badge,
                 pastarellaReport.v(d, "Name"),
                 pastarellaReport.mono(pastarellaReport.v(d, "Path")),
-                pastarellaReport.preline(pastarellaReport.actionText(value(d, "Action", "action"))),
+                pastarellaReport.preline(pastarellaReport.actionText(value(d, "Action"))),
                 pastarellaReport.v(d, "Trigger"),
                 pastarellaReport.v(d, "Privilege"),
                 pastarellaReport.v(d, "Type"),
                 pastarellaReport.preline(
                     pastarellaReport.stringifyMetadata(
-                        value(d, "Metadata", "metadata") || {},
+                        value(d, "Metadata") || {},
                     ),
                 ),
             ];
@@ -400,7 +400,7 @@ import { pastarellaReport } from "./pastarella-report.js";
                     pastarellaReport.v(d, "ChildrenPIDs"),
                     pastarellaReport.preline(
                         pastarellaReport.stringifyMetadata(
-                            value(d, "Metadata", "metadata") || {},
+                            value(d, "Metadata") || {},
                         ),
                     ),
                 ];
