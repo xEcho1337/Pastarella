@@ -5,12 +5,6 @@ export class PastarellaReport {
         this.data = null;
     }
 
-    v(obj, upper) {
-        if (!obj) return "";
-        if (obj[upper] !== undefined && obj[upper] !== null) return obj[upper];
-        return "";
-    }
-
     hasReport() {
         return this.data !== null;
     }
