@@ -20,6 +20,9 @@ public class ProcessScanner : IProcessScanner
             string? path = PlatformHelpers.TryGet(() => MacOsProcess.GetExePath(proc.Id));
             string? cmdline = PlatformHelpers.TryGet(() => MacOsProcess.GetCommandLine(proc.Id));
 
+            // PID 0 is always kernel_task on macOS
+            string name = proc.Id == 0 ? "kernel_task" : proc.ProcessName;
+
             if (cmdline != null && path != null)
                 cmdline = cmdline.Replace(path, "");
 
@@ -43,7 +46,7 @@ public class ProcessScanner : IProcessScanner
             {
                 Metadata = metadata,
                 CommandArgs = cmdline,
-                ExePath = (path == null) ? null : new(path),
+                ExePath = path == null ? new FakeExePath(name) : new ExePath(path),
                 StartTime = start
             });
             progress?.Report(new ScanProgress(++done, processes.Length));

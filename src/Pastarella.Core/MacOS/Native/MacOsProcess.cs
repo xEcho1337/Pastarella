@@ -56,4 +56,17 @@ public static unsafe class MacOsProcess
         }
     }
 
+    public static string? GetProcName(int pid)
+    {
+        // The name is stored in kp_proc.p_comm.
+        // This field is a fixed-size array of 16 characters.
+        byte[] buf = new byte[16];
+        fixed (byte* ptr = buf)
+        {
+            int ret = LibProc.proc_name(pid, ptr, (uint)buf.Length);
+            if (ret <= 0)
+                return null;
+            return Encoding.UTF8.GetString(buf, 0, ret);
+        }
+    }
 }
