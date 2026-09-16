@@ -1,5 +1,7 @@
 import { Router } from "./Router.js";
 
+const LATEST = 2;
+
 export class PastarellaReport {
     data = null;
 
@@ -11,12 +13,64 @@ export class PastarellaReport {
         return this.data !== null;
     }
 
+    migrate(data) {
+        if (data.Version == 1) data = this.version1To2(data);
+    }
+
+    // TODO: proper support for signatures
+    version1To2(data) {
+        data.Sockets = [];
+
+        for (let proc of data.Processes) {
+            proc.ExePath = {
+                Sha256: proc.Sha256,
+                Signature: null, // TODO
+                NormalizedValue: proc.Path
+            }
+            proc.CommandArgs = ""; // not implemented in v1
+        }
+
+        for (let serv of data.Services) {
+            serv.ExePath = {
+                Sha256: serv.Sha256,
+                Signature: null, // TODO
+                NormalizedValue: serv.ExecPath
+            }
+        }
+
+        for (let port of data.OpenPorts) {
+            port.Protocol = {
+                State: port.State,
+                Name: port.Protocol
+            }
+            port.PID = port.ProcessId;
+            data.Sockets.push(port)
+        }
+
+        for (let driver of data.Drivers) {
+            driver.ExePath = {
+                Sha256: driver.Sha256,
+                Signature: null,
+                NormalizedValue: driver.ExecutablePath
+            }
+        }
+
+        for (let persist of data.Persistences) {
+            persist.Action.ExePath = {
+                Sha256: persist.Action.Sha256,
+                Signature: null,
+                NormalizedValue: persist.Action.Path
+            }
+        }
+    }
+
     setReport(data) {
         this.data = data;
 
         let line = document.getElementById("homeReportLine");
-        if (line !== null)
-            line.classList.toggle("d-none", false);
+        if (line !== null) line.classList.toggle("d-none", false);
+
+        if (data.Version != LATEST) this.migrate(data);
 
         return true;
     }
@@ -113,8 +167,8 @@ export class PastarellaReport {
         var str = "";
         var entries = Array.isArray(metadata)
             ? metadata.map((m, i) => {
-                return [i, m];
-            })
+                  return [i, m];
+              })
             : Object.entries(metadata);
         entries.forEach((entry) => {
             str += entry[0] + ": " + entry[1] + "\n";
@@ -123,13 +177,18 @@ export class PastarellaReport {
     }
 
     stringifyAddress(address) {
+        if (address == null || address == undefined) {
+            console.error("Local address is null or undefined")
+        }
         switch (address.Type) {
             case "IPv4":
                 return `${address.Ip}:${address.Port}`;
             case "IPv6":
-                return `[${address.Ip}${(address.Scope === null ? "" : `%${address.Scope}`)}]:${address.Port}`;
+                return `[${address.Ip}${address.Scope === null ? "" : `%${address.Scope}`}]:${address.Port}`;
             default:
-                throw new Error(`Address type '${address.Type}' not implemented`);
+                throw new Error(
+                    `Address type '${address.Type}' not implemented`,
+                );
         }
     }
 
@@ -143,9 +202,8 @@ export class PastarellaReport {
         if (!action) return "None";
         if (action.ExePath !== undefined) {
             var p = action.ExePath;
-            if (p === null)
-                return "Scheduled run executable";
-            return `Scheduled run executable\nPath: ${p.NormalizedValue}\nSha256: ${p.Sha256}\n${this.stringifyMetadata(p.Signature || {})}`
+            if (p === null) return "Scheduled run executable";
+            return `Scheduled run executable\nPath: ${p.NormalizedValue}\nSha256: ${p.Sha256}\n${this.stringifyMetadata(p.Signature || {})}`;
         }
         if (action.ClassId !== undefined || action.classId !== undefined) {
             var id =
