@@ -1,0 +1,70 @@
+.tour-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+}
+
+.tour-highlight {
+    position: relative;
+    z-index: 1001 !important;
+    outline: 2px solid #4ade80;
+    outline-offset: 4px;
+    border-radius: 8px;
+    box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.15);
+}
+
+.tour-popup {
+    position: fixed;
+    z-index: 1002;
+    width: 300px;
+    max-width: calc(100vw - 16px);
+    padding: 14px 15px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+    color: var(--text);
+}
+
+.tour-popup h3 {
+    margin: 0 0 4px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.tour-popup p {
+    margin: 0 0 10px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.tour-meta {
+    margin-bottom: 10px;
+    font-size: 11px;
+    color: var(--muted-2);
+}
+
+.tour-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.tour-actions .tour-next,
+.tour-actions .tour-back,
+.tour-actions .tour-close {
+    padding: 6px 12px;
+    background: #17171b;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 12px;
+    color: #d4d4d8;
+    cursor: pointer;
+}
+
+.tour-actions .tour-next:hover,
+.tour-actions .tour-back:hover,
+.tour-actions .tour-close:hover {
+    background: #1e1e24;
+}
