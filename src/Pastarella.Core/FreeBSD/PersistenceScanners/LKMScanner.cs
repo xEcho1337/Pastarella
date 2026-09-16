@@ -12,7 +12,8 @@ public class LKMScanner : IPersistenceScanner
 
     private string[] BootloaderConfigFiles;
 
-    public LKMScanner() {
+    public LKMScanner()
+    {
         // TODO: handle lua configuration files
 
         // TODO: we should parse `loader_config_dirs` for getting this
@@ -28,31 +29,66 @@ public class LKMScanner : IPersistenceScanner
     {
         List<PersistenceEntry> list = [];
 
-        foreach (string configFile in BootloaderConfigFiles) {
+        bool microcodeEnabled = false;
+        string? microcodePath = null;
+        string? microcodeDeclaredOn = null;
+
+        foreach (string configFile in BootloaderConfigFiles)
+        {
             if (!File.Exists(configFile))
                 continue;
 
-            var lines = File.ReadAllLines(configFile)
-                    .Where(l => !l.StartsWith('#') && l.EndsWith("_load=\"YES\""))
-                    .Select(l => l[..^"_load=\"YES\"".Length]);
-
-            foreach (string line in lines)
+            foreach (string line in File.ReadAllLines(configFile))
             {
-                string modulePath = $"/boot/kernel/{line}.ko";
+                if (string.IsNullOrWhiteSpace(line) || line[0] == '#')
+                    continue;
 
-                list.Add(new PersistenceEntry()
+                if (line.EndsWith("_load=\"YES\""))
                 {
-                    Name = line,
-                    Path = configFile,
-                    Action = new ExecScheduledAction
+                    if (line.StartsWith("cpu_microcode"))
                     {
-                        ExePath = new(modulePath, true),
-                    },
-                    Type = PersistenceType.LoadableKernelModule,
-                    Trigger = ExecutionTrigger.Boot,
-                    Privilege = PersistencePrivilege.Kernel,
-                });
+                        microcodeEnabled = true;
+                        continue;
+                    }
+
+                    string moduleName = line[..^"_load=\"YES\"".Length];
+                    string modulePath = $"/boot/kernel/{moduleName}.ko";
+
+                    list.Add(new PersistenceEntry()
+                    {
+                        Name = moduleName,
+                        Path = configFile,
+                        Action = new ExecScheduledAction
+                        {
+                            ExePath = new(modulePath, true),
+                        },
+                        Type = PersistenceType.LoadableKernelModule,
+                        Trigger = ExecutionTrigger.Boot,
+                        Privilege = PersistencePrivilege.Kernel,
+                    });
+                }
+                else if (line.StartsWith("cpu_microcode_name"))
+                {
+                    microcodePath = line["cpu_microcode_name=\"".Length..^1];
+                    microcodeDeclaredOn = configFile;
+                }
             }
+        }
+
+        if (microcodeEnabled)
+        {
+            list.Add(new PersistenceEntry()
+            {
+                Name = "cpu_microcode",
+                Path = microcodeDeclaredOn!,
+                Action = new ExecScheduledAction
+                {
+                    ExePath = new(microcodePath!, true),
+                },
+                Type = PersistenceType.Firmware,
+                Trigger = ExecutionTrigger.Boot,
+                Privilege = PersistencePrivilege.Kernel,
+            });
         }
 
         return list;
