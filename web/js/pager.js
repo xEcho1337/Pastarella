@@ -207,7 +207,7 @@ import { pastarellaReport } from "./pastarella-report.js";
                     function (th, domIdx) {
                         if (!th.title)
                             th.title =
-                                "Click to sort · drag to move · right-click for columns";
+                                "Click to sort - drag to move - right-click for columns";
                         th.addEventListener("click", function (e) {
                             if (
                                 e.target.closest &&
