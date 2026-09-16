@@ -1,5 +1,5 @@
 <div align="center">
-  <img width="256" height="256" alt="pastarella" src="https://github.com/user-attachments/assets/46dadea3-f12a-48c6-a884-0dab6dd8ba2d" />
+  <img width="256" height="256" alt="pastarella" src="./pastarella.png" />
   <h1>Pastarella</h1>
 </div>
 
@@ -9,9 +9,16 @@ Pastarella is an **under development** tool designed to collect data in your com
 
 ---
 
+## Web Preview
+
+![Preview](web-preview.png)
+
+---
+
 ## Support
 
 Pastarella is still in development, and it currently supports:
+
 - Windows
 - macOS
 - Linux (WIP)
@@ -22,6 +29,7 @@ For further information click [here](https://xecho1337.github.io/Pastarella).
 ## The name
 
 Pastarella can mean different things depending on what you like the most:
+
 - an Italian way to say "pastry": if you feel hungry
 - Postmortem Analysis of System Telemetry, Artifacts, Registry, Events, Logs, Links and Activity: if you feel creative
 - a delicious forensic framework: if you ask the marketing team
