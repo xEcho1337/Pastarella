@@ -25,8 +25,8 @@ export class PastarellaReport {
             proc.ExePath = {
                 Sha256: proc.Sha256,
                 Signature: null, // TODO
-                NormalizedValue: proc.Path
-            }
+                NormalizedValue: proc.Path,
+            };
             proc.CommandArgs = ""; // not implemented in v1
         }
 
@@ -34,33 +34,45 @@ export class PastarellaReport {
             serv.ExePath = {
                 Sha256: serv.Sha256,
                 Signature: null, // TODO
-                NormalizedValue: serv.ExecPath
-            }
+                NormalizedValue: serv.ExecPath,
+            };
+        }
+
+        function convertPort(port) {
+            if (port == null) return;
+
+            port.Type = port.Ip.includes(":") ? "IPv6" : "IPv4";
+
+            if (port.Type === "IPv6") port.Scope = null;
         }
 
         for (let port of data.OpenPorts) {
             port.Protocol = {
                 State: port.State,
-                Name: port.Protocol
-            }
+                Name: port.Protocol,
+            };
+
+            convertPort(port.Local);
+            convertPort(port.Remote);
+
             port.PID = port.ProcessId;
-            data.Sockets.push(port)
+            data.Sockets.push(port);
         }
 
         for (let driver of data.Drivers) {
             driver.ExePath = {
                 Sha256: driver.Sha256,
                 Signature: null,
-                NormalizedValue: driver.ExecutablePath
-            }
+                NormalizedValue: driver.ExecutablePath,
+            };
         }
 
         for (let persist of data.Persistences) {
             persist.Action.ExePath = {
                 Sha256: persist.Action.Sha256,
                 Signature: null,
-                NormalizedValue: persist.Action.Path
-            }
+                NormalizedValue: persist.Action.Path,
+            };
         }
     }
 
@@ -177,14 +189,11 @@ export class PastarellaReport {
     }
 
     stringifyAddress(address) {
-        if (address == null || address == undefined) {
-            console.error("Local address is null or undefined")
-        }
         switch (address.Type) {
             case "IPv4":
                 return `${address.Ip}:${address.Port}`;
             case "IPv6":
-                return `[${address.Ip}${address.Scope === null ? "" : `%${address.Scope}`}]:${address.Port}`;
+                return `${address.Ip}${address.Scope === null ? "" : `%${address.Scope}`}:${address.Port}`;
             default:
                 throw new Error(
                     `Address type '${address.Type}' not implemented`,
