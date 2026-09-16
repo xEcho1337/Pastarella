@@ -27,7 +27,7 @@
         input.type = "text";
         input.className = "table-search-input";
         var name = cardTitle(table);
-        input.placeholder = name ? `Search ${name}\u2026` : "Search\u2026";
+        input.placeholder = name ? `Search ${name}...` : "Search...";
         input.setAttribute("aria-label", "Search table");
         bar.appendChild(input);
 
