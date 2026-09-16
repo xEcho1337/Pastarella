@@ -7,30 +7,32 @@ const steps = [
         description: "See overall statistics of your report and risk scores",
         selector: '.side-link[data-page="dashboard"]',
         page: "dashboard",
-        requiresReport: true
+        requiresReport: true,
     },
     {
         name: "Sections",
         description: "Every section contains a specific part of the report",
         selector: '.side-link[data-page="services"]',
         page: "services",
-        requiresReport: true
+        requiresReport: true,
     },
     {
         name: "Search bar",
-        description: "Search for strings across all columns or specific columns",
-        selector: '#pageContent .table-search-input',
+        description:
+            "Search for strings across all columns or specific columns",
+        selector: "#pageContent .table-search-input",
         page: "services",
-        requiresReport: true
+        requiresReport: true,
     },
     {
         name: "Table actions",
-        description: "Resize, move or toggle the visibility of individual columns, the way you like it!",
-        selector: '#pageContent .recent-panel:first-of-type .section-headers',
+        description:
+            "Resize, move or toggle the visibility of individual columns with left and right click",
+        selector: "#pageContent .recent-panel:first-of-type .section-headers",
         page: "services",
-        requiresReport: true
-    }
-]
+        requiresReport: true,
+    },
+];
 
 let currentStep = 0;
 let totalSteps = steps.length;
@@ -43,11 +45,9 @@ function canStartTour() {
 }
 
 async function ensureStepTarget(step) {
-    if (step.requiresReport && !pastarellaReport.hasReport())
-        return null;
+    if (step.requiresReport && !pastarellaReport.hasReport()) return null;
 
-    if (step.page)
-        await Router.loadSection(step.page);
+    if (step.page) await Router.loadSection(step.page);
 
     return document.querySelector(step.selector);
 }
@@ -83,6 +83,8 @@ function clearHighlight() {
     }
 }
 
+// this calculates where the popup should end
+// based on what it targets
 function positionPopup(target) {
     const gap = 12;
     const rect = target.getBoundingClientRect();
@@ -106,6 +108,7 @@ function positionPopup(target) {
     popup.style.visibility = "";
 }
 
+// continues to the next step
 async function showStep(index) {
     createTourDom();
     currentStep = index;
@@ -119,7 +122,6 @@ async function showStep(index) {
     }
 
     target.scrollIntoView({ block: "center", behavior: "smooth" });
-    await new Promise((r) => setTimeout(r, 250));
 
     clearHighlight();
     highlighted = target;
@@ -130,9 +132,11 @@ async function showStep(index) {
 
     popup.querySelector("h3").textContent = step.name;
     popup.querySelector("p").textContent = step.description;
-    popup.querySelector(".tour-meta").textContent = `Step ${index + 1} of ${totalSteps}`;
+    popup.querySelector(".tour-meta").textContent =
+        `Step ${index + 1} of ${totalSteps}`;
     popup.querySelector(".tour-back").disabled = index === 0;
-    popup.querySelector(".tour-next").textContent = index === totalSteps - 1 ? "Finish" : "Next";
+    popup.querySelector(".tour-next").textContent =
+        index === totalSteps - 1 ? "Finish" : "Next";
 
     positionPopup(target);
 }
@@ -172,7 +176,9 @@ async function startTour() {
 }
 
 document.addEventListener("click", (e) => {
-    const btn = e.target.closest ? e.target.closest('[data-action="take-a-tour"]') : null;
+    const btn = e.target.closest
+        ? e.target.closest('[data-action="take-a-tour"]')
+        : null;
     if (btn) {
         e.preventDefault();
         startTour();
@@ -184,5 +190,3 @@ document.addEventListener("keydown", (e) => {
 });
 window.addEventListener("resize", repositionCurrent);
 window.addEventListener("scroll", repositionCurrent, true);
-
-window.PastarellaTour = { steps, startTour, ensureStepTarget, canStartTour, showStep, endTour };
