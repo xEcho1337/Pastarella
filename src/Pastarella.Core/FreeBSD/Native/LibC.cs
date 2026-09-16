@@ -12,7 +12,7 @@ internal static class LibC
         public int version = Marshal.SizeOf<KldFileStat>();
 
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAXPATHLEN)]
-        public required string name;
+        public string? name;
 
         public int refs;
         public int id;
@@ -20,7 +20,7 @@ internal static class LibC
         public UIntPtr size;
 
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAXPATHLEN)]
-        public required string pathname;
+        public string? pathname;
     }
 
     [StructLayout(LayoutKind.Explicit)]
@@ -47,7 +47,7 @@ internal static class LibC
         public int version = Marshal.SizeOf<ModuleStat>();
 
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = MAXMODNAME)]
-        public required string name;
+        public string? name;
 
         public int refs;
         public int id;
@@ -69,4 +69,3 @@ internal static class LibC
     [DllImport("libc", SetLastError = true)]
     public static extern int modstat(int modid, ref ModuleStat stat);
 }
-
