@@ -1,4 +1,5 @@
 import { Router } from "./Router.js";
+import { playReportShockwave } from "./report-shockwave.js";
 
 const LATEST = 2;
 
@@ -77,12 +78,17 @@ export class PastarellaReport {
     }
 
     setReport(data) {
+        const hadReport = this.data !== null;
         this.data = data;
 
         let line = document.getElementById("homeReportLine");
         if (line !== null) line.classList.toggle("d-none", false);
 
         if (data.Version != LATEST) this.migrate(data);
+
+        if (hadReport) {
+            playReportShockwave();
+        }
 
         return true;
     }

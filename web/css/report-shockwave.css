@@ -1,0 +1,90 @@
+.shock-ring,
+.shock-flash {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: clip;
+    z-index: 2000;
+}
+
+.shock-ring::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 120vmax;
+    height: 120vmax;
+    transform: translate(-50%, -50%) scale(0);
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.85);
+    box-shadow:
+        0 0 24px rgba(255, 255, 255, 0.35),
+        inset 0 0 24px rgba(255, 255, 255, 0.25);
+    opacity: 0.9;
+    animation: shock-ring-expand 1s cubic-bezier(0.16, 0.84, 0.44, 1) forwards;
+}
+
+.shock-flash::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        circle at 50% 50%,
+        rgba(255, 255, 255, 0.55) 0%,
+        rgba(255, 255, 255, 0.12) 25%,
+        transparent 60%
+    );
+    opacity: 0.6;
+    animation: shock-flash-fade 1s ease-out forwards;
+}
+
+body.shock-pulse .app {
+    animation: shock-pulse 1s ease-out;
+}
+
+@keyframes shock-ring-expand {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0.9;
+    }
+    70% {
+        opacity: 0.45;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+    }
+}
+
+@keyframes shock-flash-fade {
+    0% {
+        opacity: 0.6;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes shock-pulse {
+    0% {
+        filter: brightness(1);
+    }
+    25% {
+        filter: brightness(1.08);
+    }
+    100% {
+        filter: brightness(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shock-ring::before,
+    .shock-flash::before,
+    body.shock-pulse .app {
+        animation: none;
+    }
+    .shock-ring,
+    .shock-flash {
+        display: none;
+    }
+}
