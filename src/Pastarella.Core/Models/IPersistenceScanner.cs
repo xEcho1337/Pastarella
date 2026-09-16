@@ -8,6 +8,7 @@ public enum PersistenceType
     ScheduledTask,
     StartupFolder,
     LoadableKernelModule,
+    Service,
 
     // Windows-only
     RegistryKey,

@@ -7,6 +7,7 @@ public class PersistenceScanner : IPersistenceScanner
 {
     public IEnumerable<PersistenceEntry> Scan(IProgress<ScanProgress>? progress = null)
     {
-        return new LKMScanner().Scan(progress);
+        return new LKMScanner().Scan(progress)
+            .Concat(new ServiceScanner().Scan(progress));
     }
 }
