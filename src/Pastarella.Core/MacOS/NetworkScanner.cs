@@ -163,22 +163,25 @@ public class NetworkScanner : INetworkScanner
             string ipStr = endpoint[..idx].Replace("*", allInterfaces);
             string portStr = endpoint[(idx + 1)..];
 
-            if (ushort.TryParse(portStr, out ushort port))
+            if (!ushort.TryParse(portStr, out ushort port))
+                return null;
+
+            return version.ToLower() switch
             {
-                switch (version)
-                {
-                    case "ipv6":
-                        // lsof may return an IPv4 address for IPv6 connections
-                        if (!ipStr.Contains('[') && !ipStr.Contains(']'))
-                            ipStr = IPAddress.Parse(ipStr).MapToIPv6().ToString();
-
-                        return new IPv6Address(ipStr, port, null);
-                    case "ipv4":
-                        return new IPv4Address(ipStr, port);
-                }
-            }
-
-            return null;
+                "ipv6" => ParseIPv6(ipStr, port),
+                "ipv4" => new IPv4Address(ipStr, port),
+                _ => null
+            };
         }
+    }
+
+
+    private static IPv6Address ParseIPv6(string ipStr, ushort port)
+    {
+        // lsof may return an IPv4 address for IPv6 connections
+        if (!ipStr.Contains('[') && !ipStr.Contains(']'))
+            ipStr = IPAddress.Parse(ipStr).MapToIPv6().ToString();
+
+        return new IPv6Address(ipStr, port, null);
     }
 }
