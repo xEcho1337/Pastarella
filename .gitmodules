@@ -1,0 +1,3 @@
+[submodule "libs/Bindo"]
+	path = libs/Bindo
+	url = https://codeberg.org/reokodoku/Bindo.git

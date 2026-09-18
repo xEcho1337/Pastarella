@@ -10,6 +10,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+    <ProjectReference Include="..\..\libs\Bindo\src\Bindo.FreeBSD\Bindo.FreeBSD.csproj" />
+
     <PackageReference Include="plist-cil" Version="2.3.1" />
     <PackageReference Include="System.Management" Version="10.0.12" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.11" />
