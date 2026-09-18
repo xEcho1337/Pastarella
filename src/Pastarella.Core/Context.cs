@@ -79,7 +79,7 @@ public class Context
                 ContainerScanner = new Linux.ContainerScanner(ctx);
                 break;
             case OS.FreeBSD:
-                ProcessScanner = null;
+                ProcessScanner = new FreeBSD.ProcessScanner();
                 UserScanner = new Unix.UserScanner();
                 StorageScanner = new Common.GenericStorageScanner();
                 PersistenceScanner = new FreeBSD.PersistenceScanner();
