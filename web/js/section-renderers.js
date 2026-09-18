@@ -19,7 +19,7 @@ function value(d, key, defaultValue = null) {
     return d[key];
 }
 
-/* Processes: Id, Name, Path, SHA256, Signature, Start Time, Metadata */
+/* Processes: Id, Path, SHA256, Signature, Start Time, Metadata */
 function renderProcesses(report, tbody) {
     if (report.Processes == null)
         return;
@@ -31,7 +31,6 @@ function renderProcesses(report, tbody) {
 
             return [
                 value(d, "Id", "-"),
-                value(d, "Name", "-"),
                 pastarellaReport.mono(
                     `${exePath.NormalizedValue ?? ""} ${value(d, "CommandArgs", [""]).join(' ')}`
                 ),

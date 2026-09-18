@@ -83,7 +83,6 @@ export var sections = [
                 description: "Running processes",
                 tableHeaders: [
                     "Id",
-                    "Name",
                     "Path",
                     "Sha256",
                     "Signature",
