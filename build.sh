@@ -7,6 +7,9 @@
 # |_.__/ \__,_|_|_|\__,_(_)___/_| |_|
 #
 
+git submodule init
+git submodule update
+
 mkdir -p out
 
 cd src/Pastarella || exit 1

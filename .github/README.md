@@ -26,6 +26,25 @@ Pastarella is still in development, and it currently supports:
 
 For further information click [here](https://xecho1337.github.io/Pastarella).
 
+## Installing
+
+If you want to use Pastarella you can just go to [releases](https://github.com/xEcho1337/Pastarella/releases) and download the right artifact for
+your operating system. No further installation required!
+
+### Source
+
+Instead if you want to build yourself the project you just need to clone the repository, get the submodules
+and run `dotnet build`.
+Ready-to-go commands:
+
+```sh
+$ git clone --recurse-submodules https://github.com/xEcho1337/Pastarella.git
+$ cd Pastarella
+# Build a release artifact
+# `YOUR-RID` is the combo `OS-ARCH`. OS can be `win` (Windows), `osx` (MacOS), `linux` or `freebsd`.
+$ cd src/Pastarella; dotnet build -c Release -r <YOUR-RID> -o ../../out/
+```
+
 ## The name
 
 Pastarella can mean different things depending on what you like the most:

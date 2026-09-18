@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using Pastarella.Core.Models;
+using static Bindo.FreeBSD.LibC.Kld;
 
 namespace Pastarella.Core.FreeBSD;
 
@@ -9,34 +10,34 @@ public class DriverScanner : IDriverScanner
     {
         List<DriverInfo> list = [];
 
-        for (int fileid = Native.LibC.kldnext(0); fileid != 0; fileid = Native.LibC.kldnext(fileid))
+        for (int fileid = kldnext(0); fileid != 0; fileid = kldnext(fileid))
         {
-            Native.LibC.KldFileStat stat = new();
-            if (Native.LibC.kldstat(fileid, ref stat) == -1)
+            var stat = KldFileStat.Empty();
+            if (kldstat(fileid, ref stat) == -1)
                 throw new Exception($"kldstat failed, errno={Marshal.GetLastWin32Error()}");
 
             list.Add(new(
-                stat.name!,
-                stat.name!,
+                stat.Name,
+                stat.Name,
                 $"file_{stat.id}",
                 DriverType.KernelModule,
-                new(stat.pathname!, true),
+                new(stat.PathName, true),
                 null /* TODO */,
                 true
             ));
 
-            for (int modid = Native.LibC.kldfirstmod(fileid); modid != 0; modid = Native.LibC.modfnext(modid))
+            for (int modid = kldfirstmod(fileid); modid != 0; modid = modfnext(modid))
             {
-                Native.LibC.ModuleStat modStat = new();
-                if (Native.LibC.modstat(modid, ref modStat) == -1)
+                var modStat = ModuleStat.Empty();
+                if (modstat(modid, ref modStat) == -1)
                     throw new Exception($"modstat failed, errno={Marshal.GetLastWin32Error()}");
 
                 list.Add(new(
-                    modStat.name!,
-                    modStat.name!,
+                    modStat.Name,
+                    modStat.Name,
                     $"mod_{modStat.id}",
                     DriverType.KernelModule,
-                    new(stat.pathname!, true),
+                    new(stat.PathName, true),
                     null /* TODO */,
                     true
                 ));
