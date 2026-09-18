@@ -79,6 +79,7 @@ public static class PathConverter
 
                                 return [.. parts];
                             }
+                            lastQuote += start;
 
                             if (path[lastQuote - 1] == '\\')
                             {
