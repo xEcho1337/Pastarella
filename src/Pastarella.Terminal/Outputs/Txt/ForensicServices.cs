@@ -17,7 +17,7 @@ public class ForensicServices(OutputBuffer buffer)
             outBuf.Append(p.StartTime?.ToString(), Presence.Required);
             outBuf.Append($"{p.Id}", Presence.Required);
             outBuf.Append(p.ExePath.NormalizedValue, Presence.Required);
-            outBuf.Append(p.CommandArgs, Presence.Optional);
+            outBuf.Append(p.CommandArgs == null ? "" : string.Join(' ', p.CommandArgs), Presence.Optional);
             outBuf.Append(signed ? "Signed" : "Unsigned", Presence.Required);
             outBuf.Append(p.ExePath.Sha256, Presence.Optional);
 

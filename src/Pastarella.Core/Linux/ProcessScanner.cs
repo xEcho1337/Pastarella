@@ -27,7 +27,7 @@ public class ProcessScanner(Context ctx) : IProcessScanner
                 string[] stats = stats_raw[(commandNameEnd + 2)..].Split(' ');
 
                 ExePath exePath;
-                string? args = null;
+                string[]? args = null;
 
                 char state = stats[0][0];
                 if (state == 'Z')
@@ -40,7 +40,7 @@ public class ProcessScanner(Context ctx) : IProcessScanner
 
                     string[] cmdline_raw = File.ReadAllLines(Path.Combine(processDir, "cmdline"))[0].Split('\x00', StringSplitOptions.RemoveEmptyEntries);
                     if (cmdline_raw.Length != 0)
-                        args = string.Join(' ', cmdline_raw[1..]);
+                        args = cmdline_raw[1..];
                 }
 
                 long startTime = long.Parse(stats[19])! / Unix.Native.LibC.sysconf(Unix.Native.LibC.SysconfName._SC_CLK_TCK);

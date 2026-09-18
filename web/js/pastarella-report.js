@@ -28,7 +28,7 @@ export class PastarellaReport {
                 Signature: null, // TODO
                 NormalizedValue: proc.Path,
             };
-            proc.CommandArgs = ""; // not implemented in v1
+            proc.CommandArgs = null; // not implemented in v1
         }
 
         for (let serv of data.Services) {

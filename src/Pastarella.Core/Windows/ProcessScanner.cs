@@ -4,6 +4,7 @@ using Pastarella.Core.Models;
 
 using static Vanara.PInvoke.NtDll;
 using static Vanara.PInvoke.Kernel32;
+using static Vanara.PInvoke.Shell32;
 using Vanara.PInvoke;
 using System.Security.Cryptography;
 using Vanara.InteropServices;
@@ -47,7 +48,7 @@ public class ProcessScanner : IProcessScanner
         return buffer.DangerousGetHandle().ToStructure<UNICODE_STRING>().ToString();
     }
 
-    private static string? GetCommandLine(HPROCESS normalHandle)
+    private static string[]? GetCommandLine(HPROCESS normalHandle)
     {
         if (Native.NtDll.Wrappers.IsWOW64(normalHandle))
         {
@@ -73,11 +74,8 @@ public class ProcessScanner : IProcessScanner
                 return null;
             var processParams = processParamsBuffer.DangerousGetHandle().ToStructure<RTL_USER_PROCESS_PARAMETERS>();
 
-            string cmdline = processParams.CommandLine.ToString(memoryHandle);
-            if (cmdline[0] == '"')
-                return cmdline[(cmdline[1..].IndexOf('"') + 2)..];
-            else
-                return cmdline[(cmdline.IndexOf(' ') + 1)..];
+            string[] cmdline = [.. CommandLineToArgvW(processParams.CommandLine.ToString(memoryHandle)).Skip(1).Select(l => l!)];
+            return cmdline.Length == 0 ? null : cmdline;
         }
     }
 

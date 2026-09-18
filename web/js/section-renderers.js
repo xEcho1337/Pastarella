@@ -33,7 +33,7 @@ function renderProcesses(report, tbody) {
                 value(d, "Id", "-"),
                 value(d, "Name", "-"),
                 pastarellaReport.mono(
-                    `${exePath.NormalizedValue ?? ""} ${value(d, "CommandArgs", "")}`
+                    `${exePath.NormalizedValue ?? ""} ${value(d, "CommandArgs", [""]).join(' ')}`
                 ),
                 pastarellaReport.mono(exePath.Sha256 ?? "-"),
                 pastarellaReport.centered(

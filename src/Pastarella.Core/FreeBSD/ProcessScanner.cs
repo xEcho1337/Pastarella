@@ -80,9 +80,7 @@ public class ProcessScanner : IProcessScanner
             list.Add(new(p.ki_pid)
             {
                 ExePath = new(string.IsNullOrEmpty(path) ? p.CommandName : path),
-                CommandArgs = (args == null || args.Length == 0)
-                    ? null
-                    : string.Join(' ', args[1..]),
+                CommandArgs = args?[1..] ?? null,
 
                 StartTime = DateTimeOffset.FromUnixTimeSeconds((long)p.ki_start.tv_sec).UtcDateTime,
             });

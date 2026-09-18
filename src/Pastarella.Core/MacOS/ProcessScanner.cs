@@ -18,13 +18,10 @@ public class ProcessScanner : IProcessScanner
 
             DateTime? start = PlatformHelpers.TryGet(() => proc.StartTime);
             string? path = PlatformHelpers.TryGet(() => MacOsProcess.GetExePath(proc.Id));
-            string? cmdline = PlatformHelpers.TryGet(() => MacOsProcess.GetCommandLine(proc.Id));
+            string[]? cmdline = PlatformHelpers.TryGet(() => MacOsProcess.GetCommandLine(proc.Id));
 
             // PID 0 is always kernel_task on macOS
             string name = proc.Id == 0 ? "kernel_task" : proc.ProcessName;
-
-            if (cmdline != null && path != null)
-                cmdline = cmdline.Replace(path, "");
 
             if (!string.IsNullOrWhiteSpace(path))
             {

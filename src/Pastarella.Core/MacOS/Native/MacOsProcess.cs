@@ -8,7 +8,7 @@ public static unsafe class MacOsProcess
     private const int KernProcArgs2 = 49;
     private const int ProcPidPathBufSize = 4096;
 
-    public static string? GetCommandLine(int pid)
+    public static string[]? GetCommandLine(int pid)
     {
         int[] mib = [CtlKern, KernProcArgs2, pid];
 
@@ -41,7 +41,8 @@ public static unsafe class MacOsProcess
             .GetString(buf, 4, (int)actualLen - 4)
             .Split('\0', StringSplitOptions.RemoveEmptyEntries);
 
-        return parts.Length <= 1 ? null : string.Join(' ', parts.Skip(1).Take(argc));
+        // Skip `exe_path` and `argv[0]`.
+        return parts.Length <= 1 ? null : parts.Skip(2).Take(argc - 1).ToArray();
     }
 
     public static string? GetExePath(int pid)
